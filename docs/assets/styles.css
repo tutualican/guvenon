@@ -1071,6 +1071,7 @@ body.lang-switching [data-i18n] {
   margin: 0 auto;
   padding: 110px 32px 120px;
   text-align: center;
+  overflow: hidden;
 }
 
 .cta-inner {

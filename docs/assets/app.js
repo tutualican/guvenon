@@ -149,7 +149,7 @@
         "Lokale Geräte sind nicht der Feind. Eine klare LAN-Allowlist soll Drucker, NAS und Casting am Laufen halten, während unsichere Teilnehmer draußen bleiben.",
       why3Title: "Leise durch Design.",
       why3Body:
-        "Standardmäßig DNS-only. Keine Tunnel-Kryptografie, kein Keepalive, keine Paketaufzeichnung, keine Logs pro Abfrage. Die Durchsetzung wird im Windows-Filtertreiber laufen und fast nichts kosten.",
+        "Standardmäßig DNS-only. Keine Tunnel-Kryptografie, kein Keepalive, keine Paketaufzeichnung, keine Logs pro Abfrage. Die Durchsetzung wird in der Windows-Filterplattform laufen und fast nichts kosten.",
       howEyebrow: "So funktioniert es",
       howTitle: "Ein Klick. Dann vergessen.",
       howSub:
@@ -252,7 +252,7 @@
         "Yerel cihazlar düşman değildir. Net bir LAN izin listesi yazıcıları, NAS'ları ve yayınlamayı çalışır tutmak için tasarlandı; güvenilmeyen taraflar dışarıda kalır.",
       why3Title: "Tasarımı gereği sessiz.",
       why3Body:
-        "Varsayılan olarak yalnızca DNS modu. Tünel şifrelemesi, keepalive, paket yakalama veya sorgu başına günlük yok. Uygulama Windows filtre motorunda çalışacak ve neredeyse hiç maliyet çıkarmayacak.",
+        "Varsayılan olarak yalnızca DNS modu. Tünel şifrelemesi, keepalive, paket yakalama veya sorgu başına günlük yok. Uygulama Windows filtre platformunda çalışacak ve neredeyse hiç maliyet çıkarmayacak.",
       howEyebrow: "Nasıl çalışır",
       howTitle: "Tek tık. Sonra unutun.",
       howSub:
@@ -268,7 +268,7 @@
       privacyEyebrow: "Tasarımı gereği gizlilik",
       privacyTitle: "Hesap yok. Profil çıkarma yok. DNS günlüğü yok.",
       privacyBody:
-        "Guven-ON yerel bir güvenlik aracıdır, veri işi değil. Servis yalnızca sayaçlar ve durum değişiklikleri üretmek üzere tasarlandı — ziyaret ettiğiniz siteleri asla.",
+        "Guven-ON yerel bir güvenlik aracıdır, bir veri işletmesi değildir. Servis yalnızca sayaçlar ve durum değişiklikleri üretmek üzere tasarlandı — ziyaret ettiğiniz siteleri asla üretmez.",
       privacy1: "Sorgu başına DNS günlüğü tasarım gereği kapalıdır.",
       privacy2: "Ayarlar cihazınızda kalır.",
       privacy3: "Açık güncelleme bildirimi ve her sürüm için yayımlanmış SHA-256.",
