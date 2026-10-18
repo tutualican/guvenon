@@ -56,13 +56,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File $installer -Channel 10.0
 Build and publish a self-contained build:
 
 ```powershell
-.\build.ps1 -Configuration Release -Runtime win-x64 -SelfContained
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build.ps1 -Configuration Release -Runtime win-x64 -SelfContained
 ```
 
 Build the installer and `latest.json` as well:
 
 ```powershell
-.\build.ps1 -Configuration Release -Runtime win-x64 -SelfContained -Installer
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build.ps1 -Configuration Release -Runtime win-x64 -SelfContained -Installer
 ```
 
 The outputs are written to `artifacts/publish/`, `artifacts/installer/` and
@@ -108,7 +108,7 @@ Each release must upload `latest.json` next to the installer. The helper
 generates it with the immutable asset URL, size and SHA-256:
 
 ```powershell
-.\scripts\make-manifest.ps1 -InstallerPath .\artifacts\installer\GuvenOnSetup-0.1.0.exe -Version 0.1.0
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-manifest.ps1 -InstallerPath .\artifacts\installer\GuvenOnSetup-0.1.0.exe -Version 0.1.0
 ```
 
 The app verifies the version and offers a download link from the manifest. The
