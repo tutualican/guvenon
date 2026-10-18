@@ -2,6 +2,9 @@
 
 Quiet protection for untrusted networks.
 
+[Download the preview](https://github.com/tutualican/guvenon/releases/latest) ·
+[Website](https://tutualican.github.io/guvenon/)
+
 Guven-ON is a Windows security tool designed to block DNS leaks and local-network
 exposure on public Wi-Fi. It is designed to live in the background, start with
 Windows, and ask for nothing after installation. The user interface is available
@@ -146,10 +149,11 @@ The site is a dependency-free static page in `docs/`:
 - `docs/assets/guvenon.png` (generated from the desktop logo)
 - `docs/assets/og.png` (social preview card)
 
-It is deployed by `.github/workflows/pages.yml` to GitHub Pages. Enable
-**Settings → Pages → Build and deployment → Source: GitHub Actions** in the
-repository. If you prefer branch deployment, choose `main` and `/docs`; the
-site does not require a build step.
+It is deployed by `.github/workflows/pages.yml` to GitHub Pages at
+<https://tutualican.github.io/guvenon/>. The repository uses
+**Settings → Pages → Build and deployment → Source: GitHub Actions**. If you
+prefer branch deployment, choose `main` and `/docs`; the site does not require a
+build step.
 
 The site uses English by default, auto-detects German and Turkish, and remembers
 the choice in `localStorage`. All download links point at
