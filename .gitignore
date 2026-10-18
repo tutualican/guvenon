@@ -1,0 +1,29 @@
+# Build output
+bin/
+obj/
+artifacts/
+publish/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Test and coverage
+TestResults/
+coverage/
+*.trx
+
+# OS noise
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Local signing material — never commit certificates or keys
+*.pfx
+*.p12
+*.snk
+secrets/

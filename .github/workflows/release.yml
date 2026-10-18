@@ -1,0 +1,64 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Build and package
+        shell: pwsh
+        run: ./build.ps1 -Configuration Release -Runtime win-x64 -SelfContained -Installer
+
+      # Code signing is intentionally not wired up yet. When the certificate is
+      # available, sign the installer and the executables here, before the
+      # release is published. Never publish an unsigned production build.
+      #
+      # - name: Sign artifacts
+      #   shell: pwsh
+      #   env:
+      #     SIGNING_ENDPOINT: ${{ secrets.SIGNING_ENDPOINT }}
+      #     SIGNING_ACCOUNT: ${{ secrets.SIGNING_ACCOUNT }}
+      #     SIGNING_PROFILE: ${{ secrets.SIGNING_PROFILE }}
+      #   run: ./scripts/sign.ps1
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: guvenon-windows-x64
+          path: |
+            artifacts/installer/*.exe
+            artifacts/latest.json
+          if-no-files-found: error
+
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $version = "${{ github.ref_name }}".TrimStart("v")
+          gh release create "${{ github.ref_name }}" `
+            "artifacts/installer/GuvenOnSetup-$version.exe" `
+            "artifacts/latest.json" `
+            --title "Guven-ON $version" `
+            --generate-notes

@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f5f5f7" />
+  <meta name="color-scheme" content="light" />
+  <title>Guven-ON — Privacy that just works on Windows</title>
+  <meta name="description" content="Guven-ON is designed to block DNS leaks and local-network exposure on untrusted Wi-Fi, stays quiet in the background, and speaks English, German and Turkish." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Guven-ON — Privacy that just works" />
+  <meta property="og:description" content="Quiet protection for untrusted networks. Windows 11 preview." />
+  <meta property="og:image" content="assets/og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Guven-ON — Privacy that just works" />
+  <meta name="twitter:description" content="Quiet protection for untrusted networks. Windows 11 preview." />
+  <meta name="twitter:image" content="assets/og.png" />
+  <link rel="icon" type="image/png" href="assets/guvenon.png" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="skip">Skip to content</a>
+
+  <header class="site-nav" id="siteNav">
+    <div class="nav-inner">
+      <a class="brand" href="#top" aria-label="Guven-ON">
+        <img class="brand-mark" src="assets/guvenon.png" alt="" width="30" height="30" />
+        <span>Guven-ON</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Main">
+        <a href="#why" data-i18n="navWhy">Why</a>
+        <a href="#how" data-i18n="navHow">How it works</a>
+        <a href="#privacy" data-i18n="navPrivacy">Privacy</a>
+        <a href="#faq" data-i18n="navFaq">FAQ</a>
+      </nav>
+
+      <div class="nav-tools">
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-set-lang="de" aria-pressed="false">DE</button>
+          <button type="button" data-set-lang="tr" aria-pressed="false">TR</button>
+        </div>
+        <a class="btn btn-nav" href="https://github.com/guvenon/guvenon/releases/latest" target="_blank" rel="noopener" data-download>
+          <span data-i18n="navDownload">Download</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero" id="top">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-inner">
+        <div class="hero-copy">
+          <p class="eyebrow hero-enter">
+            <span class="live-dot"></span>
+            <span data-i18n="heroBadge">Windows 11 · Preview</span>
+          </p>
+          <h1 class="hero-enter delay-1">
+            <span data-i18n="heroTitle1">Privacy that</span><br />
+            <span class="gradient" data-i18n="heroTitle2">just works.</span>
+          </h1>
+          <p class="hero-sub hero-enter delay-2" data-i18n="heroSub">
+            Guven-ON blocks DNS leaks and local-network exposure on untrusted Wi-Fi — quietly, in the
+            background. No account. No tunnel. No babysitting.
+          </p>
+          <div class="hero-actions hero-enter delay-3">
+            <a class="btn btn-primary" href="https://github.com/guvenon/guvenon/releases/latest" target="_blank" rel="noopener" data-download>
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M10 2.5v9m0 0 3.5-3.5M10 11.5 6.5 8M4 13.5v2A2.5 2.5 0 0 0 6.5 18h7a2.5 2.5 0 0 0 2.5-2.5v-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span data-i18n="heroDownload">Download for Windows</span>
+            </a>
+            <a class="btn btn-quiet" href="#how" data-i18n="heroHow">See how it works</a>
+          </div>
+          <p class="micro hero-enter delay-4" data-i18n="heroMicro">
+            Free during preview · Windows 11 22H2+ · x64
+          </p>
+        </div>
+
+        <div class="hero-stage" aria-hidden="true">
+          <div class="halo">
+            <span class="halo-ring ring-1"></span>
+            <span class="halo-ring ring-2"></span>
+            <span class="halo-ring ring-3"></span>
+          </div>
+
+          <div class="app-window" id="appWindow">
+            <div class="window-bar">
+              <span class="window-dots"><i></i><i></i><i></i></span>
+              <span class="window-title">Guven-ON</span>
+              <span class="window-spacer"></span>
+            </div>
+            <div class="window-body">
+              <div class="window-head">
+                <span class="window-brand"><img src="assets/guvenon.png" alt="" class="window-logo" />Guven-ON</span>
+                <span class="badge" data-i18n="mockPreview">Preview</span>
+              </div>
+
+              <div class="status-card">
+                <span class="pulse-dot"></span>
+                <div class="status-text">
+                  <strong data-i18n="mockStatus">Protected</strong>
+                  <small data-i18n="mockStatusSub">DNS leaks blocked · Local traffic filtered</small>
+                </div>
+              </div>
+
+              <div class="mini-card">
+                <span class="mini-icon">
+                  <svg viewBox="0 0 20 20" aria-hidden="true">
+                    <path d="M2.8 7.2a11 11 0 0 1 14.4 0M5.5 10a7 7 0 0 1 9 0M8.2 12.8a3.2 3.2 0 0 1 3.6 0M10 16h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                  </svg>
+                </span>
+                <div class="mini-text">
+                  <small data-i18n="mockNetwork">Wi-Fi</small>
+                  <strong data-i18n="mockNetworkSub">CoffeeShop_Guest</strong>
+                </div>
+                <span class="signal"><i></i><i></i><i></i></span>
+              </div>
+
+              <div class="mini-row">
+                <span class="chip chip-green"><span class="chip-dot"></span><span data-i18n="mockDns">DNS protected</span></span>
+                <span class="chip"><span class="chip-dot"></span><span data-i18n="mockLan">LAN allowed</span></span>
+              </div>
+
+              <div class="mini-row update-row">
+                <div class="mini-text">
+                  <small data-i18n="mockUpdates">Updates</small>
+                  <strong data-i18n="mockUpdatesSub">Checked via GitHub Releases</strong>
+                </div>
+                <span class="arrow">→</span>
+              </div>
+            </div>
+          </div>
+
+          <span class="float-chip chip-a"><span class="chip-dot"></span><span data-i18n="mockDns">DNS protected</span></span>
+          <span class="float-chip chip-b"><span class="chip-dot"></span><span data-i18n="mockLan">LAN allowed</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why -->
+    <section class="section" id="why">
+      <div class="section-head reveal">
+        <p class="eyebrow" data-i18n="whyEyebrow">Why Guven-ON</p>
+        <h2 data-i18n="whyTitle">Protection without the babysitting.</h2>
+        <p class="section-sub" data-i18n="whySub">
+          Most privacy tools ask you to choose between safety and a working laptop. Guven-ON is built
+          around a different idea: the safe path should be the quiet one.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="feature-card reveal" style="--d: 0ms">
+          <span class="feature-icon icon-blue">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 3 19 5.6v5.3c0 4.6-2.9 8.1-7 10.1-4.1-2-7-5.5-7-10.1V5.6L12 3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+              <path d="m9 11.8 2.2 2.2 3.9-4.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <h3 data-i18n="why1Title">DNS leaks, closed.</h3>
+          <p data-i18n="why1Body">
+            When you join untrusted Wi-Fi, Guven-ON keeps DNS on the encrypted path and blocks queries
+            that try to escape. No silent leaks to the café router.
+          </p>
+        </article>
+
+        <article class="feature-card reveal" style="--d: 90ms">
+          <span class="feature-icon icon-green">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3.5" y="4" width="17" height="12" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.7" />
+              <path d="M8 20h8M12 16v4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+              <path d="M7 9.5h4M7 12h2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+            </svg>
+          </span>
+          <h3 data-i18n="why2Title">Your printer still works.</h3>
+          <p data-i18n="why2Body">
+            Local devices are not the enemy. A clear LAN allowlist keeps printers, NAS boxes and casting
+            working while untrusted peers stay out.
+          </p>
+        </article>
+
+        <article class="feature-card reveal" style="--d: 180ms">
+          <span class="feature-icon icon-amber">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M13.5 3 6.5 13h4.3L10 21l7.5-10.3h-4.6L13.5 3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+            </svg>
+          </span>
+          <h3 data-i18n="why3Title">Quiet by design.</h3>
+          <p data-i18n="why3Body">
+            DNS-only mode by default. No tunnel crypto, no keepalive, no packet capture, no per-query
+            logs. Enforcement lives in the Windows filter engine, where it costs almost nothing.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- How -->
+    <section class="section how" id="how">
+      <div class="section-head reveal">
+        <p class="eyebrow" data-i18n="howEyebrow">How it works</p>
+        <h2 data-i18n="howTitle">One click. Then forget it.</h2>
+        <p class="section-sub" data-i18n="howSub">
+          Guven-ON lives in the notification area and steps in only when the network can't be trusted.
+        </p>
+      </div>
+
+      <div class="how-grid">
+        <div class="step reveal" style="--d: 0ms">
+          <span class="step-num">01</span>
+          <h3 data-i18n="step1Title">Join a network</h3>
+          <p data-i18n="step1Body">Guven-ON notices the profile. Home and work networks stay untouched.</p>
+        </div>
+        <div class="step reveal" style="--d: 110ms">
+          <span class="step-num">02</span>
+          <h3 data-i18n="step2Title">Protection turns on</h3>
+          <p data-i18n="step2Body">
+            DNS and local traffic are pinned down before the first query leaves your laptop.
+          </p>
+        </div>
+        <div class="step reveal" style="--d: 220ms">
+          <span class="step-num">03</span>
+          <h3 data-i18n="step3Title">You keep working</h3>
+          <p data-i18n="step3Body">
+            Captive portals, printers and video calls keep working. A panic reset is always one click away.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="section" id="privacy">
+      <div class="privacy-panel reveal">
+        <div class="privacy-copy">
+          <p class="eyebrow eyebrow-light" data-i18n="privacyEyebrow">Privacy by design</p>
+          <h2 data-i18n="privacyTitle">No account. No profiling. No DNS logs.</h2>
+          <p class="privacy-sub" data-i18n="privacyBody">
+            Guven-ON is a local security tool, not a data business. The service emits counters and state
+            changes — never the sites you visit.
+          </p>
+          <ul class="checks">
+            <li><span class="check">✓</span><span data-i18n="privacy1">Per-query DNS logging is off by design.</span></li>
+            <li><span class="check">✓</span><span data-i18n="privacy2">Settings stay on your device.</span></li>
+            <li><span class="check">✓</span><span data-i18n="privacy3">Open update manifest, signed releases, published SHA-256.</span></li>
+          </ul>
+        </div>
+
+        <div class="shield-art" aria-hidden="true">
+          <svg viewBox="0 0 220 260">
+            <defs>
+              <linearGradient id="shieldStroke" x1="30" y1="20" x2="190" y2="240" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#2997ff" />
+                <stop offset="0.55" stop-color="#34c759" />
+                <stop offset="1" stop-color="#0071e3" />
+              </linearGradient>
+              <radialGradient id="shieldFill" cx="50%" cy="35%" r="70%">
+                <stop stop-color="#1c1c22" />
+                <stop offset="1" stop-color="#0b0b0f" />
+              </radialGradient>
+            </defs>
+            <circle cx="110" cy="118" r="96" fill="none" stroke="rgba(255,255,255,.08)" stroke-dasharray="2 8" />
+            <circle cx="110" cy="118" r="74" fill="none" stroke="rgba(255,255,255,.06)" />
+            <path class="shield-body" d="M110 26 190 55v58c0 49-32 86-80 108-48-22-80-59-80-108V55l80-29Z" fill="url(#shieldFill)" stroke="url(#shieldStroke)" stroke-width="2.4" />
+            <path class="shield-path" d="m82 128 19 19 38-43" fill="none" stroke="url(#shieldStroke)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
+            <circle class="shield-node node-1" cx="190" cy="55" r="4" fill="#2997ff" />
+            <circle class="shield-node node-2" cx="30" cy="171" r="4" fill="#34c759" />
+            <circle class="shield-node node-3" cx="110" cy="221" r="4" fill="#0071e3" />
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Languages -->
+    <section class="section languages" id="languages">
+      <div class="language-row reveal">
+        <div>
+          <p class="eyebrow" data-i18n="langEyebrow">Languages</p>
+          <h2 data-i18n="langTitle">Speaks your language.</h2>
+          <p class="section-sub" data-i18n="langBody">
+            The interface is available in English, German and Turkish. The service, logs and command line
+            stay in English so support is predictable.
+          </p>
+        </div>
+        <div class="language-pills" aria-label="Supported interface languages">
+          <span>English</span>
+          <span>Deutsch</span>
+          <span>Türkçe</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq" id="faq">
+      <div class="section-head reveal">
+        <p class="eyebrow" data-i18n="faqEyebrow">Questions</p>
+        <h2 data-i18n="faqTitle">Good to know.</h2>
+      </div>
+
+      <div class="faq-list">
+        <details class="faq-item reveal">
+          <summary><span data-i18n="faq0Q">Does the preview protect me yet?</span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p data-i18n="faq0A">No. The preview installs the service and tray UI, but it does not filter DNS or local traffic yet. Do not rely on it as a security control. Enforcement is the next milestone.</p></div>
+        </details>
+        <details class="faq-item reveal">
+          <summary><span data-i18n="faq1Q">Does it slow down my connection?</span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p data-i18n="faq1A">By default Guven-ON runs in DNS-only mode. There is no tunnel encryption, no keepalive and no packet capture, so the overhead is effectively the cost of the DNS lookup you were already making.</p></div>
+        </details>
+        <details class="faq-item reveal">
+          <summary><span data-i18n="faq2Q">Will it break my printer, NAS or Chromecast?</span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p data-i18n="faq2A">No. Local-network access is controlled by an allowlist, not switched off blindly. Captive portals are detected and handled before enforcement kicks in.</p></div>
+        </details>
+        <details class="faq-item reveal">
+          <summary><span data-i18n="faq3Q">Is Guven-ON a VPN?</span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p data-i18n="faq3A">No. It is a leak blocker that works with the Windows filtering platform. It does not route your traffic through a remote server, and it does not need an account.</p></div>
+        </details>
+        <details class="faq-item reveal">
+          <summary><span data-i18n="faq4Q">Do you log my DNS queries?</span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p data-i18n="faq4A">No. The service keeps aggregate state and counters for the UI. Query names are not written to disk.</p></div>
+        </details>
+        <details class="faq-item reveal">
+          <summary><span data-i18n="faq5Q">Which Windows versions are supported?</span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p data-i18n="faq5A">Windows 11 22H2 or later, x64, is the first target. Windows 10 support is planned after the Windows 11 release.</p></div>
+        </details>
+        <details class="faq-item reveal">
+          <summary><span data-i18n="faq6Q">Why might SmartScreen warn me?</span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p data-i18n="faq6A">Preview builds are not code-signed yet. Verify the SHA-256 published with each release, or build from source. Signing and reputation work are part of the release checklist.</p></div>
+        </details>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="download">
+      <div class="cta-inner reveal">
+        <span class="cta-orbit" aria-hidden="true"></span>
+        <h2 data-i18n="ctaTitle">Take your privacy back.</h2>
+        <p class="section-sub" data-i18n="ctaBody">
+          Install once. Guven-ON starts with Windows, stays out of the way, and protects the networks you
+          don't control.
+        </p>
+        <a class="btn btn-primary btn-large" href="https://github.com/guvenon/guvenon/releases/latest" target="_blank" rel="noopener" data-download>
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M10 2.5v9m0 0 3.5-3.5M10 11.5 6.5 8M4 13.5v2A2.5 2.5 0 0 0 6.5 18h7a2.5 2.5 0 0 0 2.5-2.5v-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span data-i18n="ctaDownload">Download Guven-ON</span>
+        </a>
+        <p class="micro" data-i18n="ctaMicro">Windows 11 22H2+ · x64 · Preview build</p>
+        <p class="download-note" data-i18n="downloadNote">
+          Preview builds are unsigned until code signing is set up. Check the release notes and SHA-256
+          before running.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a class="brand" href="#top" aria-label="Guven-ON">
+          <img class="brand-mark" src="assets/guvenon.png" alt="" width="30" height="30" />
+          <span>Guven-ON</span>
+        </a>
+        <p data-i18n="footerTagline">Quiet protection for untrusted networks.</p>
+        <p class="footer-note" data-i18n="footerNote">Not affiliated with Microsoft.</p>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footerProduct">Product</h4>
+        <a href="#why" data-i18n="navWhy">Why</a>
+        <a href="#how" data-i18n="navHow">How it works</a>
+        <a href="#faq" data-i18n="navFaq">FAQ</a>
+      </div>
+
+      <div class="footer-col">
+        <h4 data-i18n="footerResources">Resources</h4>
+        <a href="https://github.com/guvenon/guvenon" target="_blank" rel="noopener" data-repo-link="root">GitHub</a>
+        <a href="https://github.com/guvenon/guvenon/releases" target="_blank" rel="noopener" data-repo-link="releases" data-i18n="footerReleases">Releases</a>
+        <a href="https://github.com/guvenon/guvenon/issues" target="_blank" rel="noopener" data-repo-link="issues" data-i18n="footerIssues">Issues</a>
+        <a href="#privacy" data-i18n="footerPrivacy">Privacy</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span data-i18n="footerCopyright">© 2026 Guven-ON. Built independently.</span>
+    </div>
+  </footer>
+
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<Project>
+  <PropertyGroup>
+    <Version>0.1.0</Version>
+    <SatelliteResourceLanguages>en;de;tr</SatelliteResourceLanguages>
+    <Company>GuvenOn</Company>
+    <Product>Guven-ON</Product>
+    <Authors>GuvenOn</Authors>
+    <Copyright>Copyright (c) 2026 GuvenOn</Copyright>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+</Project>

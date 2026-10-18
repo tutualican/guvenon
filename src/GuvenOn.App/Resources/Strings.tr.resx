@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="AppName" xml:space="preserve"><value>Guven-ON</value></data>
+  <data name="AppTagline" xml:space="preserve"><value>Güvenilmeyen ağlarda basit koruma.</value></data>
+  <data name="Preview" xml:space="preserve"><value>Önizleme</value></data>
+
+  <data name="StatusServiceRunning" xml:space="preserve"><value>Servis çalışıyor</value></data>
+  <data name="StatusPreviewDetail" xml:space="preserve"><value>Bu önizleme sürümü henüz trafiği filtrelemiyor.</value></data>
+  <data name="StatusServiceStopped" xml:space="preserve"><value>Servis durdu</value></data>
+  <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Koruma şu anda etkin değil.</value></data>
+  <data name="StatusServiceMissing" xml:space="preserve"><value>Servis kurulu değil</value></data>
+  <data name="StatusServiceMissingDetail" xml:space="preserve"><value>Korumayı etkinleştirmek için kurulum dosyasını çalıştırın.</value></data>
+
+  <data name="Service" xml:space="preserve"><value>Servis</value></data>
+  <data name="ServiceRunning" xml:space="preserve"><value>Çalışıyor</value></data>
+  <data name="ServiceStopped" xml:space="preserve"><value>Durdu</value></data>
+  <data name="ServiceNotInstalled" xml:space="preserve"><value>Kurulu değil</value></data>
+
+  <data name="Network" xml:space="preserve"><value>Ağ</value></data>
+  <data name="NetworkUnknown" xml:space="preserve"><value>Bilinmeyen ağ</value></data>
+  <data name="NetworkWifi" xml:space="preserve"><value>Wi-Fi</value></data>
+  <data name="NetworkEthernet" xml:space="preserve"><value>Ethernet</value></data>
+  <data name="NetworkOffline" xml:space="preserve"><value>Çevrimdışı</value></data>
+
+  <data name="SoftwareUpdates" xml:space="preserve"><value>Yazılım güncellemeleri</value></data>
+  <data name="UpdateIdle" xml:space="preserve"><value>Güncellemeler GitHub Releases üzerinden sağlanır.</value></data>
+  <data name="CheckForUpdates" xml:space="preserve"><value>Güncellemeleri denetle</value></data>
+  <data name="Download" xml:space="preserve"><value>İndir</value></data>
+  <data name="Checking" xml:space="preserve"><value>Denetleniyor…</value></data>
+  <data name="UpToDate" xml:space="preserve"><value>Güncel sürümü kullanıyorsunuz.</value></data>
+  <data name="UpdateAvailable" xml:space="preserve"><value>Sürüm {0} kullanılabilir.</value></data>
+  <data name="UpdateCheckFailed" xml:space="preserve"><value>Güncellemeler denetlenemedi.</value></data>
+
+  <data name="Settings" xml:space="preserve"><value>Ayarlar</value></data>
+  <data name="Language" xml:space="preserve"><value>Dil</value></data>
+  <data name="LanguageHint" xml:space="preserve"><value>Yalnızca kullanıcı arayüzünü etkiler.</value></data>
+  <data name="StartWithWindows" xml:space="preserve"><value>Windows ile başlat</value></data>
+  <data name="StartWithWindowsHint" xml:space="preserve"><value>Sistem tepsisinde küçültülmüş olarak başlar.</value></data>
+
+  <data name="Refresh" xml:space="preserve"><value>Yenile</value></data>
+  <data name="Version" xml:space="preserve"><value>Sürüm {0}</value></data>
+  <data name="Exit" xml:space="preserve"><value>Çıkış</value></data>
+  <data name="HideToTray" xml:space="preserve"><value>Tepsiye küçült</value></data>
+  <data name="Open" xml:space="preserve"><value>Guven-ON'u aç</value></data>
+
+  <data name="TrayTooltip" xml:space="preserve"><value>Guven-ON — {0}</value></data>
+  <data name="TrayBalloonTitle" xml:space="preserve"><value>Guven-ON</value></data>
+  <data name="TrayBalloonStarted" xml:space="preserve"><value>Sistem tepsisinde çalışıyor.</value></data>
+  <data name="TrayBalloonUpdate" xml:space="preserve"><value>Sürüm {0} kullanılabilir.</value></data>
+</root>

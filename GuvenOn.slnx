@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/GuvenOn.App/GuvenOn.App.csproj" />
+    <Project Path="src/GuvenOn.Core/GuvenOn.Core.csproj" />
+    <Project Path="src/GuvenOn.Service/GuvenOn.Service.csproj" />
+  </Folder>
+</Solution>

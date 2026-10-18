@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <data name="AppName" xml:space="preserve"><value>Guven-ON</value></data>
+  <data name="AppTagline" xml:space="preserve"><value>Einfacher Schutz für unsichere Netzwerke.</value></data>
+  <data name="Preview" xml:space="preserve"><value>Vorschau</value></data>
+
+  <data name="StatusServiceRunning" xml:space="preserve"><value>Dienst läuft</value></data>
+  <data name="StatusPreviewDetail" xml:space="preserve"><value>Diese Vorschauversion filtert noch keinen Datenverkehr.</value></data>
+  <data name="StatusServiceStopped" xml:space="preserve"><value>Dienst angehalten</value></data>
+  <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Der Schutz ist derzeit nicht aktiv.</value></data>
+  <data name="StatusServiceMissing" xml:space="preserve"><value>Dienst nicht installiert</value></data>
+  <data name="StatusServiceMissingDetail" xml:space="preserve"><value>Führen Sie das Installationsprogramm aus, um den Schutz zu aktivieren.</value></data>
+
+  <data name="Service" xml:space="preserve"><value>Dienst</value></data>
+  <data name="ServiceRunning" xml:space="preserve"><value>Wird ausgeführt</value></data>
+  <data name="ServiceStopped" xml:space="preserve"><value>Angehalten</value></data>
+  <data name="ServiceNotInstalled" xml:space="preserve"><value>Nicht installiert</value></data>
+
+  <data name="Network" xml:space="preserve"><value>Netzwerk</value></data>
+  <data name="NetworkUnknown" xml:space="preserve"><value>Unbekanntes Netzwerk</value></data>
+  <data name="NetworkWifi" xml:space="preserve"><value>WLAN</value></data>
+  <data name="NetworkEthernet" xml:space="preserve"><value>Ethernet</value></data>
+  <data name="NetworkOffline" xml:space="preserve"><value>Offline</value></data>
+
+  <data name="SoftwareUpdates" xml:space="preserve"><value>Softwareupdates</value></data>
+  <data name="UpdateIdle" xml:space="preserve"><value>Updates werden über GitHub Releases bereitgestellt.</value></data>
+  <data name="CheckForUpdates" xml:space="preserve"><value>Nach Updates suchen</value></data>
+  <data name="Download" xml:space="preserve"><value>Herunterladen</value></data>
+  <data name="Checking" xml:space="preserve"><value>Wird gesucht…</value></data>
+  <data name="UpToDate" xml:space="preserve"><value>Sie sind auf dem neuesten Stand.</value></data>
+  <data name="UpdateAvailable" xml:space="preserve"><value>Version {0} ist verfügbar.</value></data>
+  <data name="UpdateCheckFailed" xml:space="preserve"><value>Updates konnten nicht geprüft werden.</value></data>
+
+  <data name="Settings" xml:space="preserve"><value>Einstellungen</value></data>
+  <data name="Language" xml:space="preserve"><value>Sprache</value></data>
+  <data name="LanguageHint" xml:space="preserve"><value>Gilt nur für die Benutzeroberfläche.</value></data>
+  <data name="StartWithWindows" xml:space="preserve"><value>Mit Windows starten</value></data>
+  <data name="StartWithWindowsHint" xml:space="preserve"><value>Startet minimiert im Infobereich.</value></data>
+
+  <data name="Refresh" xml:space="preserve"><value>Aktualisieren</value></data>
+  <data name="Version" xml:space="preserve"><value>Version {0}</value></data>
+  <data name="Exit" xml:space="preserve"><value>Beenden</value></data>
+  <data name="HideToTray" xml:space="preserve"><value>In den Infobereich</value></data>
+  <data name="Open" xml:space="preserve"><value>Guven-ON öffnen</value></data>
+
+  <data name="TrayTooltip" xml:space="preserve"><value>Guven-ON — {0}</value></data>
+  <data name="TrayBalloonTitle" xml:space="preserve"><value>Guven-ON</value></data>
+  <data name="TrayBalloonStarted" xml:space="preserve"><value>Läuft im Infobereich.</value></data>
+  <data name="TrayBalloonUpdate" xml:space="preserve"><value>Version {0} ist verfügbar.</value></data>
+</root>
