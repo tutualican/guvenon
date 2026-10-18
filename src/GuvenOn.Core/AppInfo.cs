@@ -10,9 +10,8 @@ public static class AppInfo
     public const string ServiceDescription = "Blocks DNS leaks and local traffic on untrusted networks.";
     public const string DefaultChannel = "stable";
 
-    // Replace these two constants with the real repository before the first release.
     // Update checks do not use the GitHub API, so no token is needed.
-    public const string GitHubOwner = "guvenon";
+    public const string GitHubOwner = "tutualican";
     public const string GitHubRepo = "guvenon";
 
     public static string VersionString

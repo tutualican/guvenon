@@ -96,7 +96,7 @@ Service installation is intentionally kept out of the app:
 The app requests:
 
 ```
-https://github.com/OWNER/REPO/releases/latest/download/latest.json
+https://github.com/tutualican/guvenon/releases/latest/download/latest.json
 ```
 
 That path is a release-asset redirect, not the REST API. It needs no token and
@@ -115,9 +115,9 @@ The app verifies the version and offers a download link from the manifest. The
 manifest signature (ECDSA P-256) and silent install/rollback are wired in only
 after signing keys exist. Preview builds are unsigned on purpose.
 
-Before the first release, update the repository constants in
-`src/GuvenOn.Core/AppInfo.cs` (`GitHubOwner`, `GitHubRepo`) and in
-`docs/assets/app.js` (`REPO`).
+The repository constants live in `src/GuvenOn.Core/AppInfo.cs`
+(`GitHubOwner`, `GitHubRepo`) and `docs/assets/app.js` (`REPO`). They currently
+point at `tutualican/guvenon`.
 
 ## Installer
 
@@ -136,6 +136,8 @@ elevated through Windows' standard uninstall flow.
 
 ## Website
 
+Live site: <https://tutualican.github.io/guvenon/>
+
 The site is a dependency-free static page in `docs/`:
 
 - `docs/index.html`
@@ -151,7 +153,7 @@ site does not require a build step.
 
 The site uses English by default, auto-detects German and Turkish, and remembers
 the choice in `localStorage`. All download links point at
-`https://github.com/OWNER/REPO/releases/latest`.
+`https://github.com/tutualican/guvenon/releases/latest`.
 
 ## Icon
 

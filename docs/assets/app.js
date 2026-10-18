@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const REPO = "guvenon/guvenon";
+  const REPO = "tutualican/guvenon";
   const REPO_URL = `https://github.com/${REPO}`;
   const SUPPORTED = ["en", "de", "tr"];
   const STORAGE_KEY = "guvenon.lang";

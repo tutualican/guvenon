@@ -5,7 +5,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$Version,
 
-    [string]$Repo = "guvenon/guvenon",
+    [string]$Repo = "tutualican/guvenon",
     [string]$Channel = "stable",
     [string]$Output,
     [string]$Notes = "See the GitHub release notes."
