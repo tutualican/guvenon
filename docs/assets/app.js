@@ -121,8 +121,8 @@
       navFaq: "FAQ",
       navDownload: "Herunterladen",
       heroBadge: "Windows 11 · Vorschau",
-      heroTitle1: "Datenschutz, der",
-      heroTitle2: "einfach funktioniert.",
+      heroTitle1: "Datenschutz,",
+      heroTitle2: "einfach gemacht.",
       heroSub:
         "Guven-ON soll DNS-Leaks und lokale Netzwerkexposition in unsicheren WLANs blockieren – leise im Hintergrund. Kein Konto. Kein Tunnel. Kein ständiges Nachsehen.",
       heroDownload: "Für Windows herunterladen",
