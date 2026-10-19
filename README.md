@@ -5,15 +5,17 @@ Quiet protection for untrusted networks.
 [Download the preview](https://github.com/tutualican/guvenon/releases/latest) ·
 [Website](https://tutualican.github.io/guvenon/)
 
-Guven-ON is a Windows security tool designed to block DNS leaks and local-network
-exposure on public Wi-Fi. It is designed to live in the background, start with
-Windows, and ask for nothing after installation. The user interface is available
+Guven-ON is a network security tool designed to block DNS leaks and local-network
+exposure on public Wi-Fi. It currently targets Windows 11; a Debian/Ubuntu Linux
+build is planned. It is designed to live in the background, start with the
+system, and ask for nothing after installation. The user interface is available
 in English, German and Turkish.
 
 > **Status: early preview.** The tray app, Windows service, installer, update
 > check and website are in place. Packet filtering (WFP) and DNS policy (NRPT)
 > enforcement are the next implementation phase. This preview does not protect
-> traffic yet.
+> traffic yet. Linux support is planned as a Debian/Ubuntu `.deb`; no Linux
+> build is available today.
 
 ## What works today
 
@@ -221,12 +223,20 @@ the light details inside the shield.
 
 ## Roadmap
 
-1. WFP filters + NRPT/DoH policy, fail-closed only on untrusted profiles.
-2. Captive-portal detection, LAN allowlist, panic reset and auto-revert.
-3. Signed update manifest, silent installer handoff, rollback.
-4. Windows 10 DNS proxy path.
+The detailed, research-backed backlog lives in [ROADMAP.md](ROADMAP.md).
+
+1. Real protection phase: trust-aware profiles, DNS/DoH guard, LAN exposure
+   guard, IPv6 guard, fail-closed kill switch, captive-portal mode, panic and
+   self-test.
+2. Linux target: Debian/Ubuntu `.deb` with a systemd service, PolicyKit, D-Bus,
+   nftables and systemd-resolved/NetworkManager integration.
+3. WireGuard, split tunneling, per-app rules, visibility and threat alerts.
+4. Signed update manifest, silent installer handoff, rollback.
 5. WinGet manifest submission (manifests are kept in `winget/`).
 6. Code signing and SmartScreen reputation.
+
+Linux packaging starts with `.deb`; Flatpak/AppImage are not a substitute for a
+system-wide firewall/DNS daemon.
 
 ## License
 
