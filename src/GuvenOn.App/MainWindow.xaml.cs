@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
@@ -57,6 +58,18 @@ public partial class MainWindow : Window
         LanguageBox.Items.Add(new LanguageOption("en", "English"));
         LanguageBox.Items.Add(new LanguageOption("de", "Deutsch"));
         LanguageBox.Items.Add(new LanguageOption("tr", "Türkçe"));
+    }
+
+    private void RefreshLanguageSystemLabel()
+    {
+        var autoOption = LanguageBox.Items
+            .OfType<LanguageOption>()
+            .FirstOrDefault(option => option.Code == Loc.Auto);
+
+        if (autoOption is not null)
+        {
+            autoOption.Name = Loc.Instance["LanguageSystem"];
+        }
     }
 
     private void LoadSettings()
@@ -255,6 +268,8 @@ public partial class MainWindow : Window
         }
 
         Loc.Instance.Apply(option.Code);
+        RefreshLanguageSystemLabel();
+        AppHost.RefreshTrayLocalization();
         AppHost.Settings.Language = option.Code;
         AppHost.SaveSettings();
 
@@ -376,8 +391,35 @@ public partial class MainWindow : Window
     [DllImport("user32.dll")]
     private static extern uint GetDpiForWindow(IntPtr handle);
 
-    private sealed record LanguageOption(string Code, string Name)
+    private sealed class LanguageOption : INotifyPropertyChanged
     {
+        private string _name;
+
+        public LanguageOption(string code, string name)
+        {
+            Code = code;
+            _name = name;
+        }
+
+        public string Code { get; }
+
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                if (string.Equals(_name, value, StringComparison.Ordinal))
+                {
+                    return;
+                }
+
+                _name = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
+            }
+        }
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         public override string ToString() => Name;
     }
 }

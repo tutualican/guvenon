@@ -36,7 +36,7 @@ src/GuvenOn.Core     settings, autostart, SemVer, update manifest
 src/GuvenOn.Service  Windows service and service installer
 tests/GuvenOn.Tests  unit tests for versioning, updates, settings and autostart
 installer/           Inno Setup script
-winget/              WinGet manifests for 0.1.1
+winget/              WinGet manifests for 0.1.2
 docs/                static GitHub Pages site
 scripts/             icon and update-manifest helpers
 .github/workflows/   release and Pages pipelines
@@ -120,7 +120,7 @@ Each release must upload `latest.json` next to the installer. The helper
 generates it with the immutable asset URL, size and SHA-256:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-manifest.ps1 -InstallerPath .\artifacts\installer\GuvenOnSetup-0.1.1.exe -Version 0.1.1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-manifest.ps1 -InstallerPath .\artifacts\installer\GuvenOnSetup-0.1.2.exe -Version 0.1.2
 ```
 
 The app verifies the version and offers a download link from the manifest. The
@@ -150,12 +150,12 @@ elevated through Windows' standard uninstall flow.
 ## WinGet
 
 Versioned manifests for `Tutualican.GuvenOn` live in
-`winget/manifests/t/Tutualican/GuvenOn/0.1.1/`. They describe the per-machine
+`winget/manifests/t/Tutualican/GuvenOn/0.1.2/`. They describe the per-machine
 Inno installer, silent switches and English, German and Turkish descriptions.
 Validate them locally with:
 
 ```powershell
-winget validate --manifest .\winget\manifests\t\Tutualican\GuvenOn\0.1.1
+winget validate --manifest .\winget\manifests\t\Tutualican\GuvenOn\0.1.2
 ```
 
 Submitting to the community `winget-pkgs` repository is a separate review step;

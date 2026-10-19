@@ -156,6 +156,7 @@
                                   Grid.Column="1"
                                   Width="170"
                                   VerticalAlignment="Center"
+                                  DisplayMemberPath="Name"
                                   SelectionChanged="LanguageBox_SelectionChanged" />
                     </Grid>
 

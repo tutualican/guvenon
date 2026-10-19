@@ -79,23 +79,26 @@ public sealed class UpdateCheckerTests
     public void TrustedDownloadUrl_MatchesManifestRules()
     {
         Assert.IsTrue(UpdateChecker.IsTrustedDownloadUrl(
-            "https://github.com/tutualican/guvenon/releases/download/v0.1.1/GuvenOnSetup-0.1.1.exe"));
+            "https://github.com/tutualican/guvenon/releases/download/v0.1.2/GuvenOnSetup-0.1.2.exe"));
         Assert.IsFalse(UpdateChecker.IsTrustedDownloadUrl(
-            "https://github.com/tutualican/guvenon/releases/download/v0.1.1/GuvenOnSetup-0.1.1.zip"));
+            "https://github.com/tutualican/guvenon/releases/download/v0.1.2/GuvenOnSetup-0.1.2.zip"));
         Assert.IsFalse(UpdateChecker.IsTrustedDownloadUrl(
-            "https://github.com/other/guvenon/releases/download/v0.1.1/GuvenOnSetup-0.1.1.exe"));
+            "https://github.com/other/guvenon/releases/download/v0.1.2/GuvenOnSetup-0.1.2.exe"));
     }
 
     private static UpdateManifest ValidManifest() => new()
     {
         Channel = "stable",
-        Version = "0.1.2",
+        Version = NextVersion(),
         MinVersion = "0.1.0",
-        Url = "https://github.com/tutualican/guvenon/releases/download/v0.1.2/GuvenOnSetup-0.1.2.exe",
+        Url = $"https://github.com/tutualican/guvenon/releases/download/v{NextVersion()}/GuvenOnSetup-{NextVersion()}.exe",
         Sha256 = new string('b', 64),
         Size = 78_000_000,
         Rollout = 100
     };
+
+    private static string NextVersion() =>
+        $"{AppInfo.Version.Major}.{AppInfo.Version.Minor}.{AppInfo.Version.Patch + 1}";
 
     private static HttpResponseMessage JsonResponse(UpdateManifest manifest) => new(HttpStatusCode.OK)
     {

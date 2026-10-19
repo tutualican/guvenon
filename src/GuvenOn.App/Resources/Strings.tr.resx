@@ -97,7 +97,7 @@
   <data name="Settings" xml:space="preserve"><value>Ayarlar</value></data>
   <data name="Language" xml:space="preserve"><value>Dil</value></data>
   <data name="LanguageSystem" xml:space="preserve"><value>Sistem dili</value></data>
-  <data name="LanguageHint" xml:space="preserve"><value>Windows'u izlemek için Sistem dili'ni seçin.</value></data>
+  <data name="LanguageHint" xml:space="preserve"><value>Windows'u izlemek için Sistem dilini seçin.</value></data>
   <data name="StartWithWindows" xml:space="preserve"><value>Windows ile başlat</value></data>
   <data name="StartWithWindowsHint" xml:space="preserve"><value>Sistem tepsisinde küçültülmüş olarak başlar.</value></data>
 

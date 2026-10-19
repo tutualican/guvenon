@@ -199,6 +199,11 @@ public partial class App : Application
 
     public void SaveSettings() => _store.Save(_settings);
 
+    public void RefreshTrayLocalization()
+    {
+        _tray?.SetTooltip(Loc.Instance.Format("TrayTooltip", AppInfo.VersionString));
+    }
+
     public async Task CheckForUpdatesAsync(bool showResult)
     {
         try
