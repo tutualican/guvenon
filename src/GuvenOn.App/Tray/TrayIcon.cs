@@ -19,6 +19,7 @@ public sealed class TrayIcon : IDisposable
     private readonly Action _exit;
     private readonly Action _checkUpdates;
     private bool _disposed;
+    private Font? _boldFont;
 
     public TrayIcon(Action open, Action exit, Action checkUpdates)
     {
@@ -79,7 +80,7 @@ public sealed class TrayIcon : IDisposable
 
     private void OnLocalizationChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName is "Item[]" or "Language")
+        if (e.PropertyName == "Item[]")
         {
             RebuildMenu();
         }
@@ -92,24 +93,40 @@ public sealed class TrayIcon : IDisposable
             return;
         }
 
-        _menu.Items.Clear();
-
-        var open = new ToolStripMenuItem(Loc.Instance["Open"])
+        _menu.SuspendLayout();
+        try
         {
-            Font = new Font(_menu.Font, FontStyle.Bold)
-        };
-        open.Click += (_, _) => _open();
-        _menu.Items.Add(open);
+            var oldItems = _menu.Items.Cast<ToolStripItem>().ToArray();
+            _menu.Items.Clear();
+            foreach (var item in oldItems)
+            {
+                item.Dispose();
+            }
 
-        var updates = new ToolStripMenuItem(Loc.Instance["CheckForUpdates"]);
-        updates.Click += (_, _) => _checkUpdates();
-        _menu.Items.Add(updates);
+            _boldFont?.Dispose();
+            _boldFont = new Font(_menu.Font, FontStyle.Bold);
 
-        _menu.Items.Add(new ToolStripSeparator());
+            var open = new ToolStripMenuItem(Loc.Instance["Open"])
+            {
+                Font = _boldFont
+            };
+            open.Click += (_, _) => _open();
+            _menu.Items.Add(open);
 
-        var exit = new ToolStripMenuItem(Loc.Instance["Exit"]);
-        exit.Click += (_, _) => _exit();
-        _menu.Items.Add(exit);
+            var updates = new ToolStripMenuItem(Loc.Instance["CheckForUpdates"]);
+            updates.Click += (_, _) => _checkUpdates();
+            _menu.Items.Add(updates);
+
+            _menu.Items.Add(new ToolStripSeparator());
+
+            var exit = new ToolStripMenuItem(Loc.Instance["Exit"]);
+            exit.Click += (_, _) => _exit();
+            _menu.Items.Add(exit);
+        }
+        finally
+        {
+            _menu.ResumeLayout();
+        }
     }
 
     private static (Icon Icon, bool Owned) LoadIcon()
@@ -146,6 +163,8 @@ public sealed class TrayIcon : IDisposable
         _notifyIcon.Visible = false;
         _notifyIcon.Dispose();
         _menu.Dispose();
+        _boldFont?.Dispose();
+        _boldFont = null;
 
         if (_ownsIcon)
         {

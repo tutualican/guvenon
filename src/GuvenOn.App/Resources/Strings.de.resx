@@ -69,10 +69,13 @@
   <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Der Schutz ist derzeit nicht aktiv.</value></data>
   <data name="StatusServiceMissing" xml:space="preserve"><value>Dienst nicht installiert</value></data>
   <data name="StatusServiceMissingDetail" xml:space="preserve"><value>Führen Sie das Installationsprogramm aus, um den Schutz zu aktivieren.</value></data>
+  <data name="StatusServicePending" xml:space="preserve"><value>Dienst wird geändert</value></data>
+  <data name="StatusServicePendingDetail" xml:space="preserve"><value>Windows ändert den Dienststatus.</value></data>
 
   <data name="Service" xml:space="preserve"><value>Dienst</value></data>
   <data name="ServiceRunning" xml:space="preserve"><value>Wird ausgeführt</value></data>
   <data name="ServiceStopped" xml:space="preserve"><value>Angehalten</value></data>
+  <data name="ServicePending" xml:space="preserve"><value>Wird geändert</value></data>
   <data name="ServiceNotInstalled" xml:space="preserve"><value>Nicht installiert</value></data>
 
   <data name="Network" xml:space="preserve"><value>Netzwerk</value></data>
@@ -89,10 +92,12 @@
   <data name="UpToDate" xml:space="preserve"><value>Sie sind auf dem neuesten Stand.</value></data>
   <data name="UpdateAvailable" xml:space="preserve"><value>Version {0} ist verfügbar.</value></data>
   <data name="UpdateCheckFailed" xml:space="preserve"><value>Updates konnten nicht geprüft werden.</value></data>
+  <data name="DownloadFailed" xml:space="preserve"><value>Der Download-Link konnte nicht geöffnet werden.</value></data>
 
   <data name="Settings" xml:space="preserve"><value>Einstellungen</value></data>
   <data name="Language" xml:space="preserve"><value>Sprache</value></data>
-  <data name="LanguageHint" xml:space="preserve"><value>Gilt nur für die Benutzeroberfläche.</value></data>
+  <data name="LanguageSystem" xml:space="preserve"><value>Systemsprache</value></data>
+  <data name="LanguageHint" xml:space="preserve"><value>Wählen Sie „Systemsprache“, um Windows zu folgen.</value></data>
   <data name="StartWithWindows" xml:space="preserve"><value>Mit Windows starten</value></data>
   <data name="StartWithWindowsHint" xml:space="preserve"><value>Startet minimiert im Infobereich.</value></data>
 

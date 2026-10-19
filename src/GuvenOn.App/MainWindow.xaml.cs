@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +10,7 @@ using Application = System.Windows.Application;
 using Brush = System.Windows.Media.Brush;
 using GuvenOn.App.Localization;
 using GuvenOn.Core;
+using GuvenOn.Core.Update;
 
 namespace GuvenOn.App;
 
@@ -23,13 +25,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        // Keep the window inside the work area on scaled displays.
-        var workArea = SystemParameters.WorkArea;
-        Width = Math.Min(Width, workArea.Width - 40);
-        Height = Math.Min(Height, workArea.Height - 40);
+        // SystemParameters.WorkArea is not consistently expressed in DIPs on
+        // scaled displays. Clamp again after the native handle exists, using
+        // the monitor work area and the window's actual DPI.
         WindowStartupLocation = WindowStartupLocation.Manual;
-        Left = workArea.Left + (workArea.Width - Width) / 2;
-        Top = workArea.Top + (workArea.Height - Height) / 2;
+        SourceInitialized += (_, _) => ClampToWorkArea();
 
         BuildLanguageOptions();
         LoadSettings();
@@ -53,6 +53,7 @@ public partial class MainWindow : Window
     private void BuildLanguageOptions()
     {
         LanguageBox.Items.Clear();
+        LanguageBox.Items.Add(new LanguageOption(Loc.Auto, Loc.Instance["LanguageSystem"]));
         LanguageBox.Items.Add(new LanguageOption("en", "English"));
         LanguageBox.Items.Add(new LanguageOption("de", "Deutsch"));
         LanguageBox.Items.Add(new LanguageOption("tr", "Türkçe"));
@@ -60,17 +61,25 @@ public partial class MainWindow : Window
 
     private void LoadSettings()
     {
-        var language = Loc.Instance.Language;
-        foreach (var option in LanguageBox.Items.OfType<LanguageOption>())
+        var language = Loc.NormalizeSetting(AppHost.Settings.Language);
+        if (!string.Equals(language, AppHost.Settings.Language, StringComparison.Ordinal))
         {
-            if (option.Code == language)
-            {
-                LanguageBox.SelectedItem = option;
-                break;
-            }
+            AppHost.Settings.Language = language;
+            AppHost.SaveSettings();
         }
 
-        AutostartBox.IsChecked = Autostart.IsEnabled();
+        LanguageBox.SelectedItem = LanguageBox.Items
+            .OfType<LanguageOption>()
+            .FirstOrDefault(option => option.Code == language) ?? LanguageBox.Items[0];
+
+        var autostart = Autostart.IsEnabled();
+        AutostartBox.IsChecked = autostart;
+
+        if (AppHost.Settings.StartWithWindows != autostart)
+        {
+            AppHost.Settings.StartWithWindows = autostart;
+            AppHost.SaveSettings();
+        }
     }
 
     private void RefreshAll()
@@ -93,12 +102,21 @@ public partial class MainWindow : Window
                 break;
 
             case ServiceControllerStatus.Stopped:
-            case ServiceControllerStatus.PausePending:
             case ServiceControllerStatus.Paused:
                 StatusDot.Fill = (Brush)FindResource("StatusAmberBrush");
                 StatusTitle.Text = Loc.Instance["StatusServiceStopped"];
                 StatusDetail.Text = Loc.Instance["StatusServiceStoppedDetail"];
                 ServiceLine.Text = $"{Loc.Instance["Service"]}: {Loc.Instance["ServiceStopped"]}";
+                break;
+
+            case ServiceControllerStatus.StartPending:
+            case ServiceControllerStatus.StopPending:
+            case ServiceControllerStatus.PausePending:
+            case ServiceControllerStatus.ContinuePending:
+                StatusDot.Fill = (Brush)FindResource("StatusAmberBrush");
+                StatusTitle.Text = Loc.Instance["StatusServicePending"];
+                StatusDetail.Text = Loc.Instance["StatusServicePendingDetail"];
+                ServiceLine.Text = $"{Loc.Instance["Service"]}: {Loc.Instance["ServicePending"]}";
                 break;
 
             default:
@@ -184,6 +202,10 @@ public partial class MainWindow : Window
         {
             await AppHost.CheckForUpdatesAsync(showResult: true);
         }
+        catch
+        {
+            ShowUpdateResult(Loc.Instance["UpdateCheckFailed"], isError: true);
+        }
         finally
         {
             _updateBusy = false;
@@ -200,7 +222,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        _downloadUrl = IsTrustedDownloadUrl(downloadUrl) ? downloadUrl : null;
+        _downloadUrl = UpdateChecker.IsTrustedDownloadUrl(downloadUrl) ? downloadUrl : null;
 
         UpdateStatus.Text = text;
         UpdateStatus.Foreground = (Brush)FindResource(isError ? "StatusRedBrush" : "StatusGreenBrush");
@@ -208,21 +230,9 @@ public partial class MainWindow : Window
         DownloadButton.Visibility = _downloadUrl is null ? Visibility.Collapsed : Visibility.Visible;
     }
 
-    private static bool IsTrustedDownloadUrl(string? value)
-    {
-        if (!Uri.TryCreate(value, UriKind.Absolute, out var uri) || uri.Scheme != Uri.UriSchemeHttps)
-        {
-            return false;
-        }
-
-        return uri.Host.Equals("github.com", StringComparison.OrdinalIgnoreCase) ||
-               uri.Host.EndsWith(".githubusercontent.com", StringComparison.OrdinalIgnoreCase) ||
-               uri.Host.Equals("dl.guvenon.app", StringComparison.OrdinalIgnoreCase);
-    }
-
     private void Download_Click(object sender, RoutedEventArgs e)
     {
-        if (_downloadUrl is null || !IsTrustedDownloadUrl(_downloadUrl))
+        if (_downloadUrl is null || !UpdateChecker.IsTrustedDownloadUrl(_downloadUrl))
         {
             return;
         }
@@ -233,7 +243,7 @@ public partial class MainWindow : Window
         }
         catch
         {
-            ShowUpdateResult(Loc.Instance["UpdateCheckFailed"], isError: true);
+            ShowUpdateResult(Loc.Instance["DownloadFailed"], isError: true);
         }
     }
 
@@ -250,9 +260,11 @@ public partial class MainWindow : Window
 
         Title = Loc.Instance["AppName"];
         VersionText.Text = Loc.Instance.Format("Version", AppInfo.VersionString);
-        UpdateButton.Content = Loc.Instance["CheckForUpdates"];
+        UpdateButton.Content = _updateBusy ? Loc.Instance["Checking"] : Loc.Instance["CheckForUpdates"];
         DownloadButton.Content = Loc.Instance["Download"];
-        UpdateStatus.Text = Loc.Instance["UpdateIdle"];
+        _downloadUrl = null;
+        DownloadButton.Visibility = Visibility.Collapsed;
+        UpdateStatus.Text = _updateBusy ? Loc.Instance["Checking"] : Loc.Instance["UpdateIdle"];
         UpdateStatus.Foreground = (Brush)FindResource("TextSecondaryBrush");
 
         RefreshAll();
@@ -300,6 +312,69 @@ public partial class MainWindow : Window
     }
 
     public void AllowClose() => _allowClose = true;
+
+    private void ClampToWorkArea()
+    {
+        var handle = new System.Windows.Interop.WindowInteropHelper(this).Handle;
+        if (handle == IntPtr.Zero)
+        {
+            return;
+        }
+
+        var monitor = MonitorFromWindow(handle, MonitorDefaultToNearest);
+        var info = new MonitorInfo { Size = Marshal.SizeOf<MonitorInfo>() };
+        if (monitor == IntPtr.Zero || !GetMonitorInfo(monitor, ref info))
+        {
+            return;
+        }
+
+        var dpi = GetDpiForWindow(handle);
+        var scale = dpi <= 0 ? 1.0 : dpi / 96.0;
+        var workWidth = (info.Work.Right - info.Work.Left) / scale;
+        var workHeight = (info.Work.Bottom - info.Work.Top) / scale;
+        var workLeft = info.Work.Left / scale;
+        var workTop = info.Work.Top / scale;
+
+        const double margin = 24;
+        var availableWidth = Math.Max(320, workWidth - margin);
+        var availableHeight = Math.Max(320, workHeight - margin);
+
+        MinWidth = Math.Min(MinWidth, availableWidth);
+        MinHeight = Math.Min(MinHeight, availableHeight);
+        Width = Math.Min(Width, availableWidth);
+        Height = Math.Min(Height, availableHeight);
+        Left = workLeft + Math.Max(0, (workWidth - Width) / 2);
+        Top = workTop + Math.Max(0, (workHeight - Height) / 2);
+    }
+
+    private const uint MonitorDefaultToNearest = 2;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativeRect
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MonitorInfo
+    {
+        public int Size;
+        public NativeRect Monitor;
+        public NativeRect Work;
+        public uint Flags;
+    }
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr MonitorFromWindow(IntPtr handle, uint flags);
+
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern bool GetMonitorInfo(IntPtr monitor, ref MonitorInfo info);
+
+    [DllImport("user32.dll")]
+    private static extern uint GetDpiForWindow(IntPtr handle);
 
     private sealed record LanguageOption(string Code, string Name)
     {

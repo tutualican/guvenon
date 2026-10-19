@@ -69,10 +69,13 @@
   <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Protection is currently off.</value></data>
   <data name="StatusServiceMissing" xml:space="preserve"><value>Service not installed</value></data>
   <data name="StatusServiceMissingDetail" xml:space="preserve"><value>Run the installer to enable protection.</value></data>
+  <data name="StatusServicePending" xml:space="preserve"><value>Service changing</value></data>
+  <data name="StatusServicePendingDetail" xml:space="preserve"><value>Windows is changing the service state.</value></data>
 
   <data name="Service" xml:space="preserve"><value>Service</value></data>
   <data name="ServiceRunning" xml:space="preserve"><value>Running</value></data>
   <data name="ServiceStopped" xml:space="preserve"><value>Stopped</value></data>
+  <data name="ServicePending" xml:space="preserve"><value>Changing</value></data>
   <data name="ServiceNotInstalled" xml:space="preserve"><value>Not installed</value></data>
 
   <data name="Network" xml:space="preserve"><value>Network</value></data>
@@ -89,10 +92,12 @@
   <data name="UpToDate" xml:space="preserve"><value>You're up to date.</value></data>
   <data name="UpdateAvailable" xml:space="preserve"><value>Version {0} is available.</value></data>
   <data name="UpdateCheckFailed" xml:space="preserve"><value>Could not check for updates.</value></data>
+  <data name="DownloadFailed" xml:space="preserve"><value>Could not open the download link.</value></data>
 
   <data name="Settings" xml:space="preserve"><value>Settings</value></data>
   <data name="Language" xml:space="preserve"><value>Language</value></data>
-  <data name="LanguageHint" xml:space="preserve"><value>Applies to the user interface only.</value></data>
+  <data name="LanguageSystem" xml:space="preserve"><value>System language</value></data>
+  <data name="LanguageHint" xml:space="preserve"><value>Choose System language to follow Windows.</value></data>
   <data name="StartWithWindows" xml:space="preserve"><value>Start with Windows</value></data>
   <data name="StartWithWindowsHint" xml:space="preserve"><value>Starts minimized in the notification area.</value></data>
 

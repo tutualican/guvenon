@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\Guven-ON.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\GuvenOn.Core\GuvenOn.Core.csproj" />
   </ItemGroup>
 

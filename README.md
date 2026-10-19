@@ -34,7 +34,9 @@ in English, German and Turkish.
 src/GuvenOn.App      WPF tray app and UI resources
 src/GuvenOn.Core     settings, autostart, SemVer, update manifest
 src/GuvenOn.Service  Windows service and service installer
+tests/GuvenOn.Tests  unit tests for versioning, updates, settings and autostart
 installer/           Inno Setup script
+winget/              WinGet manifests for 0.1.1
 docs/                static GitHub Pages site
 scripts/             icon and update-manifest helpers
 .github/workflows/   release and Pages pipelines
@@ -44,7 +46,7 @@ scripts/             icon and update-manifest helpers
 
 Requirements:
 
-- Windows 10/11 x64
+- Windows 11 22H2 or newer, x64
 - .NET 10 SDK
 - Inno Setup 6 for the installer step
 
@@ -70,6 +72,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\build.ps1 -Configurati
 
 The outputs are written to `artifacts/publish/`, `artifacts/installer/` and
 `artifacts/latest.json`.
+
+Run the unit tests:
+
+```powershell
+$env:PATH = "$env:LOCALAPPDATA\Microsoft\dotnet;$env:PATH"
+dotnet test GuvenOn.slnx -c Release -warnaserror
+```
 
 For local development, install the Windows Desktop runtime so the apphost can
 find it. When the SDK is user-local, start the app with `DOTNET_ROOT` set:
@@ -111,7 +120,7 @@ Each release must upload `latest.json` next to the installer. The helper
 generates it with the immutable asset URL, size and SHA-256:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-manifest.ps1 -InstallerPath .\artifacts\installer\GuvenOnSetup-0.1.0.exe -Version 0.1.0
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-manifest.ps1 -InstallerPath .\artifacts\installer\GuvenOnSetup-0.1.1.exe -Version 0.1.1
 ```
 
 The app verifies the version and offers a download link from the manifest. The
@@ -130,12 +139,27 @@ point at `tutualican/guvenon`.
 - the service under `{app}\service`
 - the service itself through `guvenonsvc.exe --install`
 - optional sign-in autostart (per-user) and desktop shortcut
-- an uninstaller that stops and removes the service and deletes
-  `%ProgramData%\GuvenOn` and the current user's settings
+- an uninstaller that stops and removes the service, deletes
+  `%ProgramData%\GuvenOn`, and runs the cleanup helper for the current profile
+  to remove its settings and startup entry
 
 The installer requires administrator rights once. The app manifest is
 `asInvoker`, so day-to-day use never prompts for elevation. Uninstall also runs
 elevated through Windows' standard uninstall flow.
+
+## WinGet
+
+Versioned manifests for `Tutualican.GuvenOn` live in
+`winget/manifests/t/Tutualican/GuvenOn/0.1.1/`. They describe the per-machine
+Inno installer, silent switches and English, German and Turkish descriptions.
+Validate them locally with:
+
+```powershell
+winget validate --manifest .\winget\manifests\t\Tutualican\GuvenOn\0.1.1
+```
+
+Submitting to the community `winget-pkgs` repository is a separate review step;
+the manifests in this repository are ready for that submission.
 
 ## Website
 
@@ -144,9 +168,10 @@ Live site: <https://tutualican.github.io/guvenon/>
 The site is a dependency-free static page in `docs/`:
 
 - `docs/index.html`
+- `docs/404.html`, `docs/robots.txt` and `docs/sitemap.xml`
 - `docs/assets/styles.css`
 - `docs/assets/app.js`
-- `docs/assets/guvenon.png` (generated from the desktop logo)
+- `docs/assets/guvenon.png` (generated from the shield artwork)
 - `docs/assets/og.png` (social preview card)
 
 It is deployed by `.github/workflows/pages.yml` to GitHub Pages at
@@ -155,17 +180,23 @@ It is deployed by `.github/workflows/pages.yml` to GitHub Pages at
 prefer branch deployment, choose `main` and `/docs`; the site does not require a
 build step.
 
-The site uses English by default, auto-detects German and Turkish, and remembers
-the choice in `localStorage`. All download links point at
+The language control starts in **AUTO**, follows the browser/`Intl` language,
+and stores a manual choice in `localStorage`. You can force a language with
+`?lang=en`, `?lang=de`, `?lang=tr` or `?lang=auto`. All download links point at
 `https://github.com/tutualican/guvenon/releases/latest`.
+
+The visual language is derived from the shield artwork: warm cream paper, deep
+navy ink, soft blue highlights and restrained gold accents.
 
 ## Icon
 
-The source artwork is `Guven-ON.png` on the desktop. The generated assets are:
+The supplied shield artwork is cleaned by `scripts/make-icon.ps1`. The generated
+assets are:
 
 - `src/GuvenOn.App/Assets/Guven-ON.png` (cleaned, transparent)
 - `src/GuvenOn.App/Assets/guvenon.ico` (16–256 px)
 - `docs/assets/guvenon.png` (256 px site icon)
+- `docs/assets/og.png` (social preview card)
 
 Regenerate them after changing the artwork:
 
@@ -173,8 +204,8 @@ Regenerate them after changing the artwork:
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-icon.ps1
 ```
 
-The script flood-fills the semi-transparent white background and preserves the
-white details inside the shield.
+The script removes black or near-white corners with a flood fill and preserves
+the light details inside the shield.
 
 ## Security notes
 
@@ -194,7 +225,7 @@ white details inside the shield.
 2. Captive-portal detection, LAN allowlist, panic reset and auto-revert.
 3. Signed update manifest, silent installer handoff, rollback.
 4. Windows 10 DNS proxy path.
-5. WinGet manifests and automated release submission.
+5. WinGet manifest submission (manifests are kept in `winget/`).
 6. Code signing and SmartScreen reputation.
 
 ## License

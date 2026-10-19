@@ -10,8 +10,15 @@ namespace GuvenOn.App.Localization;
 /// </summary>
 public sealed class Loc : INotifyPropertyChanged
 {
+    public const string Auto = "auto";
+
     private static readonly ResourceManager Resources =
         new("GuvenOn.App.Resources.Strings", typeof(Loc).Assembly);
+
+    // Capture the Windows display language before Apply() overwrites the
+    // thread culture. Otherwise selecting "System language" after choosing a
+    // language manually would simply resolve back to the manual choice.
+    private static readonly string SystemLanguage = ResolveLanguage(CultureInfo.CurrentUICulture);
 
     public static Loc Instance { get; } = new();
 
@@ -26,15 +33,24 @@ public sealed class Loc : INotifyPropertyChanged
     public string Format(string key, params object[] arguments) =>
         string.Format(CultureInfo.CurrentUICulture, this[key], arguments);
 
-    public static string DetectLanguage()
+    public static string DetectLanguage() => SystemLanguage;
+
+    public static string NormalizeSetting(string? language)
     {
-        var code = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName.ToLowerInvariant();
+        var code = language?.Trim().ToLowerInvariant();
+        return code is "en" or "de" or "tr" or Auto ? code : Auto;
+    }
+
+    private static string ResolveLanguage(CultureInfo culture)
+    {
+        var code = culture.TwoLetterISOLanguageName.ToLowerInvariant();
         return code is "de" or "tr" ? code : "en";
     }
 
     public void Apply(string language)
     {
-        var code = language is "en" or "de" or "tr" ? language : DetectLanguage();
+        var requested = language?.Trim().ToLowerInvariant();
+        var code = requested is "en" or "de" or "tr" ? requested : DetectLanguage();
         var culture = CultureInfo.GetCultureInfo(code switch
         {
             "de" => "de-DE",

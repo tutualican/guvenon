@@ -58,6 +58,7 @@ New-Item -ItemType Directory -Force "$root\artifacts\publish\svc" | Out-Null
     -c $Configuration `
     -r $Runtime `
     --self-contained $selfContainedValue `
+    -warnaserror `
     -o "$root\artifacts\publish\app"
 
 if ($LASTEXITCODE -ne 0) {
@@ -68,6 +69,7 @@ if ($LASTEXITCODE -ne 0) {
     -c $Configuration `
     -r $Runtime `
     --self-contained $selfContainedValue `
+    -warnaserror `
     -o "$root\artifacts\publish\svc"
 
 if ($LASTEXITCODE -ne 0) {

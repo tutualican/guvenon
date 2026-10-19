@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tutualican.github.io/guvenon/sitemap.xml

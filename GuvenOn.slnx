@@ -4,4 +4,7 @@
     <Project Path="src/GuvenOn.Core/GuvenOn.Core.csproj" />
     <Project Path="src/GuvenOn.Service/GuvenOn.Service.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/GuvenOn.Tests/GuvenOn.Tests.csproj" />
+  </Folder>
 </Solution>

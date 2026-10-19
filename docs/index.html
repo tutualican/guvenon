@@ -1,26 +1,49 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" data-lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#f5f5f7" />
-  <meta name="color-scheme" content="light" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f3ea">
+  <meta name="color-scheme" content="light">
   <title>Guven-ON — Privacy that just works on Windows</title>
-  <meta name="description" content="Guven-ON is designed to block DNS leaks and local-network exposure on untrusted Wi-Fi, stays quiet in the background, and speaks English, German and Turkish." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://tutualican.github.io/guvenon/" />
-  <meta property="og:title" content="Guven-ON — Privacy that just works" />
-  <meta property="og:description" content="Quiet protection for untrusted networks. Windows 11 preview." />
-  <meta property="og:image" content="https://tutualican.github.io/guvenon/assets/og.png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Guven-ON — Privacy that just works" />
-  <meta name="twitter:description" content="Quiet protection for untrusted networks. Windows 11 preview." />
-  <meta name="twitter:image" content="https://tutualican.github.io/guvenon/assets/og.png" />
-  <link rel="canonical" href="https://tutualican.github.io/guvenon/" />
-  <link rel="icon" type="image/png" href="assets/guvenon.png" />
-  <link rel="stylesheet" href="assets/styles.css" />
+  <meta name="description" content="Guven-ON is designed to block DNS leaks and local-network exposure on untrusted Wi-Fi, stays quiet in the background, and speaks English, German and Turkish.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Guven-ON">
+  <meta property="og:url" content="https://tutualican.github.io/guvenon/">
+  <meta property="og:title" content="Guven-ON — Privacy that just works">
+  <meta property="og:description" content="Quiet protection for untrusted networks. Windows 11 preview.">
+  <meta property="og:image" content="https://tutualican.github.io/guvenon/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Guven-ON shield icon on a warm cream background">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Guven-ON — Privacy that just works">
+  <meta name="twitter:description" content="Quiet protection for untrusted networks. Windows 11 preview.">
+  <meta name="twitter:image" content="https://tutualican.github.io/guvenon/assets/og.png">
+  <meta name="twitter:image:alt" content="Guven-ON shield icon on a warm cream background">
+  <link rel="canonical" href="https://tutualican.github.io/guvenon/">
+  <link rel="icon" type="image/png" href="assets/guvenon.png">
+  <link rel="apple-touch-icon" href="assets/guvenon.png">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Guven-ON",
+      "applicationCategory": "SecurityApplication",
+      "operatingSystem": "Windows 11",
+      "softwareVersion": "0.1.1",
+      "description": "A Windows 11 preview designed to block DNS leaks and local-network exposure on untrusted Wi-Fi.",
+      "url": "https://tutualican.github.io/guvenon/",
+      "downloadUrl": "https://github.com/tutualican/guvenon/releases/latest",
+      "license": "https://www.apache.org/licenses/LICENSE-2.0",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  </script>
   <noscript><style>.reveal,.hero-enter{opacity:1!important;transform:none!important}</style></noscript>
 </head>
 <body>
@@ -29,7 +52,7 @@
   <header class="site-nav" id="siteNav">
     <div class="nav-inner">
       <a class="brand" href="#top" aria-label="Guven-ON">
-        <img class="brand-mark" src="assets/guvenon.png" alt="" width="30" height="30" />
+        <img class="brand-mark" src="assets/guvenon.png" alt="" width="30" height="30">
         <span>Guven-ON</span>
       </a>
 
@@ -42,7 +65,8 @@
 
       <div class="nav-tools">
         <div class="lang-switch" role="group" aria-label="Language">
-          <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+          <button type="button" data-set-lang="auto" aria-pressed="true" title="Automatic (browser or system language)">AUTO</button>
+          <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
           <button type="button" data-set-lang="de" aria-pressed="false">DE</button>
           <button type="button" data-set-lang="tr" aria-pressed="false">TR</button>
         </div>
@@ -64,7 +88,7 @@
             <span data-i18n="heroBadge">Windows 11 · Preview</span>
           </p>
           <h1 class="hero-enter delay-1">
-            <span data-i18n="heroTitle1">Privacy that</span><br />
+            <span data-i18n="heroTitle1">Privacy that</span><br>
             <span class="gradient" data-i18n="heroTitle2">just works.</span>
           </h1>
           <p class="hero-sub hero-enter delay-2" data-i18n="heroSub">
@@ -100,7 +124,7 @@
             </div>
             <div class="window-body">
               <div class="window-head">
-                <span class="window-brand"><img src="assets/guvenon.png" alt="" class="window-logo" />Guven-ON</span>
+                <span class="window-brand"><img src="assets/guvenon.png" alt="" class="window-logo">Guven-ON</span>
                 <span class="badge" data-i18n="mockPreview">Preview</span>
               </div>
 
@@ -257,22 +281,22 @@
           <svg viewBox="0 0 220 260">
             <defs>
               <linearGradient id="shieldStroke" x1="30" y1="20" x2="190" y2="240" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#2997ff" />
-                <stop offset="0.55" stop-color="#34c759" />
-                <stop offset="1" stop-color="#0071e3" />
+                <stop stop-color="#c9d1ff" />
+                <stop offset="0.55" stop-color="#f6f3ea" />
+                <stop offset="1" stop-color="#c9a227" />
               </linearGradient>
               <radialGradient id="shieldFill" cx="50%" cy="35%" r="70%">
-                <stop stop-color="#1c1c22" />
-                <stop offset="1" stop-color="#0b0b0f" />
+                <stop stop-color="#1b2a8c" />
+                <stop offset="1" stop-color="#0e175a" />
               </radialGradient>
             </defs>
             <circle cx="110" cy="118" r="96" fill="none" stroke="rgba(255,255,255,.08)" stroke-dasharray="2 8" />
             <circle cx="110" cy="118" r="74" fill="none" stroke="rgba(255,255,255,.06)" />
             <path class="shield-body" d="M110 26 190 55v58c0 49-32 86-80 108-48-22-80-59-80-108V55l80-29Z" fill="url(#shieldFill)" stroke="url(#shieldStroke)" stroke-width="2.4" />
             <path class="shield-path" d="m82 128 19 19 38-43" fill="none" stroke="url(#shieldStroke)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" />
-            <circle class="shield-node node-1" cx="190" cy="55" r="4" fill="#2997ff" />
-            <circle class="shield-node node-2" cx="30" cy="171" r="4" fill="#34c759" />
-            <circle class="shield-node node-3" cx="110" cy="221" r="4" fill="#0071e3" />
+            <circle class="shield-node node-1" cx="190" cy="55" r="4" fill="#c9d1ff" />
+            <circle class="shield-node node-2" cx="30" cy="171" r="4" fill="#c9a227" />
+            <circle class="shield-node node-3" cx="110" cy="221" r="4" fill="#f6f3ea" />
           </svg>
         </div>
       </div>
@@ -289,7 +313,7 @@
             stay in English so support is predictable.
           </p>
         </div>
-        <div class="language-pills" aria-label="Supported interface languages">
+        <div class="language-pills" role="group" aria-label="Supported interface languages">
           <span>English</span>
           <span>Deutsch</span>
           <span>Türkçe</span>
@@ -364,7 +388,7 @@
     <div class="footer-inner">
       <div class="footer-brand">
         <a class="brand" href="#top" aria-label="Guven-ON">
-          <img class="brand-mark" src="assets/guvenon.png" alt="" width="30" height="30" />
+          <img class="brand-mark" src="assets/guvenon.png" alt="" width="30" height="30">
           <span>Guven-ON</span>
         </a>
         <p data-i18n="footerTagline">Quiet protection for untrusted networks.</p>
@@ -372,14 +396,14 @@
       </div>
 
       <div class="footer-col">
-        <h4 data-i18n="footerProduct">Product</h4>
+        <h2 data-i18n="footerProduct">Product</h2>
         <a href="#why" data-i18n="navWhy">Why</a>
         <a href="#how" data-i18n="navHow">How it works</a>
         <a href="#faq" data-i18n="navFaq">FAQ</a>
       </div>
 
       <div class="footer-col">
-        <h4 data-i18n="footerResources">Resources</h4>
+        <h2 data-i18n="footerResources">Resources</h2>
         <a href="https://github.com/tutualican/guvenon" target="_blank" rel="noopener" data-repo-link="root">GitHub</a>
         <a href="https://github.com/tutualican/guvenon/releases" target="_blank" rel="noopener" data-repo-link="releases" data-i18n="footerReleases">Releases</a>
         <a href="https://github.com/tutualican/guvenon/issues" target="_blank" rel="noopener" data-repo-link="issues" data-i18n="footerIssues">Issues</a>

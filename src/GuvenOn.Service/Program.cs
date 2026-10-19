@@ -8,6 +8,11 @@ if (args.Any(argument => argument.Equals("--install", StringComparison.OrdinalIg
     return ServiceInstaller.Install();
 }
 
+if (args.Any(argument => argument.Equals("--stop", StringComparison.OrdinalIgnoreCase)))
+{
+    return ServiceInstaller.Stop();
+}
+
 if (args.Any(argument => argument.Equals("--uninstall", StringComparison.OrdinalIgnoreCase)))
 {
     return ServiceInstaller.Uninstall();

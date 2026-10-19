@@ -3,7 +3,7 @@ namespace GuvenOn.Core.Update;
 public sealed class UpdateManifest
 {
     public string Channel { get; set; } = AppInfo.DefaultChannel;
-    public string Version { get; set; } = "0.0.0";
+    public string Version { get; set; } = string.Empty;
     public string? MinVersion { get; set; }
     public string Url { get; set; } = string.Empty;
     public string Sha256 { get; set; } = string.Empty;

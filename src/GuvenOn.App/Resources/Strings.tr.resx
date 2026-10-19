@@ -69,10 +69,13 @@
   <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Koruma şu anda etkin değil.</value></data>
   <data name="StatusServiceMissing" xml:space="preserve"><value>Servis kurulu değil</value></data>
   <data name="StatusServiceMissingDetail" xml:space="preserve"><value>Korumayı etkinleştirmek için kurulum dosyasını çalıştırın.</value></data>
+  <data name="StatusServicePending" xml:space="preserve"><value>Servis değişiyor</value></data>
+  <data name="StatusServicePendingDetail" xml:space="preserve"><value>Windows servis durumunu değiştiriyor.</value></data>
 
   <data name="Service" xml:space="preserve"><value>Servis</value></data>
   <data name="ServiceRunning" xml:space="preserve"><value>Çalışıyor</value></data>
   <data name="ServiceStopped" xml:space="preserve"><value>Durdu</value></data>
+  <data name="ServicePending" xml:space="preserve"><value>Değişiyor</value></data>
   <data name="ServiceNotInstalled" xml:space="preserve"><value>Kurulu değil</value></data>
 
   <data name="Network" xml:space="preserve"><value>Ağ</value></data>
@@ -89,10 +92,12 @@
   <data name="UpToDate" xml:space="preserve"><value>Güncel sürümü kullanıyorsunuz.</value></data>
   <data name="UpdateAvailable" xml:space="preserve"><value>Sürüm {0} kullanılabilir.</value></data>
   <data name="UpdateCheckFailed" xml:space="preserve"><value>Güncellemeler denetlenemedi.</value></data>
+  <data name="DownloadFailed" xml:space="preserve"><value>İndirme bağlantısı açılamadı.</value></data>
 
   <data name="Settings" xml:space="preserve"><value>Ayarlar</value></data>
   <data name="Language" xml:space="preserve"><value>Dil</value></data>
-  <data name="LanguageHint" xml:space="preserve"><value>Yalnızca kullanıcı arayüzünü etkiler.</value></data>
+  <data name="LanguageSystem" xml:space="preserve"><value>Sistem dili</value></data>
+  <data name="LanguageHint" xml:space="preserve"><value>Windows'u izlemek için Sistem dili'ni seçin.</value></data>
   <data name="StartWithWindows" xml:space="preserve"><value>Windows ile başlat</value></data>
   <data name="StartWithWindowsHint" xml:space="preserve"><value>Sistem tepsisinde küçültülmüş olarak başlar.</value></data>
 
