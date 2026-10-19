@@ -14,7 +14,7 @@ UpgradeBehavior: install
 Installers:
   - Architecture: x64
     InstallerUrl: https://github.com/tutualican/guvenon/releases/download/v0.1.1/GuvenOnSetup-0.1.1.exe
-    InstallerSha256: d6b40ad547cc9c35f710bf09e786df807d0eae166f39e5d7edd27f8fb88972ac
+    InstallerSha256: f1d79948d95c261545a2d31a3a79bf3fe76543451a784a2fea8aa21c2877676e
     InstallerSwitches:
       Silent: /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-
       SilentWithProgress: /SILENT /SUPPRESSMSGBOXES /NORESTART /SP-
