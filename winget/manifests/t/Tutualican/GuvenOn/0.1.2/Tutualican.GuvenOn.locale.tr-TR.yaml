@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.locale.1.10.0.schema.json
+PackageIdentifier: Tutualican.GuvenOn
+PackageVersion: 0.1.2
+PackageLocale: tr-TR
+Publisher: GuvenOn
+PublisherUrl: https://github.com/tutualican/guvenon
+PublisherSupportUrl: https://github.com/tutualican/guvenon/issues
+PrivacyUrl: https://tutualican.github.io/guvenon/#privacy
+Author: GuvenOn
+PackageName: Guven-ON
+PackageUrl: https://tutualican.github.io/guvenon/
+License: Apache-2.0
+LicenseUrl: https://github.com/tutualican/guvenon/blob/main/LICENSE
+Copyright: Copyright (c) 2026 GuvenOn
+CopyrightUrl: https://github.com/tutualican/guvenon/blob/main/LICENSE
+ShortDescription: Windows 11'de güvenilmeyen Wi-Fi ağları için sessiz koruma.
+Description: >-
+  Guven-ON, güvenilmeyen Wi-Fi ağlarında DNS sızıntılarını ve yerel ağ
+  görünürlüğünü engellemek için tasarlanmış bir Windows 11 güvenlik aracıdır.
+  Yerel bir servis ve sakin bir tepsi uygulaması kurar, Windows görüntüleme
+  dilini izler ve İngilizce, Almanca ve Türkçe konuşur. Bu erken bir önizleme
+  sürümüdür: servis, yükleyici, güncelleme kontrolü ve arayüz gerçektir; ancak
+  paket filtreleme ve DNS zorlaması henüz etkin değildir.
+Tags:
+  - dns
+  - gizlilik
+  - güvenlik
+  - wifi
+  - windows
+ReleaseNotesUrl: https://github.com/tutualican/guvenon/releases/tag/v0.1.2
+InstallationNotes: >-
+  Önizleme sürümü. Ağ filtreleme henüz etkin değil ve yükleyici imzasızdır.
+  Çalıştırmadan önce sürümle yayımlanan SHA-256 değerini doğrulayın.
+ManifestType: locale
+ManifestVersion: 1.10.0

@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.10.0.schema.json
+PackageIdentifier: Tutualican.GuvenOn
+PackageVersion: 0.1.2
+PackageLocale: en-US
+Publisher: GuvenOn
+PublisherUrl: https://github.com/tutualican/guvenon
+PublisherSupportUrl: https://github.com/tutualican/guvenon/issues
+PrivacyUrl: https://tutualican.github.io/guvenon/#privacy
+Author: GuvenOn
+PackageName: Guven-ON
+PackageUrl: https://tutualican.github.io/guvenon/
+License: Apache-2.0
+LicenseUrl: https://github.com/tutualican/guvenon/blob/main/LICENSE
+Copyright: Copyright (c) 2026 GuvenOn
+CopyrightUrl: https://github.com/tutualican/guvenon/blob/main/LICENSE
+ShortDescription: Quiet protection for untrusted Wi-Fi on Windows 11.
+Description: >-
+  Guven-ON is a Windows 11 security tool designed to block DNS leaks and
+  local-network exposure on untrusted Wi-Fi. It installs a local service and a
+  calm tray app, follows the Windows display language, and offers English,
+  German and Turkish. This is an early preview: the service, installer, update
+  check and user interface are real, but packet filtering and DNS enforcement
+  are not enabled yet.
+Tags:
+  - dns
+  - privacy
+  - security
+  - wifi
+  - windows
+ReleaseNotesUrl: https://github.com/tutualican/guvenon/releases/tag/v0.1.2
+InstallationNotes: >-
+  Preview build. Network filtering is not enabled yet and the installer is
+  unsigned. Verify the SHA-256 published with the release before running it.
+ManifestType: defaultLocale
+ManifestVersion: 1.10.0
