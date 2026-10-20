@@ -19,9 +19,9 @@ user interface is available in English, German and Turkish.
 > DNS-over-HTTPS blocking, full IPv6 isolation and a physical leak matrix for
 > sleep/wake and captive-portal recovery. Preview builds are unsigned.
 >
-> **Main-branch note:** persistent WFP filters and service-state restore landed
-> after the published 0.2.0 artifact. The 0.2.0 installer still uses the older
-> dynamic WFP session.
+> **0.2.1 note:** persistent WFP filters, service-state restore and a real WFP
+> self-test ship in this preview. The earlier 0.2.0 installer used a dynamic WFP
+> session that failed open after a service crash.
 
 ## What works today
 
@@ -120,6 +120,13 @@ Service installation is intentionally kept out of the app:
 # elevated prompt
 .\artifacts\publish\svc\guvenonsvc.exe --install
 .\artifacts\publish\svc\guvenonsvc.exe --uninstall
+
+# local control and diagnostics (the service must be running)
+.\artifacts\publish\svc\guvenonsvc.exe --status
+.\artifacts\publish\svc\guvenonsvc.exe --selftest
+.\artifacts\publish\svc\guvenonsvc.exe --enable
+.\artifacts\publish\svc\guvenonsvc.exe --pause 10
+.\artifacts\publish\svc\guvenonsvc.exe --disable
 
 # recovery after a manually removed or crashed service
 .\artifacts\publish\svc\guvenonsvc.exe --wfp-cleanup
@@ -281,8 +288,8 @@ the light details inside the shield.
   sleep/wake and captive-portal leak matrix is still pending.
 - DNS changes are snapshotted under `%ProgramData%\GuvenOn` and restored on
   disable, pause, clean uninstall and the next service start after a crash.
-- The published 0.2.0 installer predates the persistent-filter and state-restore
-  work.
+- The 0.2.1 installer includes the persistent-filter, state-restore and self-test
+  work. The earlier 0.2.0 installer predates it.
 - The Linux daemon runs as root, restricts its control socket to root, and
   leaves the nftables table in place if the daemon crashes. Package removal
   runs `--cleanup` before files are deleted.

@@ -240,10 +240,14 @@ These are release blockers, not suggestions.
   handling, root-only control socket, CLI and `.deb` packaging.
 - Shared policy compiler, unit tests and CI nftables syntax validation.
 
-**On main after 0.2.0 (next preview build)**
+**Shipped in 0.2.1**
 - Persistent WFP provider, sublayer and filters with deterministic keys.
 - Service-state restore and transactional cleanup after a crash, plus an
   elevated `--wfp-cleanup` recovery switch and uninstall cleanup.
+- Intent-first state writes and a `--selftest` that re-opens the WFP store and
+  verifies every expected filter, not just the service's in-memory status.
+- Elevated Windows CI verifies enable, self-test, pause cleanup, a forced crash
+  with filters still installed, recovery, disable and uninstall cleanup.
 
 **Still required before "real protection"**
 - Trust profiles and a new-network prompt.
@@ -400,11 +404,10 @@ User-facing pain points and vendor behavior:
 6. Do not label a build "protected" until the leak matrix passes and the
    self-test can prove it.
 
-0.2.0 is no longer monitor-only: it applies real DNS and LAN rules. The 0.2.0
-artifact still fails open after a Windows service crash; main now uses persistent
-WFP filters and state restore. The elevated Windows CI job verifies enable, pause
-cleanup, a forced crash with filters still installed, recovery, disable and
-uninstall cleanup. A physical Windows 11 sleep/wake and captive-portal leak matrix
-is still pending. Profiles, an allowlist, DoH coverage and full IPv6 isolation
-remain missing, so the product must stay labeled an opt-in preview until that
-physical matrix passes.
+0.2.0 is no longer monitor-only: it applies real DNS and LAN rules. 0.2.1 adds
+persistent WFP filters and state restore. The elevated Windows CI job verifies
+enable, self-test, pause cleanup, a forced crash with filters still installed,
+recovery, disable and uninstall cleanup. A physical Windows 11 sleep/wake and
+captive-portal leak matrix is still pending. Profiles, an allowlist, DoH coverage
+and full IPv6 isolation remain missing, so the product must stay labeled an
+opt-in preview until that physical matrix passes.
