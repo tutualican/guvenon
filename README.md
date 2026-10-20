@@ -55,7 +55,7 @@ src/GuvenOn.Linux    Linux daemon and guvenonctl CLI
 tests/GuvenOn.Tests  unit tests for policy, WFP-facing rules, updates and settings
 installer/           Inno Setup script
 linux/               systemd unit, Debian control scripts and .deb builder
-winget/              WinGet manifests (0.2.0 current)
+winget/              WinGet manifests (0.2.1 current)
 docs/                static GitHub Pages site
 scripts/             icon and update-manifest helpers
 .github/workflows/   Windows/Linux release and Pages pipelines
@@ -180,7 +180,7 @@ Each release must upload `latest.json` next to the installer. The helper
 generates it with the immutable asset URL, size and SHA-256:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-manifest.ps1 -InstallerPath .\artifacts\installer\GuvenOnSetup-0.2.0.exe -Version 0.2.0
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-manifest.ps1 -InstallerPath .\artifacts\installer\GuvenOnSetup-0.2.1.exe -Version 0.2.1
 ```
 
 The app verifies the version and offers a download link from the manifest. The
@@ -210,12 +210,12 @@ elevated through Windows' standard uninstall flow.
 ## WinGet
 
 Versioned manifests for `Tutualican.GuvenOn` live in
-`winget/manifests/t/Tutualican/GuvenOn/0.2.0/`. They describe the per-machine
+`winget/manifests/t/Tutualican/GuvenOn/0.2.1/`. They describe the per-machine
 Inno installer, silent switches and English, German and Turkish descriptions.
 Validate them locally with:
 
 ```powershell
-winget validate --manifest .\winget\manifests\t\Tutualican\GuvenOn\0.2.0
+winget validate --manifest .\winget\manifests\t\Tutualican\GuvenOn\0.2.1
 ```
 
 Submitting to the community `winget-pkgs` repository is a separate review step;
@@ -312,7 +312,7 @@ The detailed, research-backed backlog lives in [ROADMAP.md](ROADMAP.md).
    and a small tray UI.
 3. WireGuard, split tunneling, per-app rules, visibility and threat alerts.
 4. Signed update manifest, silent installer handoff, rollback.
-5. WinGet community submission for the 0.2.0 manifests.
+5. WinGet community submission for the 0.2.1 manifests.
 6. Code signing and SmartScreen reputation.
 
 Linux packaging starts with `.deb`; Flatpak/AppImage are not a substitute for a

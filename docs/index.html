@@ -32,7 +32,7 @@
       "name": "Guven-ON",
       "applicationCategory": "SecurityApplication",
       "operatingSystem": "Windows 11, Linux",
-      "softwareVersion": "0.2.0",
+      "softwareVersion": "0.2.1",
       "description": "An opt-in preview that blocks DNS leaks and local-network exposure on untrusted Wi-Fi using WFP on Windows and nftables on Linux.",
       "url": "https://tutualican.github.io/guvenon/",
       "downloadUrl": "https://github.com/tutualican/guvenon/releases/latest",
@@ -334,7 +334,7 @@
       <div class="faq-list">
         <details class="faq-item reveal">
           <summary><span data-i18n="faq0Q">What does the preview enforce?</span><span class="plus" aria-hidden="true"></span></summary>
-          <div class="faq-a"><p data-i18n="faq0A">On Windows, enabling protection applies dynamic WFP filters and points active adapters at Cloudflare and Quad9: DNS and DoT to other resolvers, private LAN ranges, multicast and legacy discovery are blocked. On Linux the same policy is compiled to nftables. This is alpha: DoH on port 443, some IPv6 traffic, VPN split tunneling, local printers and automatic trust profiles are not covered yet. Protection is off until you enable it.</p></div>
+          <div class="faq-a"><p data-i18n="faq0A">On Windows, enabling protection applies persistent WFP filters and points active adapters at Cloudflare and Quad9: DNS and DoT to other resolvers, private LAN ranges, multicast and legacy discovery are blocked. The filters survive a service crash, and a self-test verifies them. On Linux the same policy is compiled to nftables. This is alpha: DoH on port 443, some IPv6 traffic, VPN split tunneling, local printers and automatic trust profiles are not covered yet. Protection is off until you enable it.</p></div>
         </details>
         <details class="faq-item reveal">
           <summary><span data-i18n="faq1Q">Does it slow down my connection?</span><span class="plus" aria-hidden="true"></span></summary>

@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.locale.1.10.0.schema.json
+PackageIdentifier: Tutualican.GuvenOn
+PackageVersion: 0.2.1
+PackageLocale: de-DE
+Publisher: GuvenOn
+PublisherUrl: https://github.com/tutualican/guvenon
+PublisherSupportUrl: https://github.com/tutualican/guvenon/issues
+PrivacyUrl: https://tutualican.github.io/guvenon/#privacy
+Author: GuvenOn
+PackageName: Guven-ON
+PackageUrl: https://tutualican.github.io/guvenon/
+License: Apache-2.0
+LicenseUrl: https://github.com/tutualican/guvenon/blob/main/LICENSE
+Copyright: Copyright (c) 2026 GuvenOn
+CopyrightUrl: https://github.com/tutualican/guvenon/blob/main/LICENSE
+ShortDescription: Opt-in DNS- und LAN-Schutz für unsichere WLAN-Netze unter Windows 11.
+Description: >-
+  Guven-ON ist ein Sicherheitswerkzeug für Windows 11, das DNS-Leaks und die
+  Offenlegung des lokalen Netzwerks in unsicheren WLANs blockiert. Es installiert
+  einen LocalSystem-Dienst und eine ruhige Tray-App, folgt der
+  Windows-Anzeigesprache und spricht Englisch, Deutsch und Türkisch. Der Schutz
+  ist aus, bis Sie ihn aktivieren. Diese Vorschau wendet persistente WFP-Filter
+  und vertrauenswürdiges DNS auf aktiven Adaptern an; sie ist nicht signiert und
+  automatische Vertrauensprofile, LAN-Allowlist, DoH-Blockierung und vollständige
+  IPv6-Isolierung fehlen noch. Persistente Filter überstehen einen Dienstabsturz
+  und werden durch einen Selbsttest geprüft.
+Tags:
+  - dns
+  - datenschutz
+  - sicherheit
+  - wlan
+  - windows
+ReleaseNotesUrl: https://github.com/tutualican/guvenon/releases/tag/v0.2.1
+InstallationNotes: >-
+  Vorschauversion. Der Schutz ist opt-in und der Installer ist nicht signiert.
+  Prüfen Sie vor dem Ausführen die mit dem Release veröffentlichte
+  SHA-256-Prüfsumme. Windows 11 22H2 oder neuer, x64. Die Schutzabsicht wird nach
+  einem Neustart des Dienstes oder des Systems wiederhergestellt.
+ManifestType: locale
+ManifestVersion: 1.10.0

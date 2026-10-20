@@ -74,7 +74,7 @@
       faqTitle: "Good to know.",
       faq0Q: "What does the preview enforce?",
       faq0A:
-        "On Windows, enabling protection applies dynamic WFP filters and points active adapters at Cloudflare and Quad9: DNS and DoT to other resolvers, private LAN ranges, multicast and legacy discovery are blocked. On Linux the same policy is compiled to nftables. This is alpha: DoH on port 443, some IPv6 traffic, VPN split tunneling, local printers and automatic trust profiles are not covered yet. Protection is off until you enable it.",
+        "On Windows, enabling protection applies persistent WFP filters and points active adapters at Cloudflare and Quad9: DNS and DoT to other resolvers, private LAN ranges, multicast and legacy discovery are blocked. The filters survive a service crash, and a self-test verifies them. On Linux the same policy is compiled to nftables. This is alpha: DoH on port 443, some IPv6 traffic, VPN split tunneling, local printers and automatic trust profiles are not covered yet. Protection is off until you enable it.",
       faq1Q: "Does it slow down my connection?",
       faq1A:
         "Protection uses platform packet filters and plain DNS to Cloudflare or Quad9. There is no tunnel encryption, no keepalive and no packet capture, so the overhead is close to the DNS lookup you were already making.",
@@ -179,7 +179,7 @@
       faqTitle: "Gut zu wissen.",
       faq0Q: "Was setzt die Vorschau durch?",
       faq0A:
-        "Unter Windows wendet der aktivierte Schutz dynamische WFP-Filter an und richtet aktive Adapter auf Cloudflare und Quad9: DNS und DoT zu anderen Resolvern, private LAN-Bereiche, Multicast und ältere Discovery-Protokolle werden blockiert. Unter Linux wird dieselbe Richtlinie nach nftables übersetzt. Das ist Alpha: DoH auf Port 443, einige IPv6-Verbindungen, VPN-Split-Tunneling, lokale Drucker und automatische Vertrauensprofile sind noch nicht abgedeckt. Der Schutz ist aus, bis Sie ihn aktivieren.",
+        "Unter Windows wendet der aktivierte Schutz persistente WFP-Filter an und richtet aktive Adapter auf Cloudflare und Quad9: DNS und DoT zu anderen Resolvern, private LAN-Bereiche, Multicast und ältere Discovery-Protokolle werden blockiert. Die Filter überstehen einen Dienstabsturz und werden durch einen Selbsttest geprüft. Unter Linux wird dieselbe Richtlinie nach nftables übersetzt. Das ist Alpha: DoH auf Port 443, einige IPv6-Verbindungen, VPN-Split-Tunneling, lokale Drucker und automatische Vertrauensprofile sind noch nicht abgedeckt. Der Schutz ist aus, bis Sie ihn aktivieren.",
       faq1Q: "Wird meine Verbindung langsamer?",
       faq1A:
         "Der Schutz nutzt Paketfilter der Plattform und normales DNS zu Cloudflare oder Quad9. Es gibt keine Tunnelverschlüsselung, kein Keepalive und keine Paketaufzeichnung – der Aufwand liegt nahe am DNS-Lookup, den Sie ohnehin machen.",
@@ -284,7 +284,7 @@
       faqTitle: "Bilmeniz iyi olur.",
       faq0Q: "Önizleme neyi uyguluyor?",
       faq0A:
-        "Windows'ta koruma açıldığında dinamik WFP filtreleri uygulanır ve etkin bağdaştırıcılar Cloudflare ile Quad9'a yönlendirilir: diğer çözümleyicilere DNS ve DoT, özel LAN aralıkları, çoklu yayın ve eski keşif protokolleri engellenir. Linux'ta aynı ilke nftables'a derlenir. Bu bir alfa: 443 portundaki DoH, bazı IPv6 trafiği, VPN bölünmüş tünelleme, yerel yazıcılar ve otomatik güven profilleri henüz kapsam dışıdır. Koruma siz açana kadar kapalıdır.",
+        "Windows'ta koruma açıldığında kalıcı WFP filtreleri uygulanır ve etkin bağdaştırıcılar Cloudflare ile Quad9'a yönlendirilir: diğer çözümleyicilere DNS ve DoT, özel LAN aralıkları, çoklu yayın ve eski keşif protokolleri engellenir. Filtreler servis çökmesinden sonra korunur ve bir öz test ile doğrulanır. Linux'ta aynı ilke nftables'a derlenir. Bu bir alfa: 443 portundaki DoH, bazı IPv6 trafiği, VPN bölünmüş tünelleme, yerel yazıcılar ve otomatik güven profilleri henüz kapsam dışıdır. Koruma siz açana kadar kapalıdır.",
       faq1Q: "Bağlantımı yavaşlatır mı?",
       faq1A:
         "Koruma platform paket filtrelerini ve Cloudflare veya Quad9'a düz DNS kullanır. Tünel şifrelemesi, keepalive ve paket yakalama yoktur; ek yük zaten yaptığınız DNS sorgusuna yakındır.",
