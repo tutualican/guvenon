@@ -1,0 +1,178 @@
+name: windows-wfp
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/GuvenOn.Service/**"
+      - "src/GuvenOn.Core/Protection/**"
+      - ".github/workflows/windows-wfp.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  wfp-integration:
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Build and test
+        shell: pwsh
+        run: |
+          dotnet build GuvenOn.slnx -c Release -warnaserror
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet test GuvenOn.slnx -c Release -warnaserror --no-build
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Validate WFP layouts
+        shell: pwsh
+        run: |
+          $svc = Resolve-Path "src\GuvenOn.Service\bin\Release\net10.0-windows\guvenonsvc.exe"
+          & $svc --wfp-layout
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Exercise Windows protection
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $svc = (Resolve-Path "src\GuvenOn.Service\bin\Release\net10.0-windows\guvenonsvc.exe").Path
+
+          function Assert-Condition([bool]$Condition, [string]$Message) {
+            if (-not $Condition) { throw $Message }
+          }
+
+          function Invoke-Gsvc([string[]]$Arguments) {
+            $output = & $svc @Arguments 2>&1
+            $code = $LASTEXITCODE
+            $text = ($output | Out-String).Trim()
+            if ($code -ne 0) {
+              throw "guvenonsvc $($Arguments -join ' ') failed with exit code $code. Output: $text"
+            }
+            if ($text.StartsWith("{")) { return $text | ConvertFrom-Json }
+            return $null
+          }
+
+          function Wait-ServiceReady {
+            for ($attempt = 0; $attempt -lt 90; $attempt++) {
+              $service = Get-Service GuvenOnSvc -ErrorAction SilentlyContinue
+              if ($service -and $service.Status -eq "Running") {
+                $output = & $svc --status 2>$null
+                if ($LASTEXITCODE -eq 0) {
+                  return (($output | Out-String).Trim() | ConvertFrom-Json)
+                }
+              }
+              Start-Sleep -Seconds 1
+            }
+            throw "GuvenOnSvc control pipe did not become ready."
+          }
+
+          function Assert-Off($Status) {
+            Assert-Condition ($Status.ok -eq $true) "Status command was not OK."
+            Assert-Condition ($Status.status.enabled -eq $false) "Protection unexpectedly enabled."
+            Assert-Condition ($Status.status.engineActive -eq $false) "Engine unexpectedly active."
+            Assert-Condition ($Status.status.filterCount -eq 0) "Filters unexpectedly present."
+          }
+
+          function Assert-On($Status) {
+            Assert-Condition ($Status.ok -eq $true) "Enable command was not OK. $($Status.error)"
+            Assert-Condition ($Status.status.enabled -eq $true) "Protection did not report enabled."
+            Assert-Condition ($Status.status.engineActive -eq $true) "Engine did not report active."
+            Assert-Condition ($Status.status.dnsGuard -eq $true) "DNS guard did not report active."
+            Assert-Condition ($Status.status.filterCount -gt 0) "No WFP filters were reported."
+            Assert-Condition ($Status.status.lastError -eq $null) "Protection reported an error: $($Status.status.lastError)"
+          }
+
+          function Assert-NoGuvenOnFilters([string]$Reason) {
+            $xml = Join-Path $env:RUNNER_TEMP "guvenon-wfp-$Reason.xml"
+            Remove-Item $xml -ErrorAction SilentlyContinue
+            & "$env:SystemRoot\System32\netsh.exe" wfp show filters file="$xml" | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "netsh wfp show filters failed ($LASTEXITCODE)." }
+            $text = Get-Content $xml -Raw
+            Assert-Condition (-not $text.Contains("Guven-ON")) "Guven-ON WFP objects remain after $Reason."
+          }
+
+          function Assert-GuvenOnFilters([string]$Reason) {
+            $xml = Join-Path $env:RUNNER_TEMP "guvenon-wfp-$Reason.xml"
+            Remove-Item $xml -ErrorAction SilentlyContinue
+            & "$env:SystemRoot\System32\netsh.exe" wfp show filters file="$xml" | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "netsh wfp show filters failed ($LASTEXITCODE)." }
+            $text = Get-Content $xml -Raw
+            Assert-Condition ($text.Contains("Guven-ON")) "Guven-ON WFP objects are missing after $Reason."
+          }
+
+          try {
+            & $svc --install
+            if ($LASTEXITCODE -ne 0) { throw "Service installation failed ($LASTEXITCODE)." }
+
+            $status = Wait-ServiceReady
+            Assert-Off $status
+            Assert-NoGuvenOnFilters "a fresh install"
+
+            $status = Invoke-Gsvc @("--enable")
+            Assert-On $status
+            Assert-GuvenOnFilters "enable"
+
+            $status = Invoke-Gsvc @("--status")
+            Assert-On $status
+
+            $status = Invoke-Gsvc @("--pause", "1")
+            Assert-Condition ($status.status.enabled -eq $true) "Pause lost the enabled intent."
+            Assert-Condition ($status.status.engineActive -eq $false) "Pause left the engine active."
+            Assert-Condition ($status.status.filterCount -eq 0) "Pause left filters installed."
+            Assert-Condition ($null -ne $status.status.pausedUntil) "Pause did not report a deadline."
+            Assert-NoGuvenOnFilters "pause"
+
+            $status = Invoke-Gsvc @("--enable")
+            Assert-On $status
+
+            # Crash persistence: stop SCM restart actions, kill the service,
+            # and prove the persistent filters are still in the WFP store before
+            # the service is allowed to start again.
+            & "$env:SystemRoot\System32\sc.exe" failure GuvenOnSvc reset= 0 actions= "" | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Could not disable service failure actions." }
+
+            $service = Get-CimInstance Win32_Service -Filter "Name='GuvenOnSvc'"
+            if (-not $service -or -not $service.ProcessId) { throw "Could not find the service process." }
+            Stop-Process -Id $service.ProcessId -Force
+
+            for ($attempt = 0; $attempt -lt 60; $attempt++) {
+              $service = Get-Service GuvenOnSvc -ErrorAction SilentlyContinue
+              if ($service -and $service.Status -eq "Stopped") { break }
+              Start-Sleep -Seconds 1
+            }
+            Assert-Condition ($service.Status -eq "Stopped") "Service did not stop after the forced crash."
+            Assert-GuvenOnFilters "a forced service crash"
+
+            & "$env:SystemRoot\System32\sc.exe" start GuvenOnSvc | Out-Null
+            if ($LASTEXITCODE -ne 0) { throw "Service restart failed ($LASTEXITCODE)." }
+            $status = Wait-ServiceReady
+            Assert-On $status
+
+            $status = Invoke-Gsvc @("--disable")
+            Assert-Off $status
+            Assert-NoGuvenOnFilters "disable"
+
+            & $svc --uninstall
+            if ($LASTEXITCODE -ne 0) { throw "Service removal failed ($LASTEXITCODE)." }
+            Assert-Condition (-not (Get-Service GuvenOnSvc -ErrorAction SilentlyContinue)) "Service still exists after uninstall."
+            Assert-NoGuvenOnFilters "uninstall"
+          }
+          finally {
+            if (Test-Path $svc) {
+              & $svc --disable 2>$null | Out-Null
+              & $svc --uninstall 2>$null | Out-Null
+            }
+            & "$env:SystemRoot\System32\sc.exe" stop GuvenOnSvc 2>$null | Out-Null
+            & "$env:SystemRoot\System32\sc.exe" delete GuvenOnSvc 2>$null | Out-Null
+          }
