@@ -17,10 +17,6 @@
   <img alt="Apache 2.0" src="https://img.shields.io/badge/License-Apache_2.0-2E6B4E?style=flat-square">
 </p>
 
-<p align="center">
-  <sub>Independent · English · Deutsch · Türkçe · Apache-2.0</sub>
-</p>
-
 ## Protection without the babysitting.
 
 Guven-ON is a small security tool for the networks you do not control. It blocks
