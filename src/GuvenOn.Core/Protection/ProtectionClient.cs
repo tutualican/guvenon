@@ -51,12 +51,19 @@ public static class ProtectionClient
     public static Task<ControlResponse> StatusAsync(CancellationToken cancellationToken = default) =>
         SendAsync(ControlRequest.Status, cancellationToken: cancellationToken);
 
-    public static Task<ControlResponse> EnableAsync(CancellationToken cancellationToken = default) =>
-        SendAsync(ControlRequest.Enable, cancellationToken: cancellationToken);
+    public static Task<ControlResponse> EnableAsync(
+        CancellationToken cancellationToken = default,
+        TimeSpan? timeout = null) =>
+        SendAsync(ControlRequest.Enable, timeout, cancellationToken);
 
-    public static Task<ControlResponse> DisableAsync(CancellationToken cancellationToken = default) =>
-        SendAsync(ControlRequest.Disable, cancellationToken: cancellationToken);
+    public static Task<ControlResponse> DisableAsync(
+        CancellationToken cancellationToken = default,
+        TimeSpan? timeout = null) =>
+        SendAsync(ControlRequest.Disable, timeout, cancellationToken);
 
-    public static Task<ControlResponse> PauseAsync(int minutes, CancellationToken cancellationToken = default) =>
-        SendAsync(new ControlRequest(ProtectionCommand.Pause, minutes), cancellationToken: cancellationToken);
+    public static Task<ControlResponse> PauseAsync(
+        int minutes,
+        CancellationToken cancellationToken = default,
+        TimeSpan? timeout = null) =>
+        SendAsync(new ControlRequest(ProtectionCommand.Pause, minutes), timeout, cancellationToken);
 }

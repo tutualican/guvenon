@@ -46,6 +46,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
+          $PSNativeCommandUseErrorActionPreference = $false
           $svc = (Resolve-Path "src\GuvenOn.Service\bin\Release\net10.0-windows\guvenonsvc.exe").Path
 
           function Assert-Condition([bool]$Condition, [string]$Message) {
@@ -112,21 +113,27 @@ jobs:
           }
 
           try {
+            Write-Host "Installing the service..."
             & $svc --install
             if ($LASTEXITCODE -ne 0) { throw "Service installation failed ($LASTEXITCODE)." }
 
             $status = Wait-ServiceReady
+            Write-Host "Initial status: $($status | ConvertTo-Json -Compress -Depth 5)"
             Assert-Off $status
             Assert-NoGuvenOnFilters "a fresh install"
 
+            Write-Host "Enabling protection..."
             $status = Invoke-Gsvc @("--enable")
+            Write-Host "Enabled status: $($status | ConvertTo-Json -Compress -Depth 5)"
             Assert-On $status
             Assert-GuvenOnFilters "enable"
 
             $status = Invoke-Gsvc @("--status")
             Assert-On $status
 
+            Write-Host "Pausing protection..."
             $status = Invoke-Gsvc @("--pause", "1")
+            Write-Host "Paused status: $($status | ConvertTo-Json -Compress -Depth 5)"
             Assert-Condition ($status.status.enabled -eq $true) "Pause lost the enabled intent."
             Assert-Condition ($status.status.engineActive -eq $false) "Pause left the engine active."
             Assert-Condition ($status.status.filterCount -eq 0) "Pause left filters installed."
@@ -139,6 +146,7 @@ jobs:
             # Crash persistence: stop SCM restart actions, kill the service,
             # and prove the persistent filters are still in the WFP store before
             # the service is allowed to start again.
+            Write-Host "Testing crash persistence..."
             & "$env:SystemRoot\System32\sc.exe" failure GuvenOnSvc reset= 0 actions= "" | Out-Null
             if ($LASTEXITCODE -ne 0) { throw "Could not disable service failure actions." }
 
@@ -157,9 +165,12 @@ jobs:
             & "$env:SystemRoot\System32\sc.exe" start GuvenOnSvc | Out-Null
             if ($LASTEXITCODE -ne 0) { throw "Service restart failed ($LASTEXITCODE)." }
             $status = Wait-ServiceReady
+            Write-Host "Recovered status: $($status | ConvertTo-Json -Compress -Depth 5)"
             Assert-On $status
 
+            Write-Host "Disabling protection..."
             $status = Invoke-Gsvc @("--disable")
+            Write-Host "Disabled status: $($status | ConvertTo-Json -Compress -Depth 5)"
             Assert-Off $status
             Assert-NoGuvenOnFilters "disable"
 
@@ -167,6 +178,11 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw "Service removal failed ($LASTEXITCODE)." }
             Assert-Condition (-not (Get-Service GuvenOnSvc -ErrorAction SilentlyContinue)) "Service still exists after uninstall."
             Assert-NoGuvenOnFilters "uninstall"
+          }
+          catch {
+            Write-Host "WFP integration failed: $($_.Exception.Message)"
+            Write-Host $_.ScriptStackTrace
+            throw
           }
           finally {
             if (Test-Path $svc) {

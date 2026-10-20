@@ -77,6 +77,15 @@ internal static class WfpInterop
         IntPtr securityDescriptor);
 
     [DllImport("fwpuclnt.dll", ExactSpelling = true)]
+    public static extern uint FwpmProviderGetByKey0(
+        IntPtr engineHandle,
+        in Guid key,
+        out IntPtr provider);
+
+    [DllImport("fwpuclnt.dll", ExactSpelling = true)]
+    public static extern void FwpmFreeMemory0(ref IntPtr pointer);
+
+    [DllImport("fwpuclnt.dll", ExactSpelling = true)]
     public static extern uint FwpmSubLayerAdd0(
         IntPtr engineHandle,
         ref FwpmSubLayer subLayer,

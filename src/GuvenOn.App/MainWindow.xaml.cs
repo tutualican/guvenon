@@ -299,8 +299,8 @@ public partial class MainWindow : Window
         try
         {
             var response = _protectionStatus?.EngineActive == true
-                ? await ProtectionClient.DisableAsync()
-                : await ProtectionClient.EnableAsync();
+                ? await ProtectionClient.DisableAsync(timeout: TimeSpan.FromSeconds(30))
+                : await ProtectionClient.EnableAsync(timeout: TimeSpan.FromSeconds(30));
 
             UpdateProtectionUi(response.Status);
 
@@ -333,7 +333,7 @@ public partial class MainWindow : Window
 
         try
         {
-            var response = await ProtectionClient.PauseAsync(10);
+            var response = await ProtectionClient.PauseAsync(10, timeout: TimeSpan.FromSeconds(30));
             UpdateProtectionUi(response.Status);
 
             if (!response.Ok && !string.IsNullOrWhiteSpace(response.Error))

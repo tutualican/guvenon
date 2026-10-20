@@ -20,7 +20,7 @@ internal sealed class WfpProtectionEngine : IDisposable
     // Deleting unknown keys is expected during cleanup. The slot range is
     // intentionally larger than the current ruleset so a future policy can add
     // filters without leaving older persistent filters behind.
-    private const int MaxFilterSlots = 512;
+    private const int MaxFilterSlots = 256;
 
     private static readonly Guid ProviderKey = new("9a64e98b-7516-44f1-a405-f2b0e50ef871");
     private static readonly Guid SubLayerKey = new("fc83f452-5294-4bf8-a790-41ace7391323");
@@ -194,6 +194,25 @@ internal sealed class WfpProtectionEngine : IDisposable
 
     private static int DeletePersistentObjects(IntPtr engine)
     {
+        // A fresh install has no provider, and therefore no filters that could
+        // reference it. Checking first avoids hundreds of expected-not-found
+        // delete calls on every service start.
+        var providerStatus = WfpInterop.FwpmProviderGetByKey0(engine, ProviderKey, out var provider);
+        if (providerStatus == WfpInterop.FwpEProviderNotFound)
+        {
+            return 0;
+        }
+
+        if (providerStatus != 0)
+        {
+            throw Failure("FwpmProviderGetByKey0", providerStatus);
+        }
+
+        if (provider != IntPtr.Zero)
+        {
+            WfpInterop.FwpmFreeMemory0(ref provider);
+        }
+
         var deleted = 0;
 
         for (var index = 0; index < MaxFilterSlots; index++)
@@ -218,7 +237,7 @@ internal sealed class WfpProtectionEngine : IDisposable
             throw Failure("FwpmSubLayerDeleteByKey0", subLayerStatus);
         }
 
-        var providerStatus = WfpInterop.FwpmProviderDeleteByKey0(engine, ProviderKey);
+        providerStatus = WfpInterop.FwpmProviderDeleteByKey0(engine, ProviderKey);
         if (providerStatus is not 0 and not WfpInterop.FwpEProviderNotFound)
         {
             throw Failure("FwpmProviderDeleteByKey0", providerStatus);

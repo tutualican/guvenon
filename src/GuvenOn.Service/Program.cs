@@ -132,7 +132,10 @@ static async Task<int> RunControlAsync(ControlRequest request)
 {
     try
     {
-        var response = await ProtectionClient.SendAsync(request);
+        var timeout = request.Command == ProtectionCommand.Status
+            ? TimeSpan.FromSeconds(2)
+            : TimeSpan.FromSeconds(60);
+        var response = await ProtectionClient.SendAsync(request, timeout);
         Console.WriteLine(JsonSerializer.Serialize(response, ControlProtocol.JsonOptions));
         return response.Ok ? 0 : 1;
     }
