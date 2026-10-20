@@ -137,6 +137,10 @@ jobs:
             $status = Invoke-Gsvc @("--status")
             Assert-On $status
 
+            Write-Host "Running the WFP self-test..."
+            $status = Invoke-Gsvc @("--selftest")
+            Assert-On $status
+
             Write-Host "Pausing protection..."
             $status = Invoke-Gsvc @("--pause", "1")
             Write-Host "Paused status: $($status | ConvertTo-Json -Compress -Depth 5)"
@@ -172,6 +176,9 @@ jobs:
             if ($LASTEXITCODE -ne 0) { throw "Service restart failed ($LASTEXITCODE)." }
             $status = Wait-ServiceReady
             Write-Host "Recovered status: $($status | ConvertTo-Json -Compress -Depth 5)"
+            Assert-On $status
+
+            $status = Invoke-Gsvc @("--selftest")
             Assert-On $status
 
             Write-Host "Disabling protection..."

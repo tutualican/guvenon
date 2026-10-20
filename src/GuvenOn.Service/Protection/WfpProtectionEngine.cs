@@ -128,6 +128,89 @@ internal sealed class WfpProtectionEngine : IDisposable
     }
 
     /// <summary>
+    /// Re-opens the persistent WFP store and verifies that every filter the
+    /// active policy expects is still present. Returns the number of missing
+    /// filters; zero means the guard is intact.
+    /// </summary>
+    public static int CountMissingPersistentFilters(int expectedCount)
+    {
+        if (expectedCount <= 0)
+        {
+            return 0;
+        }
+
+        var session = BuildSession(out var sessionName, out var sessionDescription);
+        IntPtr engine;
+        uint status;
+        try
+        {
+            status = WfpInterop.FwpmEngineOpen0(
+                null,
+                WfpInterop.RpcCAuthnWinnt,
+                IntPtr.Zero,
+                ref session,
+                out engine);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(sessionName);
+            Marshal.FreeHGlobal(sessionDescription);
+        }
+
+        if (status != 0)
+        {
+            throw Failure("FwpmEngineOpen0", status);
+        }
+
+        try
+        {
+            status = WfpInterop.FwpmProviderGetByKey0(engine, ProviderKey, out var provider);
+            if (status == WfpInterop.FwpEProviderNotFound)
+            {
+                return expectedCount;
+            }
+
+            if (status != 0)
+            {
+                throw Failure("FwpmProviderGetByKey0", status);
+            }
+
+            if (provider != IntPtr.Zero)
+            {
+                WfpInterop.FwpmFreeMemory0(ref provider);
+            }
+
+            var missing = 0;
+            for (var index = 0; index < expectedCount; index++)
+            {
+                var key = FilterKey(index);
+                status = WfpInterop.FwpmFilterGetByKey0(engine, key, out var filter);
+                if (status == WfpInterop.FwpEFilterNotFound)
+                {
+                    missing++;
+                    continue;
+                }
+
+                if (status != 0)
+                {
+                    throw Failure($"FwpmFilterGetByKey0 slot {index}", status);
+                }
+
+                if (filter != IntPtr.Zero)
+                {
+                    WfpInterop.FwpmFreeMemory0(ref filter);
+                }
+            }
+
+            return missing;
+        }
+        finally
+        {
+            _ = WfpInterop.FwpmEngineClose0(engine);
+        }
+    }
+
+    /// <summary>
     /// Removes every persistent object owned by this product. The operation is
     /// transactional and safe to call when no objects exist.
     /// </summary>

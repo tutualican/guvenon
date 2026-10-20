@@ -80,6 +80,11 @@ if (args.Any(argument => argument.Equals("--status", StringComparison.OrdinalIgn
     return await RunControlAsync(ControlRequest.Status);
 }
 
+if (args.Any(argument => argument.Equals("--selftest", StringComparison.OrdinalIgnoreCase)))
+{
+    return await RunControlAsync(new ControlRequest(ProtectionCommand.SelfTest));
+}
+
 if (args.Any(argument => argument.Equals("--enable", StringComparison.OrdinalIgnoreCase)))
 {
     return await RunControlAsync(ControlRequest.Enable);

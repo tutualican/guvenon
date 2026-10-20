@@ -38,6 +38,44 @@ public sealed class ProtectionManager : IDisposable
     }
 
     /// <summary>
+    /// Verifies that the active policy still has every persistent filter in the
+    /// WFP store. Status alone only describes what the service intended to do.
+    /// </summary>
+    public ProtectionStatus SelfTest()
+    {
+        lock (_gate)
+        {
+            if (!_status.EngineActive || _engine is null)
+            {
+                _status = _status with { LastError = "Protection is not active." };
+                return _status;
+            }
+
+            try
+            {
+                var missing = WfpProtectionEngine.CountMissingPersistentFilters(_engine.FilterCount);
+                if (missing == 0)
+                {
+                    _status = _status with { LastError = null };
+                }
+                else
+                {
+                    _status = _status with
+                    {
+                        LastError = $"{missing} persistent WFP filters are missing."
+                    };
+                }
+            }
+            catch (Exception exception)
+            {
+                _status = _status with { LastError = $"Self-test failed: {exception.Message}" };
+            }
+
+            return _status;
+        }
+    }
+
+    /// <summary>
     /// Restores the previous intent before the control pipe starts accepting
     /// commands. An enabled state re-applies the policy; a disabled or paused
     /// state verifies that a crash did not leave persistent filters behind.

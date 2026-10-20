@@ -83,6 +83,12 @@ internal static class WfpInterop
         out IntPtr provider);
 
     [DllImport("fwpuclnt.dll", ExactSpelling = true)]
+    public static extern uint FwpmFilterGetByKey0(
+        IntPtr engineHandle,
+        in Guid key,
+        out IntPtr filter);
+
+    [DllImport("fwpuclnt.dll", ExactSpelling = true)]
     public static extern void FwpmFreeMemory0(ref IntPtr pointer);
 
     [DllImport("fwpuclnt.dll", ExactSpelling = true)]
