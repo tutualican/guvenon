@@ -1,25 +1,24 @@
-<div align="center">
-  <img src="assets/guvenon.png" width="104" alt="Guven-ON shield">
-  <h1>Guven-ON</h1>
-  <p><strong>Privacy that just works.</strong><br>
-  DNS leak and local-network protection for untrusted Wi-Fi.</p>
-  <p>
-    <img alt="Windows 11" src="https://img.shields.io/badge/Windows_11-1B2A8C?style=flat-square&logo=windows11&logoColor=white">
-    <img alt="Linux alpha" src="https://img.shields.io/badge/Linux_alpha-11131F?style=flat-square&logo=linux&logoColor=white">
-    <img alt="English, German, Turkish" src="https://img.shields.io/badge/EN_%C2%B7_DE_%C2%B7_TR-C9A227?style=flat-square">
-    <img alt="Apache 2.0" src="https://img.shields.io/badge/License-Apache_2.0-2E6B4E?style=flat-square">
-  </p>
-  <p>
-    <a href="https://github.com/tutualican/guvenon/releases/latest"><img alt="Download for Windows" src="https://img.shields.io/badge/DOWNLOAD_FOR_WINDOWS-0E175A?style=for-the-badge&logo=windows11&logoColor=white"></a>
-    <a href="https://github.com/tutualican/guvenon/releases/latest"><img alt="Linux .deb" src="https://img.shields.io/badge/LINUX_.DEB-1B2A8C?style=for-the-badge&logo=debian&logoColor=white"></a>
-    <a href="https://github.com/tutualican/guvenon/releases"><img alt="Release notes" src="https://img.shields.io/badge/RELEASE_NOTES-F6F3EA?style=for-the-badge&logo=github&logoColor=0E175A"></a>
-  </p>
-</div>
-
 <p align="center">
   <a href="https://github.com/tutualican/guvenon/releases/latest">
-    <img src="assets/og.png" alt="Guven-ON — Privacy that just works" width="100%">
+    <img src="assets/og.png" alt="Guven-ON — Privacy that just works. DNS and LAN protection for untrusted Wi-Fi." width="100%">
   </a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/tutualican/guvenon/releases/latest"><img alt="Download for Windows" src="https://img.shields.io/badge/DOWNLOAD_FOR_WINDOWS-0E175A?style=for-the-badge&logo=windows11&logoColor=white"></a>
+  <a href="https://github.com/tutualican/guvenon/releases/latest"><img alt="Linux .deb" src="https://img.shields.io/badge/LINUX_.DEB-1B2A8C?style=for-the-badge&logo=debian&logoColor=white"></a>
+  <a href="https://github.com/tutualican/guvenon/releases"><img alt="Release notes" src="https://img.shields.io/badge/RELEASE_NOTES-F6F3EA?style=for-the-badge&logo=github&logoColor=0E175A"></a>
+</p>
+
+<p align="center">
+  <img alt="Windows 11" src="https://img.shields.io/badge/Windows_11-1B2A8C?style=flat-square&logo=windows11&logoColor=white">
+  <img alt="Linux alpha" src="https://img.shields.io/badge/Linux_alpha-11131F?style=flat-square&logo=linux&logoColor=white">
+  <img alt="English, German, Turkish" src="https://img.shields.io/badge/EN_%C2%B7_DE_%C2%B7_TR-C9A227?style=flat-square">
+  <img alt="Apache 2.0" src="https://img.shields.io/badge/License-Apache_2.0-2E6B4E?style=flat-square">
+</p>
+
+<p align="center">
+  <sub>Independent · English · Deutsch · Türkçe · Apache-2.0</sub>
 </p>
 
 ## Protection without the babysitting.
