@@ -16,8 +16,8 @@ user interface is available in English, German and Turkish.
 > are persistent WFP filters plus adapter DNS changes; on Linux they are an
 > nftables table plus systemd-resolved configuration. Still missing: automatic
 > trust profiles, a LAN allowlist, automatic captive-portal detection,
-> DNS-over-HTTPS blocking, full IPv6 isolation and a documented leak matrix for
-> crash/reboot/sleep-wake recovery. Preview builds are unsigned.
+> DNS-over-HTTPS blocking, full IPv6 isolation and a physical leak matrix for
+> sleep/wake and captive-portal recovery. Preview builds are unsigned.
 >
 > **Main-branch note:** persistent WFP filters and service-state restore landed
 > after the published 0.2.0 artifact. The 0.2.0 installer still uses the older
@@ -275,13 +275,14 @@ the light details inside the shield.
   either re-applies the policy or removes stale objects. A clean stop removes the
   filters and restores DNS, and the next service start re-applies an enabled
   policy.
-- WFP replacement and removal run in a transaction. Uninstall removes persistent
-  filters even when the service was already stopped or had crashed.
+- WFP replacement and removal run in a transaction. The elevated Windows CI job
+  verifies filter presence, pause cleanup, a forced service crash with filters
+  still installed, recovery, disable and uninstall cleanup. A physical Windows 11
+  sleep/wake and captive-portal leak matrix is still pending.
 - DNS changes are snapshotted under `%ProgramData%\GuvenOn` and restored on
   disable, pause, clean uninstall and the next service start after a crash.
 - The published 0.2.0 installer predates the persistent-filter and state-restore
-  work. A full reboot, sleep/wake and service-crash leak matrix on a physical
-  Windows 11 test host is still pending.
+  work.
 - The Linux daemon runs as root, restricts its control socket to root, and
   leaves the nftables table in place if the daemon crashes. Package removal
   runs `--cleanup` before files are deleted.

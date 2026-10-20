@@ -33,8 +33,9 @@ installer, updates, localization, and site. The first opt-in protection engine
 now exists on both platforms: persistent WFP filters plus adapter DNS on Windows,
 and an nftables table plus systemd-resolved DNS on Linux. It is deliberately
 manual and still missing the P0 items below: trust profiles, a LAN allowlist,
-automatic captive-portal detection, DoH handling, full IPv6 isolation, and
-leak-matrix verification of the persistent-filter crash path.
+automatic captive-portal detection, DoH handling, full IPv6 isolation, and a
+physical leak matrix for sleep/wake and captive portals. The persistent-filter
+crash path is now exercised by an elevated Windows CI job.
 
 ## 2. What users consistently ask for
 
@@ -401,6 +402,9 @@ User-facing pain points and vendor behavior:
 
 0.2.0 is no longer monitor-only: it applies real DNS and LAN rules. The 0.2.0
 artifact still fails open after a Windows service crash; main now uses persistent
-WFP filters and state restore, but that path still needs leak-matrix verification.
-Profiles, an allowlist, DoH coverage and full IPv6 isolation remain missing, so
-the product must stay labeled an opt-in preview until the leak matrix passes.
+WFP filters and state restore. The elevated Windows CI job verifies enable, pause
+cleanup, a forced crash with filters still installed, recovery, disable and
+uninstall cleanup. A physical Windows 11 sleep/wake and captive-portal leak matrix
+is still pending. Profiles, an allowlist, DoH coverage and full IPv6 isolation
+remain missing, so the product must stay labeled an opt-in preview until that
+physical matrix passes.
