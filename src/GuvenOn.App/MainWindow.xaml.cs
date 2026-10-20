@@ -11,6 +11,7 @@ using Application = System.Windows.Application;
 using Brush = System.Windows.Media.Brush;
 using GuvenOn.App.Localization;
 using GuvenOn.Core;
+using GuvenOn.Core.Protection;
 using GuvenOn.Core.Update;
 
 namespace GuvenOn.App;
@@ -20,6 +21,8 @@ public partial class MainWindow : Window
     private bool _allowClose;
     private bool _initializing = true;
     private bool _updateBusy;
+    private bool _protectionBusy;
+    private ProtectionStatus? _protectionStatus;
     private string? _downloadUrl;
 
     public MainWindow()
@@ -39,6 +42,8 @@ public partial class MainWindow : Window
         UpdateButton.Content = Loc.Instance["CheckForUpdates"];
         DownloadButton.Content = Loc.Instance["Download"];
         UpdateStatus.Text = Loc.Instance["UpdateIdle"];
+        ProtectionButton.Content = Loc.Instance["ProtectionEnable"];
+        PauseButton.Content = Loc.Instance["ProtectionPause"];
 
         Loaded += (_, _) =>
         {
@@ -46,7 +51,11 @@ public partial class MainWindow : Window
             RefreshAll();
         };
 
-        Activated += (_, _) => RefreshServiceStatus();
+        Activated += (_, _) =>
+        {
+            RefreshServiceStatus();
+            _ = RefreshProtectionAsync();
+        };
     }
 
     private App AppHost => (App)Application.Current;
@@ -99,6 +108,7 @@ public partial class MainWindow : Window
     {
         RefreshServiceStatus();
         RefreshNetwork();
+        _ = RefreshProtectionAsync();
     }
 
     private void RefreshServiceStatus()
@@ -110,7 +120,7 @@ public partial class MainWindow : Window
             case ServiceControllerStatus.Running:
                 StatusDot.Fill = (Brush)FindResource("StatusGreenBrush");
                 StatusTitle.Text = Loc.Instance["StatusServiceRunning"];
-                StatusDetail.Text = Loc.Instance["StatusPreviewDetail"];
+                StatusDetail.Text = Loc.Instance["StatusReadyDetail"];
                 ServiceLine.Text = $"{Loc.Instance["Service"]}: {Loc.Instance["ServiceRunning"]}";
                 break;
 
@@ -194,6 +204,163 @@ public partial class MainWindow : Window
             NetworkName.Text = Loc.Instance["NetworkUnknown"];
             NetworkType.Text = string.Empty;
         }
+    }
+
+    private async Task RefreshProtectionAsync()
+    {
+        if (_protectionBusy)
+        {
+            return;
+        }
+
+        try
+        {
+            var response = await ProtectionClient.StatusAsync();
+            UpdateProtectionUi(response.Status);
+        }
+        catch
+        {
+            UpdateProtectionUi(null);
+        }
+    }
+
+    private void UpdateProtectionUi(ProtectionStatus? status)
+    {
+        _protectionStatus = status;
+
+        if (_protectionBusy)
+        {
+            ProtectionButton.Content = Loc.Instance["ProtectionBusy"];
+            ProtectionButton.IsEnabled = false;
+            PauseButton.IsEnabled = false;
+            return;
+        }
+
+        ProtectionButton.IsEnabled = true;
+        PauseButton.IsEnabled = true;
+        PauseButton.Visibility = Visibility.Collapsed;
+
+        if (status is null)
+        {
+            ProtectionDot.Fill = (Brush)FindResource("StatusAmberBrush");
+            ProtectionStateText.Text = Loc.Instance["ProtectionUnavailable"];
+            ProtectionDetailText.Text = Loc.Instance["ProtectionUnavailableDetail"];
+            ProtectionButton.Content = Loc.Instance["ProtectionEnable"];
+            return;
+        }
+
+        if (status.EngineActive)
+        {
+            ProtectionDot.Fill = (Brush)FindResource("StatusGreenBrush");
+            ProtectionStateText.Text = Loc.Instance["ProtectionOn"];
+            ProtectionDetailText.Text = Loc.Instance["ProtectionOnDetail"];
+            ProtectionButton.Content = Loc.Instance["ProtectionDisable"];
+            PauseButton.Content = Loc.Instance["ProtectionPause"];
+            PauseButton.Visibility = Visibility.Visible;
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(status.LastError))
+        {
+            ProtectionDot.Fill = (Brush)FindResource("StatusRedBrush");
+            ProtectionStateText.Text = Loc.Instance["ProtectionError"];
+            ProtectionDetailText.Text = status.LastError;
+            ProtectionButton.Content = Loc.Instance["ProtectionEnable"];
+            return;
+        }
+
+        if (status.IsPaused(DateTimeOffset.UtcNow) && status.PausedUntil is { } pausedUntil)
+        {
+            ProtectionDot.Fill = (Brush)FindResource("StatusAmberBrush");
+            ProtectionStateText.Text = Loc.Instance["ProtectionPaused"];
+            ProtectionDetailText.Text = Loc.Instance.Format(
+                "ProtectionPausedDetail",
+                pausedUntil.LocalDateTime.ToString("HH:mm"));
+            ProtectionButton.Content = Loc.Instance["ProtectionEnable"];
+            return;
+        }
+
+        ProtectionDot.Fill = (Brush)FindResource("StatusAmberBrush");
+        ProtectionStateText.Text = Loc.Instance["ProtectionOff"];
+        ProtectionDetailText.Text = Loc.Instance["ProtectionOffDetail"];
+        ProtectionButton.Content = Loc.Instance["ProtectionEnable"];
+    }
+
+    private async void Protection_Click(object sender, RoutedEventArgs e)
+    {
+        if (_protectionBusy)
+        {
+            return;
+        }
+
+        _protectionBusy = true;
+        UpdateProtectionUi(_protectionStatus);
+
+        try
+        {
+            var response = _protectionStatus?.EngineActive == true
+                ? await ProtectionClient.DisableAsync()
+                : await ProtectionClient.EnableAsync();
+
+            UpdateProtectionUi(response.Status);
+
+            if (!response.Ok && !string.IsNullOrWhiteSpace(response.Error))
+            {
+                ShowProtectionFailure(response.Error);
+            }
+        }
+        catch (Exception exception)
+        {
+            UpdateProtectionUi(null);
+            ShowProtectionFailure(exception.Message);
+        }
+        finally
+        {
+            _protectionBusy = false;
+            UpdateProtectionUi(_protectionStatus);
+        }
+    }
+
+    private async void Pause_Click(object sender, RoutedEventArgs e)
+    {
+        if (_protectionBusy)
+        {
+            return;
+        }
+
+        _protectionBusy = true;
+        UpdateProtectionUi(_protectionStatus);
+
+        try
+        {
+            var response = await ProtectionClient.PauseAsync(10);
+            UpdateProtectionUi(response.Status);
+
+            if (!response.Ok && !string.IsNullOrWhiteSpace(response.Error))
+            {
+                ShowProtectionFailure(response.Error);
+            }
+        }
+        catch (Exception exception)
+        {
+            UpdateProtectionUi(null);
+            ShowProtectionFailure(exception.Message);
+        }
+        finally
+        {
+            _protectionBusy = false;
+            UpdateProtectionUi(_protectionStatus);
+        }
+    }
+
+    private void ShowProtectionFailure(string error)
+    {
+        System.Windows.MessageBox.Show(
+            this,
+            Loc.Instance.Format("ProtectionFailed", error),
+            Loc.Instance["Protection"],
+            MessageBoxButton.OK,
+            MessageBoxImage.Warning);
     }
 
     private void Refresh_Click(object sender, RoutedEventArgs e) => RefreshAll();

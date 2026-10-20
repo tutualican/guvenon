@@ -1,6 +1,6 @@
 # Guven-ON — Advanced Product Roadmap
 
-Status: planning document · Updated: 2026-10-20
+Status: living document · Updated: 2026-10-20
 
 This document turns the research into a concrete, prioritized backlog. It covers
 the Windows product, the new Linux target (`.deb` first), and the shared
@@ -29,8 +29,12 @@ That means three things must be true before a release may call itself
    must not quietly restore unprotected traffic on an untrusted profile.
 
 The preview releases so far built the delivery vehicle: tray app, service,
-installer, updates, localization, and site. The protection engine is still the
-missing part.
+installer, updates, localization, and site. The first opt-in protection engine
+now exists on both platforms: dynamic WFP filters plus adapter DNS on Windows,
+and an nftables table plus systemd-resolved DNS on Linux. It is deliberately
+manual and still missing the P0 items below: trust profiles, a LAN allowlist,
+automatic captive-portal detection, DoH handling, full IPv6 isolation and a
+Windows fail-closed path after a service crash.
 
 ## 2. What users consistently ask for
 
@@ -226,27 +230,22 @@ These are release blockers, not suggestions.
 
 ## 7. Release plan
 
-### 0.2 — Real protection (P0)
+### 0.2 – Opt-in protection preview (shipped)
 
-**Windows**
-- Trust profiles, new-network prompt.
-- DNS guard + encrypted resolver presets.
-- LAN exposure guard + allowlist basics.
-- IPv6 guard.
-- Fail-closed kill switch on untrusted profiles.
-- Captive-portal mode, panic, self-test.
-- Honest status UI and event counters.
-- WFP cleanup and crash/reboot tests.
+**Shipped in 0.2.0**
+- Windows: dynamic WFP DNS/LAN guard, trusted adapter DNS, manual pause and
+  panic reset, tray/service/installer/update path, English, German and Turkish.
+- Linux alpha: nftables DNS/LAN guard, systemd-resolved and `/etc/resolv.conf`
+  handling, root-only control socket, CLI and `.deb` packaging.
+- Shared policy compiler, unit tests and CI nftables syntax validation.
 
-**Linux (alpha)**
-- `.deb` with systemd service + polkit.
-- nftables backend for DNS/LAN/IPv6.
-- systemd-resolved and NetworkManager integration.
-- CLI first, minimal tray UI if time allows.
-- Same self-test and panic behavior.
-
-Exit criteria: a documented leak matrix passes on Windows 11 VM and
-Ubuntu/Debian VM, including portal, IPv6, sleep/wake, service crash, uninstall.
+**Still required before "real protection"**
+- Trust profiles and a new-network prompt.
+- LAN allowlist and automatic captive-portal detection.
+- IPv6 isolation and DoH handling.
+- Persistent fail-closed WFP filters with verified cleanup.
+- A documented leak matrix on Windows 11 and Ubuntu/Debian VMs, including
+  portal, IPv6, sleep/wake, service crash and uninstall.
 
 ### 0.3 — Cross-platform + VPN
 
@@ -396,5 +395,7 @@ User-facing pain points and vendor behavior:
 6. Do not label a build "protected" until the leak matrix passes and the
    self-test can prove it.
 
-The current release remains **monitor-only**. The next public build should not
-claim otherwise.
+0.2.0 is no longer monitor-only: it applies real DNS and LAN rules. It still
+fails open after a Windows service crash and lacks profiles, an allowlist, DoH
+coverage and full IPv6 isolation, so it must remain labeled an opt-in preview
+until the leak matrix passes.

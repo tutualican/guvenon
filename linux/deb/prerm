@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+    # Stop first so an auto-resume timer cannot reapply protection between
+    # cleanup and shutdown.
+    systemctl stop guvenon.service || true
+
+    if [ -x /usr/lib/guvenon/guvenon-linuxd ]; then
+        /usr/lib/guvenon/guvenon-linuxd --cleanup || true
+    fi
+
+    systemctl disable guvenon.service >/dev/null 2>&1 || true
+fi
+
+exit 0

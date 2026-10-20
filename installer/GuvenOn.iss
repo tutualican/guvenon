@@ -1,5 +1,5 @@
 #ifndef AppVersion
-  #define AppVersion "0.1.2"
+  #define AppVersion "0.2.0"
 #endif
 
 [Setup]
@@ -94,6 +94,7 @@ Filename: "{app}\guvenon.exe"; Description: "{cm:LaunchProgram}"; Flags: nowait 
 
 [UninstallRun]
 Filename: "{app}\service\guvenonsvc.exe"; Parameters: "--uninstall"; Flags: runhidden waituntilterminated; RunOnceId: "GuvenOnService"
+Filename: "{app}\service\guvenonsvc.exe"; Parameters: "--restore-network"; Flags: runhidden waituntilterminated; RunOnceId: "GuvenOnDnsRestore"
 Filename: "{sys}\sc.exe"; Parameters: "stop GuvenOnSvc"; Flags: runhidden waituntilterminated; RunOnceId: "GuvenOnServiceStopFallback"
 Filename: "{sys}\sc.exe"; Parameters: "delete GuvenOnSvc"; Flags: runhidden waituntilterminated; RunOnceId: "GuvenOnServiceDeleteFallback"
 ; Inno only allows runasoriginaluser in [Run], not [UninstallRun]. The
@@ -136,6 +137,10 @@ begin
   end
   else if CurStep = ssPostInstall then
   begin
+    // Recover a DNS snapshot left behind by a previous crash before the new
+    // service starts. The new binary supports this repair switch.
+    Exec(ExpandConstant('{app}\service\guvenonsvc.exe'), '--restore-network', '', SW_HIDE,
+      ewWaitUntilTerminated, ResultCode);
     InstallService;
   end;
 end;

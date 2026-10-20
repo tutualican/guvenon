@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+systemctl daemon-reload || true
+systemctl enable guvenon.service >/dev/null 2>&1 || true
+systemctl restart guvenon.service || true
+
+exit 0

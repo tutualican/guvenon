@@ -1,4 +1,6 @@
+#if WINDOWS
 using Microsoft.Win32;
+#endif
 
 namespace GuvenOn.Core;
 
@@ -8,6 +10,7 @@ namespace GuvenOn.Core;
 /// </summary>
 public static class Autostart
 {
+#if WINDOWS
     private const string RunKey = @"Software\Microsoft\Windows\CurrentVersion\Run";
     private const string ValueName = "GuvenOn";
 
@@ -130,4 +133,23 @@ public static class Autostart
             .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
             .Any(argument => string.Equals(argument, "--tray", StringComparison.OrdinalIgnoreCase));
     }
+#else
+    // The Linux build uses systemd, not the Windows Run key. These stubs keep
+    // the shared assembly free of Windows-only registry dependencies.
+    public static string Command => string.Empty;
+
+    public static bool IsEnabled() => false;
+
+    public static bool Enable() => false;
+
+    public static void Disable()
+    {
+    }
+
+    public static void Sync(bool enabled)
+    {
+    }
+
+    public static bool IsLaunchCommand(string? command) => false;
+#endif
 }

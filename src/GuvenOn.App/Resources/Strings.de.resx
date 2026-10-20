@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -65,6 +65,22 @@
 
   <data name="StatusServiceRunning" xml:space="preserve"><value>Dienst läuft</value></data>
   <data name="StatusPreviewDetail" xml:space="preserve"><value>Diese Vorschauversion filtert noch keinen Datenverkehr.</value></data>
+  <data name="StatusReadyDetail" xml:space="preserve"><value>Dienst läuft. Aktiviere unten den Schutz für DNS- und lokale Netzwerkabsicherung.</value></data>
+  <data name="Protection" xml:space="preserve"><value>Schutz</value></data>
+  <data name="ProtectionOff" xml:space="preserve"><value>Schutz ist aus</value></data>
+  <data name="ProtectionOffDetail" xml:space="preserve"><value>Aktiviere ihn in unsicheren WLANs. DNS wird auf vertrauenswürdige Resolver festgelegt und das lokale Netzwerk isoliert.</value></data>
+  <data name="ProtectionOn" xml:space="preserve"><value>Schutz ist aktiv</value></data>
+  <data name="ProtectionOnDetail" xml:space="preserve"><value>DNS ist auf vertrauenswürdige Resolver festgelegt. Lokales Netzwerk, Legacy-Erkennung und normales DNS außerhalb der vertrauenswürdigen Server werden blockiert.</value></data>
+  <data name="ProtectionPaused" xml:space="preserve"><value>Schutz pausiert</value></data>
+  <data name="ProtectionPausedDetail" xml:space="preserve"><value>Nutze das Captive Portal. Der Schutz wird automatisch um {0} fortgesetzt.</value></data>
+  <data name="ProtectionError" xml:space="preserve"><value>Schutz konnte nicht gestartet werden</value></data>
+  <data name="ProtectionUnavailable" xml:space="preserve"><value>Dienst nicht verfügbar</value></data>
+  <data name="ProtectionUnavailableDetail" xml:space="preserve"><value>Starte den Guven-ON-Dienst, um den Schutz zu steuern.</value></data>
+  <data name="ProtectionEnable" xml:space="preserve"><value>Schutz einschalten</value></data>
+  <data name="ProtectionDisable" xml:space="preserve"><value>Schutz ausschalten</value></data>
+  <data name="ProtectionPause" xml:space="preserve"><value>10 Min. pausieren</value></data>
+  <data name="ProtectionBusy" xml:space="preserve"><value>Wird ausgeführt...</value></data>
+  <data name="ProtectionFailed" xml:space="preserve"><value>Schutz konnte nicht geändert werden: {0}</value></data>
   <data name="StatusServiceStopped" xml:space="preserve"><value>Dienst angehalten</value></data>
   <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Der Schutz ist derzeit nicht aktiv.</value></data>
   <data name="StatusServiceMissing" xml:space="preserve"><value>Dienst nicht installiert</value></data>

@@ -65,6 +65,22 @@
 
   <data name="StatusServiceRunning" xml:space="preserve"><value>Service running</value></data>
   <data name="StatusPreviewDetail" xml:space="preserve"><value>This preview build does not filter traffic yet.</value></data>
+  <data name="StatusReadyDetail" xml:space="preserve"><value>Service running. Use Protection below to enable the DNS and local-network guards.</value></data>
+  <data name="Protection" xml:space="preserve"><value>Protection</value></data>
+  <data name="ProtectionOff" xml:space="preserve"><value>Protection is off</value></data>
+  <data name="ProtectionOffDetail" xml:space="preserve"><value>Turn it on on untrusted Wi-Fi. DNS is locked to trusted resolvers and the local network is isolated.</value></data>
+  <data name="ProtectionOn" xml:space="preserve"><value>Protection is active</value></data>
+  <data name="ProtectionOnDetail" xml:space="preserve"><value>DNS is locked to trusted resolvers. Local network, legacy discovery and plain DNS outside the trusted set are blocked.</value></data>
+  <data name="ProtectionPaused" xml:space="preserve"><value>Protection is paused</value></data>
+  <data name="ProtectionPausedDetail" xml:space="preserve"><value>Use the captive portal. Protection resumes automatically at {0}.</value></data>
+  <data name="ProtectionError" xml:space="preserve"><value>Protection could not start</value></data>
+  <data name="ProtectionUnavailable" xml:space="preserve"><value>Service unavailable</value></data>
+  <data name="ProtectionUnavailableDetail" xml:space="preserve"><value>Start the Guven-ON service to control protection.</value></data>
+  <data name="ProtectionEnable" xml:space="preserve"><value>Turn on protection</value></data>
+  <data name="ProtectionDisable" xml:space="preserve"><value>Turn off protection</value></data>
+  <data name="ProtectionPause" xml:space="preserve"><value>Pause 10 min</value></data>
+  <data name="ProtectionBusy" xml:space="preserve"><value>Working...</value></data>
+  <data name="ProtectionFailed" xml:space="preserve"><value>Could not change protection: {0}</value></data>
   <data name="StatusServiceStopped" xml:space="preserve"><value>Service stopped</value></data>
   <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Protection is currently off.</value></data>
   <data name="StatusServiceMissing" xml:space="preserve"><value>Service not installed</value></data>

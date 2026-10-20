@@ -1,0 +1,13 @@
+Package: guvenon
+Version: __VERSION__
+Section: net
+Priority: optional
+Architecture: __ARCH__
+Depends: nftables, systemd, libc6, libstdc++6, libgcc-s1
+Recommends: systemd-resolved
+Maintainer: GuvenOn <tutualican@users.noreply.github.com>
+Homepage: https://github.com/tutualican/guvenon
+Description: DNS and local-network protection for untrusted networks
+ Guven-ON applies an nftables guard that keeps DNS on trusted resolvers,
+ blocks local-network exposure, and can be paused for captive portals.
+ This is the Linux alpha command-line package.

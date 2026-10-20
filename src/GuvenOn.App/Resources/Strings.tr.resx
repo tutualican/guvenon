@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -65,6 +65,22 @@
 
   <data name="StatusServiceRunning" xml:space="preserve"><value>Servis çalışıyor</value></data>
   <data name="StatusPreviewDetail" xml:space="preserve"><value>Bu önizleme sürümü henüz trafiği filtrelemiyor.</value></data>
+  <data name="StatusReadyDetail" xml:space="preserve"><value>Servis çalışıyor. DNS ve yerel ağ korumasını açmak için aşağıdaki Koruma bölümünü kullanın.</value></data>
+  <data name="Protection" xml:space="preserve"><value>Koruma</value></data>
+  <data name="ProtectionOff" xml:space="preserve"><value>Koruma kapalı</value></data>
+  <data name="ProtectionOffDetail" xml:space="preserve"><value>Güvenilmeyen Wi-Fi ağlarında açın. DNS güvenilir çözümleyicilere kilitlenir ve yerel ağ izole edilir.</value></data>
+  <data name="ProtectionOn" xml:space="preserve"><value>Koruma etkin</value></data>
+  <data name="ProtectionOnDetail" xml:space="preserve"><value>DNS güvenilir çözümleyicilere kilitli. Yerel ağ, eski keşif protokolleri ve güvenilir sunucular dışındaki düz DNS engellenir.</value></data>
+  <data name="ProtectionPaused" xml:space="preserve"><value>Koruma duraklatıldı</value></data>
+  <data name="ProtectionPausedDetail" xml:space="preserve"><value>Captive portalı kullanın. Koruma saat {0}'da otomatik olarak yeniden başlar.</value></data>
+  <data name="ProtectionError" xml:space="preserve"><value>Koruma başlatılamadı</value></data>
+  <data name="ProtectionUnavailable" xml:space="preserve"><value>Servis kullanılamıyor</value></data>
+  <data name="ProtectionUnavailableDetail" xml:space="preserve"><value>Korumayı denetlemek için Guven-ON servisini başlatın.</value></data>
+  <data name="ProtectionEnable" xml:space="preserve"><value>Korumayı aç</value></data>
+  <data name="ProtectionDisable" xml:space="preserve"><value>Korumayı kapat</value></data>
+  <data name="ProtectionPause" xml:space="preserve"><value>10 dk duraklat</value></data>
+  <data name="ProtectionBusy" xml:space="preserve"><value>İşleniyor...</value></data>
+  <data name="ProtectionFailed" xml:space="preserve"><value>Koruma değiştirilemedi: {0}</value></data>
   <data name="StatusServiceStopped" xml:space="preserve"><value>Servis durdu</value></data>
   <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Koruma şu anda etkin değil.</value></data>
   <data name="StatusServiceMissing" xml:space="preserve"><value>Servis kurulu değil</value></data>

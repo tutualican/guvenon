@@ -8,7 +8,7 @@ public static class AppInfo
     public const string ServiceName = "GuvenOnSvc";
     public const string ServiceDisplayName = "Guven-ON Protection Service";
     public const string ServiceDescription =
-        "Monitors network conditions for Guven-ON. Enforcement is not enabled in this preview.";
+        "Applies Guven-ON trusted DNS and local-network protection when the user enables it.";
     public const string DefaultChannel = "stable";
 
     // Update checks do not use the GitHub API, so no token is needed.

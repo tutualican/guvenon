@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+systemctl daemon-reload || true
+
+if [ "$1" = "remove" ] || [ "$1" = "purge" ]; then
+    # Runtime protection state must not survive a package removal, otherwise
+    # a later reinstall would start with protection enabled unexpectedly.
+    rm -rf /var/lib/guvenon
+fi
+
+rm -rf /run/guvenon
+
+exit 0

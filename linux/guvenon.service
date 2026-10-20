@@ -1,0 +1,29 @@
+[Unit]
+Description=Guven-ON protection service
+Documentation=https://github.com/tutualican/guvenon
+After=network-online.target systemd-resolved.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/lib/guvenon/guvenon-linuxd --daemon
+Restart=on-failure
+RestartSec=2s
+StateDirectory=guvenon
+StateDirectoryMode=0700
+RuntimeDirectory=guvenon
+RuntimeDirectoryMode=0750
+UMask=0077
+
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_NET_RAW
+AmbientCapabilities=CAP_NET_ADMIN CAP_NET_RAW
+NoNewPrivileges=yes
+ProtectSystem=full
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelTunables=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+
+[Install]
+WantedBy=multi-user.target

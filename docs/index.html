@@ -5,20 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f6f3ea">
   <meta name="color-scheme" content="light">
-  <title>Guven-ON — Privacy that just works on Windows</title>
-  <meta name="description" content="Guven-ON is designed to block DNS leaks and local-network exposure on untrusted Wi-Fi, stays quiet in the background, and speaks English, German and Turkish.">
+  <title>Guven-ON — Privacy that just works</title>
+  <meta name="description" content="Guven-ON adds opt-in DNS and local-network enforcement for untrusted Wi-Fi on Windows and Linux, stays quiet in the background, and speaks English, German and Turkish.">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Guven-ON">
   <meta property="og:url" content="https://tutualican.github.io/guvenon/">
   <meta property="og:title" content="Guven-ON — Privacy that just works">
-  <meta property="og:description" content="Quiet protection for untrusted networks. Windows 11 preview.">
+  <meta property="og:description" content="Opt-in DNS and local-network protection for untrusted networks. Windows 11 and Linux alpha preview.">
   <meta property="og:image" content="https://tutualican.github.io/guvenon/assets/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Guven-ON shield icon on a warm cream background">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Guven-ON — Privacy that just works">
-  <meta name="twitter:description" content="Quiet protection for untrusted networks. Windows 11 preview.">
+  <meta name="twitter:description" content="Opt-in DNS and local-network protection for untrusted networks. Windows 11 and Linux alpha preview.">
   <meta name="twitter:image" content="https://tutualican.github.io/guvenon/assets/og.png">
   <meta name="twitter:image:alt" content="Guven-ON shield icon on a warm cream background">
   <link rel="canonical" href="https://tutualican.github.io/guvenon/">
@@ -31,9 +31,9 @@
       "@type": "SoftwareApplication",
       "name": "Guven-ON",
       "applicationCategory": "SecurityApplication",
-      "operatingSystem": "Windows 11",
-      "softwareVersion": "0.1.2",
-      "description": "A Windows 11 preview designed to block DNS leaks and local-network exposure on untrusted Wi-Fi.",
+      "operatingSystem": "Windows 11, Linux",
+      "softwareVersion": "0.2.0",
+      "description": "An opt-in preview that blocks DNS leaks and local-network exposure on untrusted Wi-Fi using WFP on Windows and nftables on Linux.",
       "url": "https://tutualican.github.io/guvenon/",
       "downloadUrl": "https://github.com/tutualican/guvenon/releases/latest",
       "license": "https://www.apache.org/licenses/LICENSE-2.0",
@@ -85,7 +85,7 @@
         <div class="hero-copy">
           <p class="eyebrow hero-enter">
             <span class="live-dot"></span>
-            <span data-i18n="heroBadge">Windows 11 · Preview</span>
+            <span data-i18n="heroBadge">Windows 11 · Linux alpha · Preview</span>
           </p>
           <h1 class="hero-enter delay-1">
             <span data-i18n="heroTitle1">Privacy that</span><br>
@@ -105,7 +105,7 @@
             <a class="btn btn-quiet" href="#how" data-i18n="heroHow">See how it works</a>
           </div>
           <p class="micro hero-enter delay-4" data-i18n="heroMicro">
-            Preview build · filtering not enabled yet · Windows 11 22H2+ · x64
+            Preview build · opt-in protection · Windows 11 22H2+ · Linux .deb alpha
           </p>
         </div>
 
@@ -131,8 +131,8 @@
               <div class="status-card">
                 <span class="pulse-dot"></span>
                 <div class="status-text">
-                  <strong data-i18n="mockStatus">Preview ready</strong>
-                  <small data-i18n="mockStatusSub">Service and tray installed · filtering comes next</small>
+                  <strong data-i18n="mockStatus">Protection ready</strong>
+                  <small data-i18n="mockStatusSub">Service, tray and opt-in enforcement installed</small>
                 </div>
               </div>
 
@@ -151,7 +151,7 @@
 
               <div class="mini-row">
                 <span class="chip chip-green"><span class="chip-dot"></span><span data-i18n="mockDns">DNS policy</span></span>
-                <span class="chip"><span class="chip-dot"></span><span data-i18n="mockLan">LAN allowlist</span></span>
+                <span class="chip"><span class="chip-dot"></span><span data-i18n="mockLan">LAN isolation</span></span>
               </div>
 
               <div class="mini-row update-row">
@@ -165,7 +165,7 @@
           </div>
 
           <span class="float-chip chip-a"><span class="chip-dot"></span><span data-i18n="mockDns">DNS policy</span></span>
-          <span class="float-chip chip-b"><span class="chip-dot"></span><span data-i18n="mockLan">LAN allowlist</span></span>
+          <span class="float-chip chip-b"><span class="chip-dot"></span><span data-i18n="mockLan">LAN isolation</span></span>
         </div>
       </div>
     </section>
@@ -191,8 +191,9 @@
           </span>
           <h3 data-i18n="why1Title">DNS leaks, closed.</h3>
           <p data-i18n="why1Body">
-            When you join untrusted Wi-Fi, Guven-ON is designed to keep DNS on the encrypted path and
-            block queries that try to escape. No silent leaks to the café router.
+            When you enable protection on untrusted Wi-Fi, Guven-ON points the system at Cloudflare and
+            Quad9, permits DNS only to those resolvers, and blocks plain DNS and DNS-over-TLS to
+            everything else. No silent leaks to the cafe router.
           </p>
         </article>
 
@@ -204,10 +205,11 @@
               <path d="M7 9.5h4M7 12h2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
             </svg>
           </span>
-          <h3 data-i18n="why2Title">Your printer still works.</h3>
+          <h3 data-i18n="why2Title">Local exposure, contained.</h3>
           <p data-i18n="why2Body">
-            Local devices are not the enemy. A clear LAN allowlist is designed to keep printers, NAS
-            boxes and casting working while untrusted peers stay out.
+            Protection isolates private IPv4 ranges, multicast and legacy discovery. A printer or
+            captive portal can be reached through the ten-minute pause; a configurable LAN allowlist
+            is on the roadmap.
           </p>
         </article>
 
@@ -219,8 +221,8 @@
           </span>
           <h3 data-i18n="why3Title">Quiet by design.</h3>
           <p data-i18n="why3Body">
-            DNS-only mode by default. No tunnel crypto, no keepalive, no packet capture, no per-query
-            logs. Enforcement will live in the Windows filter engine, where it costs almost nothing.
+            Protection is off until you turn it on, and the guards live in the platform filter engine.
+            No tunnel crypto, no keepalive, no packet capture, no per-query logs.
           </p>
         </article>
       </div>
@@ -240,21 +242,22 @@
         <div class="step reveal" style="--d: 0ms">
           <span class="step-num">01</span>
           <h3 data-i18n="step1Title">Join a network</h3>
-          <p data-i18n="step1Body">Guven-ON notices the profile. Home and work networks stay untouched.</p>
+          <p data-i18n="step1Body">Join the untrusted Wi-Fi, then turn on protection from the tray. Home networks stay untouched until you choose to enable it.</p>
         </div>
         <div class="step reveal" style="--d: 110ms">
           <span class="step-num">02</span>
           <h3 data-i18n="step2Title">Protection kicks in</h3>
           <p data-i18n="step2Body">
-            In the enforcement build, DNS and local traffic are pinned down before the first query
+            Trusted DNS, the DNS guard and local-network isolation are applied before the next query
             leaves your laptop.
           </p>
         </div>
         <div class="step reveal" style="--d: 220ms">
           <span class="step-num">03</span>
-          <h3 data-i18n="step3Title">You keep working</h3>
+          <h3 data-i18n="step3Title">You stay in control</h3>
           <p data-i18n="step3Body">
-            Captive portals, printers and video calls keep working. A panic reset is always one click away.
+            Use the ten-minute pause for a captive portal or a printer. Panic turns everything off and
+            restores DNS immediately.
           </p>
         </div>
       </div>
@@ -330,8 +333,8 @@
 
       <div class="faq-list">
         <details class="faq-item reveal">
-          <summary><span data-i18n="faq0Q">Does the preview protect me yet?</span><span class="plus" aria-hidden="true"></span></summary>
-          <div class="faq-a"><p data-i18n="faq0A">No. The preview installs the service and tray UI, but it does not filter DNS or local traffic yet. Do not rely on it as a security control. Enforcement is the next milestone.</p></div>
+          <summary><span data-i18n="faq0Q">What does the preview enforce?</span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p data-i18n="faq0A">On Windows, enabling protection applies dynamic WFP filters and points active adapters at Cloudflare and Quad9: DNS and DoT to other resolvers, private LAN ranges, multicast and legacy discovery are blocked. On Linux the same policy is compiled to nftables. This is alpha: DoH on port 443, some IPv6 traffic, VPN split tunneling, local printers and automatic trust profiles are not covered yet. Protection is off until you enable it.</p></div>
         </details>
         <details class="faq-item reveal">
           <summary><span data-i18n="faq1Q">Does it slow down my connection?</span><span class="plus" aria-hidden="true"></span></summary>
@@ -339,19 +342,19 @@
         </details>
         <details class="faq-item reveal">
           <summary><span data-i18n="faq2Q">Will it break my printer, NAS or Chromecast?</span><span class="plus" aria-hidden="true"></span></summary>
-          <div class="faq-a"><p data-i18n="faq2A">No. Local-network access is controlled by an allowlist, not switched off blindly. Captive portals are detected and handled before enforcement kicks in.</p></div>
+          <div class="faq-a"><p data-i18n="faq2A">While protection is on, private LAN ranges and legacy discovery are isolated, so a printer or casting device may be unreachable. Use the ten-minute pause for local devices or a captive portal. A LAN allowlist is planned.</p></div>
         </details>
         <details class="faq-item reveal">
           <summary><span data-i18n="faq3Q">Is Guven-ON a VPN?</span><span class="plus" aria-hidden="true"></span></summary>
-          <div class="faq-a"><p data-i18n="faq3A">No. It is a leak blocker that works with the Windows filtering platform. It does not route your traffic through a remote server, and it does not need an account.</p></div>
+          <div class="faq-a"><p data-i18n="faq3A">No. It is a local leak blocker built on the Windows Filtering Platform and nftables on Linux. It does not route your traffic through a remote server, and it does not need an account.</p></div>
         </details>
         <details class="faq-item reveal">
           <summary><span data-i18n="faq4Q">Do you log my DNS queries?</span><span class="plus" aria-hidden="true"></span></summary>
           <div class="faq-a"><p data-i18n="faq4A">No. The service keeps aggregate state and counters for the UI. Query names are not written to disk.</p></div>
         </details>
         <details class="faq-item reveal">
-          <summary><span data-i18n="faq5Q">Which Windows versions are supported?</span><span class="plus" aria-hidden="true"></span></summary>
-          <div class="faq-a"><p data-i18n="faq5A">Windows 11 22H2 or later, x64, is the first target. Windows 10 support is planned after the Windows 11 release.</p></div>
+          <summary><span data-i18n="faq5Q">Which platforms are supported?</span><span class="plus" aria-hidden="true"></span></summary>
+          <div class="faq-a"><p data-i18n="faq5A">Windows 11 22H2 or later, x64, and a Linux alpha .deb for x64 using systemd-resolved and nftables. Windows arm64 and Linux arm64 packages are planned.</p></div>
         </details>
         <details class="faq-item reveal">
           <summary><span data-i18n="faq6Q">Why might SmartScreen warn me?</span><span class="plus" aria-hidden="true"></span></summary>
@@ -366,8 +369,8 @@
         <span class="cta-orbit" aria-hidden="true"></span>
         <h2 data-i18n="ctaTitle">Take your privacy back.</h2>
         <p class="section-sub" data-i18n="ctaBody">
-          Install once. Guven-ON starts with Windows, stays out of the way, and is built for the
-          networks you don't control.
+          Install once. Guven-ON starts with Windows or the Linux service, stays out of the way, and
+          is built for the networks you don't control.
         </p>
         <a class="btn btn-primary btn-large" href="https://github.com/tutualican/guvenon/releases/latest" target="_blank" rel="noopener" data-download>
           <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -375,10 +378,13 @@
           </svg>
           <span data-i18n="ctaDownload">Download Guven-ON</span>
         </a>
-        <p class="micro" data-i18n="ctaMicro">Windows 11 22H2+ · x64 · Preview build</p>
+        <p class="micro" data-i18n="ctaMicro">Windows 11 22H2+ · x64 · Linux .deb alpha · Preview build</p>
         <p class="download-note" data-i18n="downloadNote">
           Preview builds are unsigned until code signing is set up. Check the release notes and SHA-256
           before running.
+        </p>
+        <p class="download-note" data-i18n="linuxNote">
+          Linux alpha: install the .deb from the same release, then run sudo guvenonctl enable.
         </p>
       </div>
     </section>

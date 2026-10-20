@@ -1,0 +1,37 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.10.0.schema.json
+PackageIdentifier: Tutualican.GuvenOn
+PackageVersion: 0.2.0
+PackageLocale: en-US
+Publisher: GuvenOn
+PublisherUrl: https://github.com/tutualican/guvenon
+PublisherSupportUrl: https://github.com/tutualican/guvenon/issues
+PrivacyUrl: https://tutualican.github.io/guvenon/#privacy
+Author: GuvenOn
+PackageName: Guven-ON
+PackageUrl: https://tutualican.github.io/guvenon/
+License: Apache-2.0
+LicenseUrl: https://github.com/tutualican/guvenon/blob/main/LICENSE
+Copyright: Copyright (c) 2026 GuvenOn
+CopyrightUrl: https://github.com/tutualican/guvenon/blob/main/LICENSE
+ShortDescription: Opt-in DNS and LAN protection for untrusted Wi-Fi on Windows 11.
+Description: >-
+  Guven-ON is a Windows 11 security tool that blocks DNS leaks and local-network
+  exposure on untrusted Wi-Fi. It installs a LocalSystem service and a calm tray
+  app, follows the Windows display language, and offers English, German and
+  Turkish. Protection is off until you enable it. This preview applies dynamic
+  WFP filters and trusted DNS on active adapters; it is unsigned and still
+  missing automatic trust profiles, a LAN allowlist, DoH blocking and fail-closed
+  behavior after a service crash.
+Tags:
+  - dns
+  - privacy
+  - security
+  - wifi
+  - windows
+ReleaseNotesUrl: https://github.com/tutualican/guvenon/releases/tag/v0.2.0
+InstallationNotes: >-
+  Preview build. Protection is opt-in and the installer is unsigned. Verify the
+  SHA-256 published with the release before running it. Windows 11 22H2 or later,
+  x64. Re-enable protection after a reboot; it is session-scoped in this build.
+ManifestType: defaultLocale
+ManifestVersion: 1.10.0
