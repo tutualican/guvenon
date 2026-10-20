@@ -102,8 +102,11 @@ public sealed class ProtectionManager : IDisposable
     {
         lock (_gate)
         {
-            var cleanupError = StopEngine();
+            // Persist the user's intent before removing filters. If the service
+            // crashes during teardown, the next start sees "disabled" and
+            // finishes the cleanup instead of unexpectedly re-enabling.
             var stateError = SaveState(new WindowsProtectionState(false, null, null));
+            var cleanupError = StopEngine();
             _status = ProtectionStatus.Off with
             {
                 LastError = Combine(cleanupError, stateError)
@@ -117,10 +120,19 @@ public sealed class ProtectionManager : IDisposable
         lock (_gate)
         {
             var duration = TimeSpan.FromMinutes(Math.Clamp(minutes, 1, 120));
-            var cleanupError = StopEngine();
-
             var until = DateTimeOffset.UtcNow.Add(duration);
             var stateError = SaveState(new WindowsProtectionState(true, until, null));
+
+            // Do not tear down the guard if the pause deadline could not be
+            // persisted; otherwise a crash could turn a temporary pause into a
+            // permanent one, or an unintended re-enable after restart.
+            if (stateError is not null)
+            {
+                _status = _status with { LastError = stateError };
+                return _status;
+            }
+
+            var cleanupError = StopEngine();
             _status = new ProtectionStatus(
                 Enabled: true,
                 EngineActive: false,
@@ -176,6 +188,19 @@ public sealed class ProtectionManager : IDisposable
         _resumeTimer?.Dispose();
         _resumeTimer = null;
 
+        var now = DateTimeOffset.UtcNow;
+        var since = activeSince ?? now;
+
+        // Persist "enabled" before touching WFP or DNS. If the service crashes
+        // half-way through Apply, startup will see the user's intent and
+        // re-apply instead of cleaning up a possibly partial guard.
+        var stateError = SaveState(new WindowsProtectionState(true, null, since));
+        if (stateError is not null)
+        {
+            _status = ProtectionStatus.Off with { LastError = stateError };
+            return _status;
+        }
+
         try
         {
             // Assign before applying so the outer catch can clean up both
@@ -187,10 +212,6 @@ public sealed class ProtectionManager : IDisposable
             _engine.Apply();
             var changedAdapters = _dnsConfigurator.Apply(ProtectionPolicy.Default);
 
-            var now = DateTimeOffset.UtcNow;
-            var since = activeSince ?? now;
-            var stateError = SaveState(new WindowsProtectionState(true, null, since));
-
             _status = new ProtectionStatus(
                 Enabled: true,
                 EngineActive: true,
@@ -199,7 +220,7 @@ public sealed class ProtectionManager : IDisposable
                 ActiveSince: since,
                 PausedUntil: null,
                 FilterCount: _engine.FilterCount,
-                LastError: stateError);
+                LastError: null);
 
             _logger.LogInformation(
                 "Protection enabled with {FilterCount} persistent WFP filters and trusted DNS on {AdapterCount} adapters.",
@@ -209,11 +230,11 @@ public sealed class ProtectionManager : IDisposable
         catch (Exception exception)
         {
             var cleanupError = StopEngine();
-            var stateError = SaveState(new WindowsProtectionState(false, null, null));
+            var disableStateError = SaveState(new WindowsProtectionState(false, null, null));
             var message = Combine(
                 exception.Message,
                 cleanupError is null ? null : $"Cleanup: {cleanupError}",
-                stateError);
+                disableStateError);
 
             _status = new ProtectionStatus(
                 Enabled: false,
