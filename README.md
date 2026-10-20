@@ -13,20 +13,25 @@ user interface is available in English, German and Turkish.
 > **Status: early preview with opt-in enforcement.** The tray app, Windows
 > service, WFP filters, trusted-DNS setup, installer, update check and website
 > are in place. Protection is **off until you enable it**. On Windows the guards
-> are dynamic WFP filters plus adapter DNS changes; on Linux they are an
+> are persistent WFP filters plus adapter DNS changes; on Linux they are an
 > nftables table plus systemd-resolved configuration. Still missing: automatic
 > trust profiles, a LAN allowlist, automatic captive-portal detection,
-> DNS-over-HTTPS blocking, full IPv6 isolation and fail-closed behavior after a
-> Windows service crash. Preview builds are unsigned.
+> DNS-over-HTTPS blocking, full IPv6 isolation and a documented leak matrix for
+> crash/reboot/sleep-wake recovery. Preview builds are unsigned.
+>
+> **Main-branch note:** persistent WFP filters and service-state restore landed
+> after the published 0.2.0 artifact. The 0.2.0 installer still uses the older
+> dynamic WFP session.
 
 ## What works today
 
 - WPF tray app (`guvenon.exe`) with a calm, Apple-inspired interface.
 - Windows service (`guvenonsvc.exe`, `GuvenOnSvc`) with automatic recovery.
-- Opt-in Windows enforcement: dynamic WFP session, trusted DNS on active
+- Opt-in Windows enforcement: persistent WFP filters, trusted DNS on active
   adapters (Cloudflare and Quad9), plain DNS/DoT blocking, private IPv4 and ULA
-  isolation, legacy discovery blocking, loopback/DHCP permits, and a
-  ten-minute captive-portal pause with automatic resume.
+  isolation, legacy discovery blocking, loopback/DHCP permits, service-state
+  restore after a crash, and a ten-minute captive-portal pause with automatic
+  resume.
 - Linux alpha daemon (`guvenon-linuxd`) and `guvenonctl` CLI with an nftables
   `inet guvenon` table, systemd-resolved DNS configuration, state persistence,
   pause/resume and package cleanup.
@@ -115,6 +120,10 @@ Service installation is intentionally kept out of the app:
 # elevated prompt
 .\artifacts\publish\svc\guvenonsvc.exe --install
 .\artifacts\publish\svc\guvenonsvc.exe --uninstall
+
+# recovery after a manually removed or crashed service
+.\artifacts\publish\svc\guvenonsvc.exe --wfp-cleanup
+.\artifacts\publish\svc\guvenonsvc.exe --restore-network
 ```
 
 ## Linux alpha
@@ -260,13 +269,19 @@ the light details inside the shield.
 - The Windows control pipe currently accepts any authenticated local user, so
   another signed-in user on a shared machine could toggle protection. Restricting
   it to the interactive user is future hardening.
-- Windows filters use a dynamic WFP session, so a service crash removes the
-  filters instead of locking the machine out. That means a crash fails open;
-  persistent filters with a verified cleanup path are still a release blocker.
+- Windows filters are persistent WFP objects owned by the service. A service
+  crash leaves them installed, so DNS and LAN traffic stay blocked while the
+  service restarts; startup reads `%ProgramData%\GuvenOn\service-state.json` and
+  either re-applies the policy or removes stale objects. A clean stop removes the
+  filters and restores DNS, and the next service start re-applies an enabled
+  policy.
+- WFP replacement and removal run in a transaction. Uninstall removes persistent
+  filters even when the service was already stopped or had crashed.
 - DNS changes are snapshotted under `%ProgramData%\GuvenOn` and restored on
   disable, pause, clean uninstall and the next service start after a crash.
-- Windows protection is session-scoped in 0.2.0. A reboot or service restart
-  leaves protection off until the tray app enables it again.
+- The published 0.2.0 installer predates the persistent-filter and state-restore
+  work. A full reboot, sleep/wake and service-crash leak matrix on a physical
+  Windows 11 test host is still pending.
 - The Linux daemon runs as root, restricts its control socket to root, and
   leaves the nftables table in place if the daemon crashes. Package removal
   runs `--cleanup` before files are deleted.
@@ -283,8 +298,8 @@ the light details inside the shield.
 The detailed, research-backed backlog lives in [ROADMAP.md](ROADMAP.md).
 
 1. Finish the Windows guard: trust-aware profiles, LAN allowlist, automatic
-   captive-portal detection, DoH handling, full IPv6 isolation, persistent
-   fail-closed filters with a verified panic cleanup, and self-test.
+   captive-portal detection, DoH handling, full IPv6 isolation, leak-matrix
+   verification of persistent-filter crash recovery, and self-test.
 2. Linux follow-up: PolicyKit/D-Bus, NetworkManager integration, arm64 packages
    and a small tray UI.
 3. WireGuard, split tunneling, per-app rules, visibility and threat alerts.

@@ -10,6 +10,7 @@ public static class AppPaths
 
     public static string Logs => Path.Combine(ProgramData, "logs");
     public static string ServiceSettings => Path.Combine(ProgramData, "service.json");
+    public static string ServiceState => Path.Combine(ProgramData, "service-state.json");
     public static string UserSettings => Path.Combine(UserData, "settings.json");
     public static string UpdatesCache => Path.Combine(ProgramData, "updates");
 

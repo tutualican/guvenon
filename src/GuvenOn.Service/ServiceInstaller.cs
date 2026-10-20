@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Security.Principal;
 using System.ServiceProcess;
 using GuvenOn.Core;
+using GuvenOn.Service.Protection;
 
 namespace GuvenOn.Service;
 
@@ -109,13 +110,23 @@ internal static class ServiceInstaller
 
         if (!ServiceExists())
         {
-            return 0;
+            return CleanupPersistentWfp();
         }
 
         var stopped = StopAndWait(StopTimeout);
         if (stopped != 0)
         {
             return stopped;
+        }
+
+        // A crashed service leaves its persistent WFP filters installed. Remove
+        // them after the service has stopped and before deleting the state
+        // directory, otherwise they would keep blocking traffic with no owner
+        // left to clean them up.
+        var cleanup = CleanupPersistentWfp();
+        if (cleanup != 0)
+        {
+            return cleanup;
         }
 
         // A service removed while one of its handles is still open is marked
@@ -137,6 +148,25 @@ internal static class ServiceInstaller
         }
 
         return ServiceMarkedForDeletion;
+    }
+
+    private static int CleanupPersistentWfp()
+    {
+        try
+        {
+            var removed = WfpProtectionEngine.CleanupPersistent();
+            if (removed > 0)
+            {
+                Console.WriteLine($"Removed {removed} persistent WFP filters.");
+            }
+
+            return 0;
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"Persistent WFP cleanup failed: {exception.Message}");
+            return 1;
+        }
     }
 
     private static int StopAndWait(TimeSpan timeout)

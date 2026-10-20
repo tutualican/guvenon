@@ -18,4 +18,8 @@
     <ProjectReference Include="..\GuvenOn.Core\GuvenOn.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="GuvenOn.Tests" />
+  </ItemGroup>
+
 </Project>

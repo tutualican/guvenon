@@ -2,25 +2,37 @@ using System.ComponentModel;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
+using System.Text;
+using GuvenOn.Core;
 using GuvenOn.Core.Protection;
 
 namespace GuvenOn.Service.Protection;
 
 /// <summary>
-/// Applies the protection policy with a dynamic WFP session. Dynamic objects are
-/// removed by Windows when the engine handle closes, so a service crash or a
-/// panic reset cannot leave permanent firewall rules behind.
+/// Applies the protection policy with persistent WFP objects. A service crash
+/// closes the WFP engine handle but leaves the filters installed, so DNS and
+/// local-network traffic stay blocked until the service either re-applies the
+/// policy or performs an explicit, verified cleanup.
 /// </summary>
 internal sealed class WfpProtectionEngine : IDisposable
 {
+    // Deleting unknown keys is expected during cleanup. The slot range is
+    // intentionally larger than the current ruleset so a future policy can add
+    // filters without leaving older persistent filters behind.
+    private const int MaxFilterSlots = 512;
+
+    private static readonly Guid ProviderKey = new("9a64e98b-7516-44f1-a405-f2b0e50ef871");
+    private static readonly Guid SubLayerKey = new("fc83f452-5294-4bf8-a790-41ace7391323");
+
     private const byte WeightPermit = 15;
     private const byte WeightBlock = 5;
     private const byte WeightLegacyBlock = 4;
 
     private readonly ProtectionPolicy _policy;
     private IntPtr _engine;
-    private Guid _providerKey;
-    private Guid _subLayerKey;
+    private int _nextFilterIndex;
+    private bool _applied;
     private bool _disposed;
 
     public WfpProtectionEngine(ProtectionPolicy policy)
@@ -33,6 +45,10 @@ internal sealed class WfpProtectionEngine : IDisposable
     public void Apply()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
+        if (_applied)
+        {
+            throw new InvalidOperationException("WFP protection is already applied.");
+        }
 
         var layoutErrors = WfpInterop.ValidateLayouts();
         if (layoutErrors.Count > 0)
@@ -41,8 +57,8 @@ internal sealed class WfpProtectionEngine : IDisposable
                 "WFP structure layout validation failed: " + string.Join("; ", layoutErrors));
         }
 
-        _providerKey = Guid.NewGuid();
-        _subLayerKey = Guid.NewGuid();
+        _nextFilterIndex = 0;
+        FilterCount = 0;
 
         var session = BuildSession(out var sessionName, out var sessionDescription);
         uint status;
@@ -63,6 +79,7 @@ internal sealed class WfpProtectionEngine : IDisposable
 
         if (status != 0)
         {
+            _engine = IntPtr.Zero;
             throw Failure("FwpmEngineOpen0", status);
         }
 
@@ -76,6 +93,11 @@ internal sealed class WfpProtectionEngine : IDisposable
             }
 
             transactionStarted = true;
+
+            // The transaction turns replacement into all-or-nothing: a failed
+            // update restores the previous persistent filters instead of
+            // briefly opening the network.
+            DeletePersistentObjects(_engine);
             AddProvider();
             AddSubLayer();
             AddFilters();
@@ -87,6 +109,7 @@ internal sealed class WfpProtectionEngine : IDisposable
             }
 
             transactionStarted = false;
+            _applied = true;
         }
         catch
         {
@@ -95,25 +118,134 @@ internal sealed class WfpProtectionEngine : IDisposable
                 _ = WfpInterop.FwpmTransactionAbort0(_engine);
             }
 
-            Dispose();
+            FilterCount = 0;
             throw;
         }
+        finally
+        {
+            CloseEngine();
+        }
+    }
+
+    /// <summary>
+    /// Removes every persistent object owned by this product. The operation is
+    /// transactional and safe to call when no objects exist.
+    /// </summary>
+    public static int CleanupPersistent()
+    {
+        var session = BuildSession(out var sessionName, out var sessionDescription);
+        IntPtr engine;
+        uint status;
+        try
+        {
+            status = WfpInterop.FwpmEngineOpen0(
+                null,
+                WfpInterop.RpcCAuthnWinnt,
+                IntPtr.Zero,
+                ref session,
+                out engine);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(sessionName);
+            Marshal.FreeHGlobal(sessionDescription);
+        }
+
+        if (status != 0)
+        {
+            throw Failure("FwpmEngineOpen0", status);
+        }
+
+        var transactionStarted = false;
+        try
+        {
+            status = WfpInterop.FwpmTransactionBegin0(engine, 0);
+            if (status != 0)
+            {
+                throw Failure("FwpmTransactionBegin0", status);
+            }
+
+            transactionStarted = true;
+            var deleted = DeletePersistentObjects(engine);
+
+            status = WfpInterop.FwpmTransactionCommit0(engine);
+            if (status != 0)
+            {
+                throw Failure("FwpmTransactionCommit0", status);
+            }
+
+            transactionStarted = false;
+            return deleted;
+        }
+        catch
+        {
+            if (transactionStarted)
+            {
+                _ = WfpInterop.FwpmTransactionAbort0(engine);
+            }
+
+            throw;
+        }
+        finally
+        {
+            _ = WfpInterop.FwpmEngineClose0(engine);
+        }
+    }
+
+    private static int DeletePersistentObjects(IntPtr engine)
+    {
+        var deleted = 0;
+
+        for (var index = 0; index < MaxFilterSlots; index++)
+        {
+            var key = FilterKey(index);
+            var status = WfpInterop.FwpmFilterDeleteByKey0(engine, key);
+            switch (status)
+            {
+                case 0:
+                    deleted++;
+                    break;
+                case WfpInterop.FwpEFilterNotFound:
+                    break;
+                default:
+                    throw Failure($"FwpmFilterDeleteByKey0 slot {index}", status);
+            }
+        }
+
+        var subLayerStatus = WfpInterop.FwpmSubLayerDeleteByKey0(engine, SubLayerKey);
+        if (subLayerStatus is not 0 and not WfpInterop.FwpESubLayerNotFound)
+        {
+            throw Failure("FwpmSubLayerDeleteByKey0", subLayerStatus);
+        }
+
+        var providerStatus = WfpInterop.FwpmProviderDeleteByKey0(engine, ProviderKey);
+        if (providerStatus is not 0 and not WfpInterop.FwpEProviderNotFound)
+        {
+            throw Failure("FwpmProviderDeleteByKey0", providerStatus);
+        }
+
+        return deleted;
     }
 
     private void AddProvider()
     {
         var name = AllocString("Guven-ON");
         var description = AllocString("Guven-ON protection provider");
+        var serviceName = AllocString(AppInfo.ServiceName);
         try
         {
             var provider = new WfpInterop.FwpmProvider
             {
-                ProviderKey = _providerKey,
+                ProviderKey = ProviderKey,
                 DisplayData = new WfpInterop.FwpmDisplayData
                 {
                     Name = name,
                     Description = description
-                }
+                },
+                Flags = WfpInterop.FwpmProviderFlagPersistent,
+                // BFE disables persistent filters at startup when the provider
+                // has no service name or the service is not set to auto-start.
+                ServiceName = serviceName
             };
 
             var status = WfpInterop.FwpmProviderAdd0(_engine, ref provider, IntPtr.Zero);
@@ -124,6 +256,7 @@ internal sealed class WfpProtectionEngine : IDisposable
         }
         finally
         {
+            Marshal.FreeHGlobal(serviceName);
             Marshal.FreeHGlobal(name);
             Marshal.FreeHGlobal(description);
         }
@@ -133,17 +266,18 @@ internal sealed class WfpProtectionEngine : IDisposable
     {
         var name = AllocString("Guven-ON filters");
         var description = AllocString("DNS and local-network protection");
-        var providerKey = AllocGuid(_providerKey);
+        var providerKey = AllocGuid(ProviderKey);
         try
         {
             var subLayer = new WfpInterop.FwpmSubLayer
             {
-                SubLayerKey = _subLayerKey,
+                SubLayerKey = SubLayerKey,
                 DisplayData = new WfpInterop.FwpmDisplayData
                 {
                     Name = name,
                     Description = description
                 },
+                Flags = WfpInterop.FwpmSubLayerFlagPersistent,
                 ProviderKey = providerKey,
                 Weight = ushort.MaxValue
             };
@@ -359,10 +493,25 @@ internal sealed class WfpProtectionEngine : IDisposable
 
     private void AddFilter(Guid layer, uint action, byte weight, string name, Action<FilterBuilder> configure)
     {
+        if (_nextFilterIndex >= MaxFilterSlots)
+        {
+            throw new InvalidOperationException(
+                $"The WFP ruleset exceeds the {MaxFilterSlots}-filter persistent cleanup budget.");
+        }
+
         using var builder = new FilterBuilder();
         configure(builder);
 
-        var filter = builder.Build(layer, _providerKey, _subLayerKey, action, weight, name);
+        var filterKey = FilterKey(_nextFilterIndex++);
+        var filter = builder.Build(
+            filterKey,
+            layer,
+            ProviderKey,
+            SubLayerKey,
+            action,
+            weight,
+            name);
+
         var status = WfpInterop.FwpmFilterAdd0(_engine, ref filter, IntPtr.Zero, out _);
         if (status != 0)
         {
@@ -372,10 +521,23 @@ internal sealed class WfpProtectionEngine : IDisposable
         FilterCount++;
     }
 
+    private static Guid FilterKey(int index)
+    {
+        if (index is < 0 or >= MaxFilterSlots)
+        {
+            throw new ArgumentOutOfRangeException(nameof(index));
+        }
+
+        Span<byte> hash = stackalloc byte[32];
+        var input = Encoding.UTF8.GetBytes($"guvenon/wfp/filter/{index}");
+        SHA256.HashData(input, hash);
+        return new Guid(hash[..16]);
+    }
+
     private static WfpInterop.FwpmSession BuildSession(out IntPtr name, out IntPtr description)
     {
         name = AllocString("Guven-ON");
-        description = AllocString("Guven-ON dynamic protection session");
+        description = AllocString("Guven-ON persistent protection session");
 
         return new WfpInterop.FwpmSession
         {
@@ -384,9 +546,18 @@ internal sealed class WfpProtectionEngine : IDisposable
                 Name = name,
                 Description = description
             },
-            Flags = WfpInterop.FwpmSessionFlagDynamic,
+            Flags = 0,
             TxnWaitTimeoutInMSec = WfpInterop.Infinite
         };
+    }
+
+    private void CloseEngine()
+    {
+        if (_engine != IntPtr.Zero)
+        {
+            _ = WfpInterop.FwpmEngineClose0(_engine);
+            _engine = IntPtr.Zero;
+        }
     }
 
     private static IntPtr AllocString(string value) => Marshal.StringToHGlobalUni(value);
@@ -409,12 +580,22 @@ internal sealed class WfpProtectionEngine : IDisposable
         }
 
         _disposed = true;
-        FilterCount = 0;
 
-        if (_engine != IntPtr.Zero)
+        if (!_applied)
         {
-            _ = WfpInterop.FwpmEngineClose0(_engine);
-            _engine = IntPtr.Zero;
+            CloseEngine();
+            return;
+        }
+
+        try
+        {
+            _ = CleanupPersistent();
+        }
+        finally
+        {
+            _applied = false;
+            FilterCount = 0;
+            CloseEngine();
         }
     }
 
@@ -506,6 +687,7 @@ internal sealed class WfpProtectionEngine : IDisposable
         }
 
         public WfpInterop.FwpmFilter Build(
+            Guid filterKey,
             Guid layer,
             Guid providerKey,
             Guid subLayerKey,
@@ -534,11 +716,13 @@ internal sealed class WfpProtectionEngine : IDisposable
 
             return new WfpInterop.FwpmFilter
             {
+                FilterKey = filterKey,
                 DisplayData = new WfpInterop.FwpmDisplayData
                 {
                     Name = namePointer,
                     Description = descriptionPointer
                 },
+                Flags = WfpInterop.FwpmFilterFlagPersistent,
                 ProviderKey = providerKeyPointer,
                 LayerKey = layer,
                 SubLayerKey = subLayerKey,

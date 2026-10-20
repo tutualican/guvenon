@@ -26,9 +26,12 @@ public sealed class ProtectionWorker : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation(
-            "{Product} service {Version} started. Protection is off until enabled.",
+            "{Product} service {Version} started. EngineActive={EngineActive}; Enabled={Enabled}; PausedUntil={PausedUntil}.",
             AppInfo.ProductName,
-            AppInfo.VersionString);
+            AppInfo.VersionString,
+            _manager.Status.EngineActive,
+            _manager.Status.Enabled,
+            _manager.Status.PausedUntil);
 
         using var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
 

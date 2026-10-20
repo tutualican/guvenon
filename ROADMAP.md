@@ -30,11 +30,11 @@ That means three things must be true before a release may call itself
 
 The preview releases so far built the delivery vehicle: tray app, service,
 installer, updates, localization, and site. The first opt-in protection engine
-now exists on both platforms: dynamic WFP filters plus adapter DNS on Windows,
+now exists on both platforms: persistent WFP filters plus adapter DNS on Windows,
 and an nftables table plus systemd-resolved DNS on Linux. It is deliberately
 manual and still missing the P0 items below: trust profiles, a LAN allowlist,
-automatic captive-portal detection, DoH handling, full IPv6 isolation and a
-Windows fail-closed path after a service crash.
+automatic captive-portal detection, DoH handling, full IPv6 isolation, and
+leak-matrix verification of the persistent-filter crash path.
 
 ## 2. What users consistently ask for
 
@@ -239,13 +239,17 @@ These are release blockers, not suggestions.
   handling, root-only control socket, CLI and `.deb` packaging.
 - Shared policy compiler, unit tests and CI nftables syntax validation.
 
+**On main after 0.2.0 (next preview build)**
+- Persistent WFP provider, sublayer and filters with deterministic keys.
+- Service-state restore and transactional cleanup after a crash, plus an
+  elevated `--wfp-cleanup` recovery switch and uninstall cleanup.
+
 **Still required before "real protection"**
 - Trust profiles and a new-network prompt.
 - LAN allowlist and automatic captive-portal detection.
 - IPv6 isolation and DoH handling.
-- Persistent fail-closed WFP filters with verified cleanup.
 - A documented leak matrix on Windows 11 and Ubuntu/Debian VMs, including
-  portal, IPv6, sleep/wake, service crash and uninstall.
+  portal, IPv6, sleep/wake, service crash, reboot and uninstall.
 
 ### 0.3 — Cross-platform + VPN
 
@@ -395,7 +399,8 @@ User-facing pain points and vendor behavior:
 6. Do not label a build "protected" until the leak matrix passes and the
    self-test can prove it.
 
-0.2.0 is no longer monitor-only: it applies real DNS and LAN rules. It still
-fails open after a Windows service crash and lacks profiles, an allowlist, DoH
-coverage and full IPv6 isolation, so it must remain labeled an opt-in preview
-until the leak matrix passes.
+0.2.0 is no longer monitor-only: it applies real DNS and LAN rules. The 0.2.0
+artifact still fails open after a Windows service crash; main now uses persistent
+WFP filters and state restore, but that path still needs leak-matrix verification.
+Profiles, an allowlist, DoH coverage and full IPv6 isolation remain missing, so
+the product must stay labeled an opt-in preview until the leak matrix passes.

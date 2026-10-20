@@ -11,18 +11,19 @@ namespace GuvenOn.Service.Protection;
 public sealed class ProtectionManager : IDisposable
 {
     private readonly ILogger<ProtectionManager> _logger;
+    private readonly ProtectionStateStore _stateStore = new();
     private readonly object _gate = new();
 
     private WfpProtectionEngine? _engine;
     private NetworkDnsConfigurator? _dnsConfigurator;
     private ProtectionStatus _status = ProtectionStatus.Off;
     private Timer? _resumeTimer;
+    private bool _started;
     private bool _disposed;
 
     public ProtectionManager(ILogger<ProtectionManager> logger)
     {
         _logger = logger;
-        NetworkDnsConfigurator.RestorePersisted(logger, out _);
     }
 
     public ProtectionStatus Status
@@ -33,6 +34,59 @@ public sealed class ProtectionManager : IDisposable
             {
                 return _status;
             }
+        }
+    }
+
+    /// <summary>
+    /// Restores the previous intent before the control pipe starts accepting
+    /// commands. An enabled state re-applies the policy; a disabled or paused
+    /// state verifies that a crash did not leave persistent filters behind.
+    /// </summary>
+    public void Start()
+    {
+        lock (_gate)
+        {
+            if (_started)
+            {
+                return;
+            }
+
+            _started = true;
+            var state = _stateStore.Load();
+
+            if (!state.Enabled)
+            {
+                var cleanupError = Combine(
+                    CleanupPersistentFilters(),
+                    RestoreDnsSnapshot());
+                _status = ProtectionStatus.Off with { LastError = cleanupError };
+                return;
+            }
+
+            if (state.PausedUntil is { } pausedUntil && pausedUntil > DateTimeOffset.UtcNow)
+            {
+                // A crash during pause can leave persistent WFP filters or a DNS
+                // marker behind. Clear both so a captive portal is not blocked.
+                var cleanupError = Combine(
+                    CleanupPersistentFilters(),
+                    RestoreDnsSnapshot());
+
+                _status = new ProtectionStatus(
+                    Enabled: true,
+                    EngineActive: false,
+                    DnsGuard: false,
+                    LanGuard: false,
+                    ActiveSince: null,
+                    PausedUntil: pausedUntil,
+                    FilterCount: 0,
+                    LastError: cleanupError);
+
+                ScheduleResume(pausedUntil);
+                _logger.LogInformation("Protection is paused until {Until}.", pausedUntil);
+                return;
+            }
+
+            _ = EnableLocked(state.AppliedAt);
         }
     }
 
@@ -49,9 +103,11 @@ public sealed class ProtectionManager : IDisposable
         lock (_gate)
         {
             var cleanupError = StopEngine();
-            _status = cleanupError is null
-                ? ProtectionStatus.Off
-                : ProtectionStatus.Off with { LastError = cleanupError };
+            var stateError = SaveState(new WindowsProtectionState(false, null, null));
+            _status = ProtectionStatus.Off with
+            {
+                LastError = Combine(cleanupError, stateError)
+            };
             return _status;
         }
     }
@@ -64,6 +120,7 @@ public sealed class ProtectionManager : IDisposable
             var cleanupError = StopEngine();
 
             var until = DateTimeOffset.UtcNow.Add(duration);
+            var stateError = SaveState(new WindowsProtectionState(true, until, null));
             _status = new ProtectionStatus(
                 Enabled: true,
                 EngineActive: false,
@@ -72,15 +129,9 @@ public sealed class ProtectionManager : IDisposable
                 ActiveSince: null,
                 PausedUntil: until,
                 FilterCount: 0,
-                LastError: cleanupError);
+                LastError: Combine(cleanupError, stateError));
 
-            _resumeTimer?.Dispose();
-            _resumeTimer = new Timer(
-                _ => ResumeFromPause(until),
-                state: null,
-                dueTime: duration,
-                period: Timeout.InfiniteTimeSpan);
-
+            ScheduleResume(until);
             _logger.LogInformation("Protection paused until {Until}.", until);
             return _status;
         }
@@ -100,7 +151,17 @@ public sealed class ProtectionManager : IDisposable
         }
     }
 
-    private ProtectionStatus EnableLocked()
+    private void ScheduleResume(DateTimeOffset until)
+    {
+        _resumeTimer?.Dispose();
+        _resumeTimer = new Timer(
+            _ => ResumeFromPause(until),
+            state: null,
+            dueTime: until - DateTimeOffset.UtcNow,
+            period: Timeout.InfiniteTimeSpan);
+    }
+
+    private ProtectionStatus EnableLocked(DateTimeOffset? activeSince = null)
     {
         if (_disposed)
         {
@@ -126,27 +187,33 @@ public sealed class ProtectionManager : IDisposable
             _engine.Apply();
             var changedAdapters = _dnsConfigurator.Apply(ProtectionPolicy.Default);
 
+            var now = DateTimeOffset.UtcNow;
+            var since = activeSince ?? now;
+            var stateError = SaveState(new WindowsProtectionState(true, null, since));
+
             _status = new ProtectionStatus(
                 Enabled: true,
                 EngineActive: true,
                 DnsGuard: true,
                 LanGuard: ProtectionPolicy.Default.BlockLan,
-                ActiveSince: DateTimeOffset.UtcNow,
+                ActiveSince: since,
                 PausedUntil: null,
                 FilterCount: _engine.FilterCount,
-                LastError: null);
+                LastError: stateError);
 
             _logger.LogInformation(
-                "Protection enabled with {FilterCount} WFP filters and trusted DNS on {AdapterCount} adapters.",
+                "Protection enabled with {FilterCount} persistent WFP filters and trusted DNS on {AdapterCount} adapters.",
                 _engine.FilterCount,
                 changedAdapters);
         }
         catch (Exception exception)
         {
             var cleanupError = StopEngine();
-            var message = cleanupError is null
-                ? exception.Message
-                : $"{exception.Message} Cleanup: {cleanupError}";
+            var stateError = SaveState(new WindowsProtectionState(false, null, null));
+            var message = Combine(
+                exception.Message,
+                cleanupError is null ? null : $"Cleanup: {cleanupError}",
+                stateError);
 
             _status = new ProtectionStatus(
                 Enabled: false,
@@ -190,24 +257,86 @@ public sealed class ProtectionManager : IDisposable
 
         if (_engine is not null)
         {
+            var hadFilters = _engine.FilterCount > 0;
             try
             {
                 _engine.Dispose();
             }
             catch (Exception exception)
             {
-                cleanupError = cleanupError is null
-                    ? exception.Message
-                    : $"{cleanupError} {exception.Message}";
-                _logger.LogWarning(exception, "WFP engine cleanup failed.");
+                cleanupError = Combine(cleanupError, exception.Message);
+                _logger.LogWarning(exception, "WFP engine cleanup failed; retrying stale filter removal.");
+                cleanupError = Combine(cleanupError, CleanupPersistentFilters());
             }
             finally
             {
                 _engine = null;
             }
+
+            if (!hadFilters)
+            {
+                cleanupError = Combine(cleanupError, CleanupPersistentFilters());
+            }
+        }
+        else
+        {
+            cleanupError = Combine(cleanupError, CleanupPersistentFilters());
         }
 
         return cleanupError;
+    }
+
+    private string? CleanupPersistentFilters()
+    {
+        try
+        {
+            var removed = WfpProtectionEngine.CleanupPersistent();
+            if (removed > 0)
+            {
+                _logger.LogInformation("Removed {Count} stale persistent WFP filters.", removed);
+            }
+
+            return null;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Stale WFP filter cleanup failed.");
+            return exception.Message;
+        }
+    }
+
+    private string? RestoreDnsSnapshot()
+    {
+        var restored = NetworkDnsConfigurator.RestorePersisted(_logger, out var snapshotFound);
+        if (snapshotFound && !restored)
+        {
+            return "The previous DNS snapshot could not be fully restored.";
+        }
+
+        return null;
+    }
+
+    private string? SaveState(WindowsProtectionState state)
+    {
+        try
+        {
+            _stateStore.Save(state);
+            return null;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogWarning(exception, "Protection state could not be saved.");
+            return $"Protection state could not be saved: {exception.Message}";
+        }
+    }
+
+    private static string? Combine(params string?[] messages)
+    {
+        var parts = messages
+            .Where(message => !string.IsNullOrWhiteSpace(message))
+            .ToArray();
+
+        return parts.Length == 0 ? null : string.Join(" ", parts);
     }
 
     public void Dispose()
@@ -222,6 +351,8 @@ public sealed class ProtectionManager : IDisposable
             _disposed = true;
             StopEngine();
             _status = ProtectionStatus.Off;
+            // Keep the state file so the next service start can re-apply an
+            // enabled policy after a reboot or upgrade.
         }
     }
 }

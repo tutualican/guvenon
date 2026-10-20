@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\GuvenOn.Core\GuvenOn.Core.csproj" />
+    <ProjectReference Include="..\..\src\GuvenOn.Service\GuvenOn.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>

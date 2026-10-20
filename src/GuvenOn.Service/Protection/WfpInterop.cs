@@ -10,11 +10,18 @@ internal static class WfpInterop
 {
     public const uint RpcCAuthnWinnt = 10;
     public const uint FwpmSessionFlagDynamic = 0x00000001;
+    public const uint FwpmProviderFlagPersistent = 0x00000001;
+    public const uint FwpmSubLayerFlagPersistent = 0x00000001;
+    public const uint FwpmFilterFlagPersistent = 0x00000001;
     public const uint FwpActionFlagTerminating = 0x00001000;
     public const uint FwpActionBlock = 0x00000001 | FwpActionFlagTerminating;
     public const uint FwpActionPermit = 0x00000002 | FwpActionFlagTerminating;
     public const uint FwpConditionFlagIsLoopback = 0x00000001;
     public const uint Infinite = 0xFFFFFFFF;
+
+    public const uint FwpEFilterNotFound = 0x80320003;
+    public const uint FwpEProviderNotFound = 0x80320005;
+    public const uint FwpESubLayerNotFound = 0x80320007;
 
     public static readonly Guid LayerAleAuthConnectV4 =
         new("c38d57d1-05a7-4c33-904f-7fbceee60e82");
@@ -81,6 +88,15 @@ internal static class WfpInterop
         ref FwpmFilter filter,
         IntPtr securityDescriptor,
         out ulong filterId);
+
+    [DllImport("fwpuclnt.dll", ExactSpelling = true)]
+    public static extern uint FwpmFilterDeleteByKey0(IntPtr engineHandle, in Guid key);
+
+    [DllImport("fwpuclnt.dll", ExactSpelling = true)]
+    public static extern uint FwpmSubLayerDeleteByKey0(IntPtr engineHandle, in Guid key);
+
+    [DllImport("fwpuclnt.dll", ExactSpelling = true)]
+    public static extern uint FwpmProviderDeleteByKey0(IntPtr engineHandle, in Guid key);
 
     public static IReadOnlyList<string> ValidateLayouts()
     {

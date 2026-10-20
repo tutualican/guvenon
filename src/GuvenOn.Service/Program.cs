@@ -39,6 +39,21 @@ if (args.Any(argument => argument.Equals("--wfp-layout", StringComparison.Ordina
     return 1;
 }
 
+if (args.Any(argument => argument.Equals("--wfp-cleanup", StringComparison.OrdinalIgnoreCase)))
+{
+    try
+    {
+        var removed = WfpProtectionEngine.CleanupPersistent();
+        Console.WriteLine($"Removed {removed} persistent WFP filters.");
+        return 0;
+    }
+    catch (Exception exception)
+    {
+        Console.Error.WriteLine($"Persistent WFP cleanup failed: {exception.Message}");
+        return 1;
+    }
+}
+
 if (args.Any(argument => argument.Equals("--restore-network", StringComparison.OrdinalIgnoreCase)))
 {
     using var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
@@ -104,6 +119,12 @@ builder.Services.AddHostedService<ProtectionWorker>();
 builder.Services.AddHostedService<ProtectionControlServer>();
 
 using var host = builder.Build();
+
+// Restore the previous protection intent before the control pipe starts
+// accepting commands. This also cleans up persistent WFP filters left by a
+// crashed service instance.
+host.Services.GetRequiredService<ProtectionManager>().Start();
+
 await host.RunAsync();
 return 0;
 
