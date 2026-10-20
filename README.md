@@ -284,6 +284,28 @@ scripts/             icon and update-manifest helpers
 </details>
 
 <details>
+<summary><strong>Brand assets</strong></summary>
+
+The supplied shield artwork is cleaned by `scripts/make-icon.ps1`. It produces
+the application icon, the tray icon and the two images used by this page:
+
+- `src/GuvenOn.App/Assets/Guven-ON.png` (cleaned, transparent)
+- `src/GuvenOn.App/Assets/guvenon.ico` (16-256 px)
+- `assets/guvenon.png` (256 px repository icon)
+- `assets/og.png` (1200x630 social card)
+
+Regenerate them after changing the artwork:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-icon.ps1
+```
+
+The script removes black or near-white corners with a flood fill and preserves
+the light details inside the shield.
+
+</details>
+
+<details>
 <summary><strong>Security model and known limits</strong></summary>
 
 - The tray app runs with the user's normal token. It cannot change firewall or
