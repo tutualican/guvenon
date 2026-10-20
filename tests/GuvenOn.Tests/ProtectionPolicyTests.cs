@@ -53,6 +53,48 @@ public sealed class ProtectionPolicyTests
     }
 
     [TestMethod]
+    public void NormalizeLanAllowlist_TrimsDeduplicatesAndKeepsBothFamilies()
+    {
+        var result = ProtectionPolicy.NormalizeLanAllowlist(new[]
+        {
+            " 192.168.1.50 ",
+            "192.168.1.50",
+            "fd00::50",
+            ""
+        });
+
+        CollectionAssert.AreEqual(
+            new[] { "192.168.1.50", "fd00::50" },
+            result.ToArray());
+    }
+
+    [TestMethod]
+    public void NormalizeLanAllowlist_RejectsInvalidAndUnsafeAddresses()
+    {
+        Assert.ThrowsExactly<ArgumentException>(
+            () => ProtectionPolicy.NormalizeLanAllowlist(new[] { "not-an-ip" }));
+        Assert.ThrowsExactly<ArgumentException>(
+            () => ProtectionPolicy.NormalizeLanAllowlist(new[] { "192.168.1.0/24" }));
+        Assert.ThrowsExactly<ArgumentException>(
+            () => ProtectionPolicy.NormalizeLanAllowlist(new[] { "127.0.0.1" }));
+        Assert.ThrowsExactly<ArgumentException>(
+            () => ProtectionPolicy.NormalizeLanAllowlist(new[] { "224.0.0.1" }));
+        Assert.ThrowsExactly<ArgumentException>(
+            () => ProtectionPolicy.NormalizeLanAllowlist(new[] { "ff02::1" }));
+    }
+
+    [TestMethod]
+    public void NormalizeLanAllowlist_EnforcesEntryLimit()
+    {
+        var values = Enumerable.Range(1, ProtectionPolicy.MaxLanAllowlistEntries + 1)
+            .Select(index => $"192.168.1.{index}")
+            .ToArray();
+
+        Assert.ThrowsExactly<ArgumentException>(
+            () => ProtectionPolicy.NormalizeLanAllowlist(values));
+    }
+
+    [TestMethod]
     public void PausedStatus_IsPausedOnlyBeforeDeadline()
     {
         var now = DateTimeOffset.Parse("2026-06-01T12:00:00Z");

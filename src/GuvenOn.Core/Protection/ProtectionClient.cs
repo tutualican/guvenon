@@ -71,4 +71,13 @@ public static class ProtectionClient
         CancellationToken cancellationToken = default,
         TimeSpan? timeout = null) =>
         SendAsync(new ControlRequest(ProtectionCommand.SelfTest), timeout, cancellationToken);
+
+    public static Task<ControlResponse> SetLanAllowlistAsync(
+        IReadOnlyList<string> addresses,
+        CancellationToken cancellationToken = default,
+        TimeSpan? timeout = null) =>
+        SendAsync(
+            new ControlRequest(ProtectionCommand.SetLanAllowlist, LanAllowlist: addresses),
+            timeout,
+            cancellationToken);
 }

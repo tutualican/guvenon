@@ -50,6 +50,23 @@ internal static class Cli
             case "selftest":
                 request = new ControlRequest(ProtectionCommand.SelfTest);
                 break;
+            case "allowlist":
+            {
+                var addresses = args
+                    .Skip(1)
+                    .SelectMany(argument => argument.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                    .ToArray();
+                if (addresses.Length == 0)
+                {
+                    Console.Error.WriteLine("Usage: guvenonctl allowlist 192.168.1.50 192.168.1.60");
+                    return 2;
+                }
+
+                request = new ControlRequest(
+                    ProtectionCommand.SetLanAllowlist,
+                    LanAllowlist: addresses);
+                break;
+            }
             default:
                 Console.Error.WriteLine($"Unknown command: {args[0]}");
                 PrintHelp();
@@ -137,6 +154,7 @@ internal static class Cli
         Console.WriteLine($"Protection:  {state}");
         Console.WriteLine($"DNS guard:   {(status.DnsGuard ? "on" : "off")}");
         Console.WriteLine($"LAN guard:   {(status.LanGuard ? "on" : "off")}");
+        Console.WriteLine($"Allowlist:   {(status.LanAllowlist.Count == 0 ? "none" : string.Join(", ", status.LanAllowlist))}");
         Console.WriteLine($"Filters:     {status.FilterCount}");
 
         if (status.ActiveSince is { } activeSince)
@@ -167,6 +185,7 @@ internal static class Cli
         Console.WriteLine("  panic           Same as disable");
         Console.WriteLine("  pause [minutes] Temporarily allow a captive portal (1-120, default 10)");
         Console.WriteLine("  selftest        Check that the nftables and DNS guards are present");
+        Console.WriteLine("  allowlist IP... Allow local devices while the LAN guard is on");
         Console.WriteLine("  version         Show the installed version");
         Console.WriteLine();
         Console.WriteLine("Run with sudo; the daemon is root-only by design.");

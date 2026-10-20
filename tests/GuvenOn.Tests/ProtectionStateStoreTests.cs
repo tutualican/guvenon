@@ -42,6 +42,7 @@ public sealed class ProtectionStateStoreTests
         Assert.IsFalse(state.Enabled);
         Assert.IsNull(state.PausedUntil);
         Assert.IsNull(state.AppliedAt);
+        Assert.IsEmpty(state.LanAllowlist);
     }
 
     [TestMethod]
@@ -70,6 +71,22 @@ public sealed class ProtectionStateStoreTests
         Assert.IsTrue(loaded.Enabled);
         Assert.AreEqual(until, loaded.PausedUntil);
         Assert.IsNull(loaded.AppliedAt);
+    }
+
+    [TestMethod]
+    public void LanAllowlistRoundTrips()
+    {
+        var store = new ProtectionStateStore(_path);
+        store.Save(new WindowsProtectionState(true, null, DateTimeOffset.UtcNow)
+        {
+            LanAllowlist = new[] { "192.168.1.50", "fd00::50" }
+        });
+
+        var loaded = store.Load();
+
+        CollectionAssert.AreEqual(
+            new[] { "192.168.1.50", "fd00::50" },
+            loaded.LanAllowlist.ToArray());
     }
 
     [TestMethod]

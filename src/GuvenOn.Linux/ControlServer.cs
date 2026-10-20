@@ -123,6 +123,9 @@ internal sealed class ControlServer
                 ProtectionCommand.Pause => await _manager.PauseAsync(request.Minutes ?? 10, cancellationToken)
                     .ConfigureAwait(false),
                 ProtectionCommand.SelfTest => await _manager.SelfTestAsync(cancellationToken).ConfigureAwait(false),
+                ProtectionCommand.SetLanAllowlist => await _manager.SetLanAllowlistAsync(
+                    request.LanAllowlist ?? Array.Empty<string>(),
+                    cancellationToken).ConfigureAwait(false),
                 _ => throw new ArgumentOutOfRangeException(nameof(request))
             };
 

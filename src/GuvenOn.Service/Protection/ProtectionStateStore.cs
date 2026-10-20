@@ -6,7 +6,10 @@ namespace GuvenOn.Service.Protection;
 internal sealed record WindowsProtectionState(
     bool Enabled,
     DateTimeOffset? PausedUntil,
-    DateTimeOffset? AppliedAt);
+    DateTimeOffset? AppliedAt)
+{
+    public IReadOnlyList<string> LanAllowlist { get; init; } = Array.Empty<string>();
+}
 
 /// <summary>
 /// Persists the user's intent across service restarts. This is deliberately

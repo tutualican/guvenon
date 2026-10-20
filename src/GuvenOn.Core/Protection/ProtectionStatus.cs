@@ -15,6 +15,8 @@ public sealed record ProtectionStatus(
     int FilterCount,
     string? LastError)
 {
+    public IReadOnlyList<string> LanAllowlist { get; init; } = Array.Empty<string>();
+
     public static ProtectionStatus Off { get; } = new(
         Enabled: false,
         EngineActive: false,

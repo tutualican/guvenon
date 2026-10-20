@@ -88,6 +88,12 @@
   <data name="AdvancedLanBody" xml:space="preserve"><value>Private IPv4 ranges, multicast and legacy discovery are blocked.</value></data>
   <data name="AdvancedPersistentTitle" xml:space="preserve"><value>Crash-safe filters</value></data>
   <data name="AdvancedPersistentBody" xml:space="preserve"><value>Persistent WFP objects are restored or cleaned up after a restart.</value></data>
+  <data name="LanAllowlistTitle" xml:space="preserve"><value>Local devices</value></data>
+  <data name="LanAllowlistBody" xml:space="preserve"><value>Keep printers, a NAS or consoles reachable while LAN isolation stays on.</value></data>
+  <data name="LanAllowlistHint" xml:space="preserve"><value>One IPv4 or IPv6 address per line. DNS to local resolvers stays blocked.</value></data>
+  <data name="LanAllowlistSave" xml:space="preserve"><value>Save devices</value></data>
+  <data name="LanAllowlistSaved" xml:space="preserve"><value>Local device allowlist saved.</value></data>
+  <data name="LanAllowlistFailed" xml:space="preserve"><value>Could not save local devices: {0}</value></data>
   <data name="AdvancedSelfTest" xml:space="preserve"><value>Run self-test</value></data>
   <data name="AdvancedSelfTestHint" xml:space="preserve"><value>Re-opens the WFP store and verifies every expected filter.</value></data>
   <data name="SelfTestPassed" xml:space="preserve"><value>Self-test passed: all expected filters are installed.</value></data>

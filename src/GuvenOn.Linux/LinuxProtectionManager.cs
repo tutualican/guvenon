@@ -11,6 +11,7 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
     private readonly object _statusLock = new();
 
     private ProtectionStatus _status = ProtectionStatus.Off;
+    private IReadOnlyList<string> _lanAllowlist = Array.Empty<string>();
     private Timer? _resumeTimer;
     private bool _disposed;
 
@@ -28,6 +29,17 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
     public async Task StartAsync(CancellationToken cancellationToken = default)
     {
         var state = _stateStore.Load();
+        string? allowlistError = null;
+        try
+        {
+            _lanAllowlist = ProtectionPolicy.NormalizeLanAllowlist(state.LanAllowlist);
+        }
+        catch (Exception exception)
+        {
+            _lanAllowlist = Array.Empty<string>();
+            allowlistError = $"Saved local device allowlist is invalid: {exception.Message}";
+            Log.Warning(allowlistError);
+        }
 
         if (!state.Enabled)
         {
@@ -35,7 +47,12 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
             await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
             try
             {
-                _ = await SafeRestoreAsync(cancellationToken).ConfigureAwait(false);
+                var cleanupError = await SafeRestoreAsync(cancellationToken).ConfigureAwait(false);
+                SetStatus(ProtectionStatus.Off with
+                {
+                    LastError = cleanupError ?? allowlistError,
+                    LanAllowlist = _lanAllowlist
+                });
             }
             finally
             {
@@ -68,7 +85,10 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
                 ActiveSince: null,
                 PausedUntil: pausedUntil,
                 FilterCount: 0,
-                LastError: cleanupError));
+                LastError: cleanupError ?? allowlistError)
+            {
+                LanAllowlist = _lanAllowlist
+            });
 
             ScheduleResume(pausedUntil);
             Log.Info($"Protection is paused until {pausedUntil:O}.");
@@ -99,7 +119,7 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
             return Status;
         }
 
-        var policy = ProtectionPolicy.Default;
+        var policy = BuildPolicy();
 
         try
         {
@@ -107,7 +127,10 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
             await _dns.ApplyAsync(policy, cancellationToken).ConfigureAwait(false);
 
             var now = DateTimeOffset.UtcNow;
-            _stateStore.Save(new LinuxState(true, null, _dns.Method, now));
+            _stateStore.Save(new LinuxState(true, null, _dns.Method, now)
+            {
+                LanAllowlist = _lanAllowlist
+            });
             SetStatus(new ProtectionStatus(
                 Enabled: true,
                 EngineActive: true,
@@ -116,7 +139,10 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
                 ActiveSince: now,
                 PausedUntil: null,
                 FilterCount: _nft.RuleCount,
-                LastError: null));
+                LastError: null)
+            {
+                LanAllowlist = _lanAllowlist
+            });
 
             Log.Info($"Protection enabled with {_nft.RuleCount} nftables rules.");
             return Status;
@@ -124,7 +150,10 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
         catch (Exception exception)
         {
             var cleanupError = await SafeRestoreAsync(cancellationToken).ConfigureAwait(false);
-            _stateStore.Save(new LinuxState(false, null, null, null));
+            _stateStore.Save(new LinuxState(false, null, null, null)
+            {
+                LanAllowlist = _lanAllowlist
+            });
             var message = cleanupError is null ? exception.Message : $"{exception.Message} Cleanup: {cleanupError}";
             SetStatus(new ProtectionStatus(
                 Enabled: false,
@@ -134,7 +163,10 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
                 ActiveSince: null,
                 PausedUntil: null,
                 FilterCount: 0,
-                LastError: message));
+                LastError: message)
+            {
+                LanAllowlist = _lanAllowlist
+            });
 
             Log.Error($"Protection could not be enabled: {message}");
             return Status;
@@ -148,10 +180,15 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
         {
             CancelResume();
             var cleanupError = await SafeRestoreAsync(cancellationToken).ConfigureAwait(false);
-            _stateStore.Save(new LinuxState(false, null, null, null));
-            SetStatus(cleanupError is null
-                ? ProtectionStatus.Off
-                : ProtectionStatus.Off with { LastError = cleanupError });
+            _stateStore.Save(new LinuxState(false, null, null, null)
+            {
+                LanAllowlist = _lanAllowlist
+            });
+            SetStatus(ProtectionStatus.Off with
+            {
+                LastError = cleanupError,
+                LanAllowlist = _lanAllowlist
+            });
 
             Log.Info("Protection disabled.");
             return Status;
@@ -173,7 +210,10 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
             var cleanupError = await SafeRestoreAsync(cancellationToken).ConfigureAwait(false);
             var until = DateTimeOffset.UtcNow.AddMinutes(Math.Clamp(minutes, 1, 120));
 
-            _stateStore.Save(new LinuxState(true, until, null, null));
+            _stateStore.Save(new LinuxState(true, until, null, null)
+            {
+                LanAllowlist = _lanAllowlist
+            });
             SetStatus(new ProtectionStatus(
                 Enabled: true,
                 EngineActive: false,
@@ -182,7 +222,10 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
                 ActiveSince: null,
                 PausedUntil: until,
                 FilterCount: 0,
-                LastError: cleanupError));
+                LastError: cleanupError)
+            {
+                LanAllowlist = _lanAllowlist
+            });
 
             ScheduleResume(until);
             Log.Info($"Protection paused until {until:O}.");
@@ -193,6 +236,123 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
             _gate.Release();
         }
     }
+
+    public async Task<ProtectionStatus> SetLanAllowlistAsync(
+        IReadOnlyList<string> addresses,
+        CancellationToken cancellationToken = default)
+    {
+        await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            IReadOnlyList<string> normalized;
+            try
+            {
+                normalized = ProtectionPolicy.NormalizeLanAllowlist(addresses);
+            }
+            catch (Exception exception)
+            {
+                var invalid = Status with { LastError = exception.Message };
+                SetStatus(invalid);
+                return invalid;
+            }
+
+            var previous = _lanAllowlist;
+            var status = Status;
+            var pausedUntil = status.PausedUntil is { } until && until > DateTimeOffset.UtcNow
+                ? until
+                : (DateTimeOffset?)null;
+            var dnsMethod = status.EngineActive ? _dns.Method : null;
+
+            _stateStore.Save(new LinuxState(
+                status.Enabled,
+                pausedUntil,
+                dnsMethod,
+                status.ActiveSince)
+            {
+                LanAllowlist = normalized
+            });
+            _lanAllowlist = normalized;
+
+            if (!status.EngineActive)
+            {
+                var updated = status with
+                {
+                    LanAllowlist = normalized,
+                    LastError = null
+                };
+                SetStatus(updated);
+                return updated;
+            }
+
+            try
+            {
+                await _nft.ApplyAsync(BuildPolicy(), cancellationToken).ConfigureAwait(false);
+                var updated = status with
+                {
+                    FilterCount = _nft.RuleCount,
+                    LanAllowlist = normalized,
+                    LastError = null
+                };
+                SetStatus(updated);
+                Log.Info($"Local device allowlist updated with {normalized.Count} entries.");
+                return updated;
+            }
+            catch (Exception exception)
+            {
+                _lanAllowlist = previous;
+                _stateStore.Save(new LinuxState(
+                    status.Enabled,
+                    pausedUntil,
+                    dnsMethod,
+                    status.ActiveSince)
+                {
+                    LanAllowlist = previous
+                });
+
+                try
+                {
+                    await _nft.ApplyAsync(BuildPolicy(), cancellationToken).ConfigureAwait(false);
+                    var rolledBack = status with
+                    {
+                        FilterCount = _nft.RuleCount,
+                        LanAllowlist = previous,
+                        LastError = $"Local device allowlist could not be applied: {exception.Message}"
+                    };
+                    SetStatus(rolledBack);
+                    return rolledBack;
+                }
+                catch (Exception restoreException)
+                {
+                    var cleanupError = await SafeRestoreAsync(cancellationToken).ConfigureAwait(false);
+                    _stateStore.Save(new LinuxState(false, null, null, null)
+                    {
+                        LanAllowlist = previous
+                    });
+                    var failed = ProtectionStatus.Off with
+                    {
+                        LanAllowlist = previous,
+                        LastError = string.Join(
+                            " ",
+                            new[]
+                            {
+                                $"Local device allowlist could not be applied: {exception.Message}",
+                                $"The previous guard could not be restored: {restoreException.Message}",
+                                cleanupError
+                            }.Where(message => !string.IsNullOrWhiteSpace(message)))
+                    };
+                    SetStatus(failed);
+                    return failed;
+                }
+            }
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    private ProtectionPolicy BuildPolicy() =>
+        ProtectionPolicy.Default with { LanAllowlist = _lanAllowlist };
 
     public async Task<ProtectionStatus> SelfTestAsync(CancellationToken cancellationToken = default)
     {
@@ -256,8 +416,11 @@ internal sealed class LinuxProtectionManager : IAsyncDisposable
         {
             CancelResume();
             _ = await SafeRestoreAsync(cancellationToken).ConfigureAwait(false);
-            _stateStore.Save(new LinuxState(false, null, null, null));
-            SetStatus(ProtectionStatus.Off);
+            _stateStore.Save(new LinuxState(false, null, null, null)
+            {
+                LanAllowlist = _lanAllowlist
+            });
+            SetStatus(ProtectionStatus.Off with { LanAllowlist = _lanAllowlist });
         }
         finally
         {

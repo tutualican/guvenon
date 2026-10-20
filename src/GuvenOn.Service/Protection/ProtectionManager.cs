@@ -17,6 +17,7 @@ public sealed class ProtectionManager : IDisposable
     private WfpProtectionEngine? _engine;
     private NetworkDnsConfigurator? _dnsConfigurator;
     private ProtectionStatus _status = ProtectionStatus.Off;
+    private IReadOnlyList<string> _lanAllowlist = Array.Empty<string>();
     private Timer? _resumeTimer;
     private bool _started;
     private bool _disposed;
@@ -91,13 +92,29 @@ public sealed class ProtectionManager : IDisposable
 
             _started = true;
             var state = _stateStore.Load();
+            string? allowlistError = null;
+            try
+            {
+                _lanAllowlist = ProtectionPolicy.NormalizeLanAllowlist(state.LanAllowlist);
+            }
+            catch (Exception exception)
+            {
+                _lanAllowlist = Array.Empty<string>();
+                allowlistError = $"Saved local device allowlist is invalid: {exception.Message}";
+                _logger.LogWarning(exception, "Saved local device allowlist is invalid.");
+            }
 
             if (!state.Enabled)
             {
                 var cleanupError = Combine(
                     CleanupPersistentFilters(),
-                    RestoreDnsSnapshot());
-                _status = ProtectionStatus.Off with { LastError = cleanupError };
+                    RestoreDnsSnapshot(),
+                    allowlistError);
+                _status = ProtectionStatus.Off with
+                {
+                    LastError = cleanupError,
+                    LanAllowlist = _lanAllowlist
+                };
                 return;
             }
 
@@ -117,7 +134,10 @@ public sealed class ProtectionManager : IDisposable
                     ActiveSince: null,
                     PausedUntil: pausedUntil,
                     FilterCount: 0,
-                    LastError: cleanupError);
+                    LastError: Combine(cleanupError, allowlistError))
+                {
+                    LanAllowlist = _lanAllowlist
+                };
 
                 ScheduleResume(pausedUntil);
                 _logger.LogInformation("Protection is paused until {Until}.", pausedUntil);
@@ -143,11 +163,15 @@ public sealed class ProtectionManager : IDisposable
             // Persist the user's intent before removing filters. If the service
             // crashes during teardown, the next start sees "disabled" and
             // finishes the cleanup instead of unexpectedly re-enabling.
-            var stateError = SaveState(new WindowsProtectionState(false, null, null));
+            var stateError = SaveState(new WindowsProtectionState(false, null, null)
+            {
+                LanAllowlist = _lanAllowlist
+            });
             var cleanupError = StopEngine();
             _status = ProtectionStatus.Off with
             {
-                LastError = Combine(cleanupError, stateError)
+                LastError = Combine(cleanupError, stateError),
+                LanAllowlist = _lanAllowlist
             };
             return _status;
         }
@@ -159,7 +183,10 @@ public sealed class ProtectionManager : IDisposable
         {
             var duration = TimeSpan.FromMinutes(Math.Clamp(minutes, 1, 120));
             var until = DateTimeOffset.UtcNow.Add(duration);
-            var stateError = SaveState(new WindowsProtectionState(true, until, null));
+            var stateError = SaveState(new WindowsProtectionState(true, until, null)
+            {
+                LanAllowlist = _lanAllowlist
+            });
 
             // Do not tear down the guard if the pause deadline could not be
             // persisted; otherwise a crash could turn a temporary pause into a
@@ -179,13 +206,112 @@ public sealed class ProtectionManager : IDisposable
                 ActiveSince: null,
                 PausedUntil: until,
                 FilterCount: 0,
-                LastError: Combine(cleanupError, stateError));
+                LastError: Combine(cleanupError, stateError))
+            {
+                LanAllowlist = _lanAllowlist
+            };
 
             ScheduleResume(until);
             _logger.LogInformation("Protection paused until {Until}.", until);
             return _status;
         }
     }
+
+    public ProtectionStatus SetLanAllowlist(IReadOnlyList<string> addresses)
+    {
+        lock (_gate)
+        {
+            IReadOnlyList<string> normalized;
+            try
+            {
+                normalized = ProtectionPolicy.NormalizeLanAllowlist(addresses);
+            }
+            catch (Exception exception)
+            {
+                _status = _status with { LastError = exception.Message };
+                return _status;
+            }
+
+            var pausedUntil = _status.PausedUntil is { } until && until > DateTimeOffset.UtcNow
+                ? until
+                : (DateTimeOffset?)null;
+            var stateError = SaveState(new WindowsProtectionState(
+                _status.Enabled,
+                pausedUntil,
+                _status.ActiveSince)
+            {
+                LanAllowlist = normalized
+            });
+            if (stateError is not null)
+            {
+                _status = _status with { LastError = stateError };
+                return _status;
+            }
+
+            var previous = _lanAllowlist;
+
+            if (_engine is null)
+            {
+                _lanAllowlist = normalized;
+                _status = _status with
+                {
+                    LanAllowlist = normalized,
+                    LastError = null
+                };
+                return _status;
+            }
+
+            WfpProtectionEngine? candidate = null;
+            try
+            {
+                _lanAllowlist = normalized;
+                candidate = new WfpProtectionEngine(BuildPolicy());
+                candidate.Apply();
+
+                var oldEngine = _engine;
+                _engine = candidate;
+                candidate = null;
+
+                oldEngine.Detach();
+                oldEngine.Dispose();
+
+                _status = _status with
+                {
+                    FilterCount = _engine.FilterCount,
+                    LanAllowlist = normalized,
+                    LastError = null
+                };
+                _logger.LogInformation(
+                    "Local device allowlist updated with {Count} entries.",
+                    normalized.Count);
+                return _status;
+            }
+            catch (Exception exception)
+            {
+                candidate?.Dispose();
+                _lanAllowlist = previous;
+                var rollbackError = SaveState(new WindowsProtectionState(
+                    _status.Enabled,
+                    pausedUntil,
+                    _status.ActiveSince)
+                {
+                    LanAllowlist = previous
+                });
+                _status = _status with
+                {
+                    LanAllowlist = previous,
+                    LastError = Combine(
+                        $"Local device allowlist could not be applied: {exception.Message}",
+                        rollbackError)
+                };
+                _logger.LogError(exception, "Local device allowlist could not be applied.");
+                return _status;
+            }
+        }
+    }
+
+    private ProtectionPolicy BuildPolicy() =>
+        ProtectionPolicy.Default with { LanAllowlist = _lanAllowlist };
 
     private void ResumeFromPause(DateTimeOffset expectedUntil)
     {
@@ -232,10 +358,17 @@ public sealed class ProtectionManager : IDisposable
         // Persist "enabled" before touching WFP or DNS. If the service crashes
         // half-way through Apply, startup will see the user's intent and
         // re-apply instead of cleaning up a possibly partial guard.
-        var stateError = SaveState(new WindowsProtectionState(true, null, since));
+        var stateError = SaveState(new WindowsProtectionState(true, null, since)
+        {
+            LanAllowlist = _lanAllowlist
+        });
         if (stateError is not null)
         {
-            _status = ProtectionStatus.Off with { LastError = stateError };
+            _status = ProtectionStatus.Off with
+            {
+                LastError = stateError,
+                LanAllowlist = _lanAllowlist
+            };
             return _status;
         }
 
@@ -244,21 +377,25 @@ public sealed class ProtectionManager : IDisposable
             // Assign before applying so the outer catch can clean up both
             // resources even if the second step throws. StopEngine tolerates
             // partially initialized objects.
-            _engine = new WfpProtectionEngine(ProtectionPolicy.Default);
+            var policy = BuildPolicy();
+            _engine = new WfpProtectionEngine(policy);
             _dnsConfigurator = new NetworkDnsConfigurator(_logger);
 
             _engine.Apply();
-            var changedAdapters = _dnsConfigurator.Apply(ProtectionPolicy.Default);
+            var changedAdapters = _dnsConfigurator.Apply(policy);
 
             _status = new ProtectionStatus(
                 Enabled: true,
                 EngineActive: true,
                 DnsGuard: true,
-                LanGuard: ProtectionPolicy.Default.BlockLan,
+                LanGuard: policy.BlockLan,
                 ActiveSince: since,
                 PausedUntil: null,
                 FilterCount: _engine.FilterCount,
-                LastError: null);
+                LastError: null)
+            {
+                LanAllowlist = _lanAllowlist
+            };
 
             _logger.LogInformation(
                 "Protection enabled with {FilterCount} persistent WFP filters and trusted DNS on {AdapterCount} adapters.",
@@ -268,7 +405,10 @@ public sealed class ProtectionManager : IDisposable
         catch (Exception exception)
         {
             var cleanupError = StopEngine();
-            var disableStateError = SaveState(new WindowsProtectionState(false, null, null));
+            var disableStateError = SaveState(new WindowsProtectionState(false, null, null)
+            {
+                LanAllowlist = _lanAllowlist
+            });
             var message = Combine(
                 exception.Message,
                 cleanupError is null ? null : $"Cleanup: {cleanupError}",
@@ -282,7 +422,10 @@ public sealed class ProtectionManager : IDisposable
                 ActiveSince: null,
                 PausedUntil: null,
                 FilterCount: 0,
-                LastError: message);
+                LastError: message)
+            {
+                LanAllowlist = _lanAllowlist
+            };
 
             _logger.LogError(exception, "Protection could not be enabled.");
         }

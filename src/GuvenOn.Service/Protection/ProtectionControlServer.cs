@@ -132,6 +132,8 @@ public sealed class ProtectionControlServer : BackgroundService
                 ProtectionCommand.Disable => _manager.Disable(),
                 ProtectionCommand.Pause => _manager.Pause(request.Minutes ?? 10),
                 ProtectionCommand.SelfTest => _manager.SelfTest(),
+                ProtectionCommand.SetLanAllowlist => _manager.SetLanAllowlist(
+                    request.LanAllowlist ?? Array.Empty<string>()),
                 _ => throw new ArgumentOutOfRangeException(nameof(request))
             };
 

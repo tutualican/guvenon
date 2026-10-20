@@ -141,6 +141,15 @@ jobs:
             $status = Invoke-Gsvc @("--selftest")
             Assert-On $status
 
+            Write-Host "Testing the local device allowlist..."
+            $beforeAllowlistCount = $status.status.filterCount
+            $status = Invoke-Gsvc @("--allowlist", "192.168.50.50", "fd00::50")
+            Assert-On $status
+            Assert-Condition ($status.status.lanAllowlist.Count -eq 2) "Allowlist did not contain both addresses."
+            Assert-Condition ($status.status.filterCount -eq ($beforeAllowlistCount + 4)) "Allowlist filters were not added."
+            $status = Invoke-Gsvc @("--selftest")
+            Assert-On $status
+
             Write-Host "Pausing protection..."
             $status = Invoke-Gsvc @("--pause", "1")
             Write-Host "Paused status: $($status | ConvertTo-Json -Compress -Depth 5)"
@@ -152,6 +161,7 @@ jobs:
 
             $status = Invoke-Gsvc @("--enable")
             Assert-On $status
+            Assert-Condition ($status.status.lanAllowlist.Count -eq 2) "The allowlist was lost after pause and enable."
 
             # Crash persistence: stop SCM restart actions, kill the service,
             # and prove the persistent filters are still in the WFP store before
@@ -177,6 +187,7 @@ jobs:
             $status = Wait-ServiceReady
             Write-Host "Recovered status: $($status | ConvertTo-Json -Compress -Depth 5)"
             Assert-On $status
+            Assert-Condition ($status.status.lanAllowlist.Count -eq 2) "The allowlist was lost after the service restart."
 
             $status = Invoke-Gsvc @("--selftest")
             Assert-On $status

@@ -26,7 +26,9 @@ internal sealed class WfpProtectionEngine : IDisposable
     private static readonly Guid SubLayerKey = new("fc83f452-5294-4bf8-a790-41ace7391323");
 
     private const byte WeightPermit = 15;
-    private const byte WeightBlock = 5;
+    private const byte WeightDnsBlock = 9;
+    private const byte WeightLanPermit = 8;
+    private const byte WeightLanBlock = 5;
     private const byte WeightLegacyBlock = 4;
 
     private readonly ProtectionPolicy _policy;
@@ -493,7 +495,7 @@ internal sealed class WfpProtectionEngine : IDisposable
         foreach (var port in ports)
         {
             var conditionPort = port;
-            AddFilter(layer, WfpInterop.FwpActionBlock, WeightBlock, $"{name} port {port}", builder =>
+            AddFilter(layer, WfpInterop.FwpActionBlock, WeightDnsBlock, $"{name} port {port}", builder =>
                 builder.AddUInt16(WfpInterop.ConditionIpRemotePort, conditionPort));
         }
     }
@@ -534,6 +536,8 @@ internal sealed class WfpProtectionEngine : IDisposable
 
     private void AddLanBlocks()
     {
+        AddLanAllowlistPermits();
+
         var v4Ranges = new[]
         {
             "10.0.0.0/8",
@@ -553,23 +557,41 @@ internal sealed class WfpProtectionEngine : IDisposable
         AddLanBlock(WfpInterop.LayerAleAuthRecvAcceptV6, "Block local network inbound (IPv6)", new[] { "fc00::/7" });
     }
 
+    private void AddLanAllowlistPermits()
+    {
+        // Permit filters sit above the LAN and legacy blocks but below DNS
+        // blocks, so an allowlisted device cannot become a DNS resolver.
+        foreach (var value in ProtectionPolicy.NormalizeLanAllowlist(_policy.LanAllowlist))
+        {
+            var address = IPAddress.Parse(value);
+            var isV4 = address.AddressFamily == AddressFamily.InterNetwork;
+            var cidr = isV4 ? $"{value}/32" : $"{value}/128";
+            var connectLayer = isV4
+                ? WfpInterop.LayerAleAuthConnectV4
+                : WfpInterop.LayerAleAuthConnectV6;
+            var receiveLayer = isV4
+                ? WfpInterop.LayerAleAuthRecvAcceptV4
+                : WfpInterop.LayerAleAuthRecvAcceptV6;
+            var family = isV4 ? "IPv4" : "IPv6";
+
+            AddFilter(connectLayer, WfpInterop.FwpActionPermit, WeightLanPermit,
+                $"Permit allowlisted local device {value} outbound ({family})",
+                builder => builder.AddV4OrV6Prefix(WfpInterop.ConditionIpRemoteAddress, cidr));
+
+            AddFilter(receiveLayer, WfpInterop.FwpActionPermit, WeightLanPermit,
+                $"Permit allowlisted local device {value} inbound ({family})",
+                builder => builder.AddV4OrV6Prefix(WfpInterop.ConditionIpRemoteAddress, cidr));
+        }
+    }
+
     private void AddLanBlock(Guid layer, string name, IReadOnlyList<string> ranges)
     {
         // Multiple address ranges are alternatives, not an intersection.
         foreach (var range in ranges)
         {
             var conditionRange = range;
-            AddFilter(layer, WfpInterop.FwpActionBlock, WeightBlock, $"{name} {range}", builder =>
-            {
-                if (conditionRange.Contains(':'))
-                {
-                    builder.AddV6Prefix(WfpInterop.ConditionIpRemoteAddress, conditionRange);
-                }
-                else
-                {
-                    builder.AddV4Prefix(WfpInterop.ConditionIpRemoteAddress, conditionRange);
-                }
-            });
+            AddFilter(layer, WfpInterop.FwpActionBlock, WeightLanBlock, $"{name} {range}", builder =>
+                builder.AddV4OrV6Prefix(WfpInterop.ConditionIpRemoteAddress, conditionRange));
         }
     }
 
@@ -674,6 +696,17 @@ internal sealed class WfpProtectionEngine : IDisposable
     private static Win32Exception Failure(string operation, uint status) =>
         new((int)status, $"{operation} failed (0x{status:X8}).");
 
+    /// <summary>
+    /// Gives up ownership of the persistent filters without deleting them. Used
+    /// after a replacement engine has committed a new ruleset in the same keys.
+    /// </summary>
+    public void Detach()
+    {
+        _applied = false;
+        FilterCount = 0;
+        CloseEngine();
+    }
+
     public void Dispose()
     {
         if (_disposed)
@@ -752,6 +785,18 @@ internal sealed class WfpProtectionEngine : IDisposable
                 Type = WfpInterop.FwpDataType.V4AddrMask,
                 Value = new WfpInterop.FwpValueUnion { Pointer = pointer }
             });
+        }
+
+        public void AddV4OrV6Prefix(Guid field, string cidr)
+        {
+            if (cidr.Contains(':'))
+            {
+                AddV6Prefix(field, cidr);
+            }
+            else
+            {
+                AddV4Prefix(field, cidr);
+            }
         }
 
         public void AddV6Prefix(Guid field, string cidr)

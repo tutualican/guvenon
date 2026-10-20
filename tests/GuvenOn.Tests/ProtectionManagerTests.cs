@@ -16,4 +16,16 @@ public sealed class ProtectionManagerTests
         Assert.IsFalse(status.EngineActive);
         Assert.AreEqual("Protection is not active.", status.LastError);
     }
+
+    [TestMethod]
+    public void SetLanAllowlistRejectsInvalidAddressWithoutChangingState()
+    {
+        using var manager = new ProtectionManager(NullLogger<ProtectionManager>.Instance);
+
+        var status = manager.SetLanAllowlist(new[] { "not-an-ip" });
+
+        Assert.IsFalse(status.Enabled);
+        Assert.IsEmpty(status.LanAllowlist);
+        StringAssert.Contains(status.LastError, "Invalid IP address");
+    }
 }

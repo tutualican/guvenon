@@ -12,12 +12,14 @@ public enum ProtectionCommand
     Enable,
     Disable,
     Pause,
-    SelfTest
+    SelfTest,
+    SetLanAllowlist
 }
 
 public sealed record ControlRequest(
     ProtectionCommand Command,
-    int? Minutes = null)
+    int? Minutes = null,
+    IReadOnlyList<string>? LanAllowlist = null)
 {
     public static ControlRequest Status { get; } = new(ProtectionCommand.Status);
 

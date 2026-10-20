@@ -85,6 +85,27 @@ if (args.Any(argument => argument.Equals("--selftest", StringComparison.OrdinalI
     return await RunControlAsync(new ControlRequest(ProtectionCommand.SelfTest));
 }
 
+var allowlistIndex = Array.FindIndex(
+    args,
+    argument => argument.Equals("--allowlist", StringComparison.OrdinalIgnoreCase));
+
+if (allowlistIndex >= 0)
+{
+    var addresses = args
+        .Skip(allowlistIndex + 1)
+        .SelectMany(argument => argument.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        .ToArray();
+    if (addresses.Length == 0)
+    {
+        Console.Error.WriteLine("Usage: guvenonsvc.exe --allowlist 192.168.1.50 192.168.1.60");
+        return 2;
+    }
+
+    return await RunControlAsync(new ControlRequest(
+        ProtectionCommand.SetLanAllowlist,
+        LanAllowlist: addresses));
+}
+
 if (args.Any(argument => argument.Equals("--enable", StringComparison.OrdinalIgnoreCase)))
 {
     return await RunControlAsync(ControlRequest.Enable);

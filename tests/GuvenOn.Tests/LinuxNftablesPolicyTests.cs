@@ -45,6 +45,30 @@ public sealed class LinuxNftablesPolicyTests
     }
 
     [TestMethod]
+    public void Ruleset_PermitsAllowlistedDevicesBeforeLanDrops()
+    {
+        var policy = ProtectionPolicy.Default with
+        {
+            LanAllowlist = new[] { "192.168.1.50", "fd00::50" }
+        };
+
+        var rules = LinuxNftablesPolicy.BuildRuleset(policy);
+
+        StringAssert.Contains(rules, "ip daddr { 192.168.1.50 } accept");
+        StringAssert.Contains(rules, "ip saddr { 192.168.1.50 } accept");
+        StringAssert.Contains(rules, "ip6 daddr { fd00::50 } accept");
+        StringAssert.Contains(rules, "ip6 saddr { fd00::50 } accept");
+
+        var allowIndex = rules.IndexOf("ip daddr { 192.168.1.50 } accept", StringComparison.Ordinal);
+        var lanDropIndex = rules.IndexOf("ip daddr { 10.0.0.0/8", StringComparison.Ordinal);
+        Assert.IsGreaterThanOrEqualTo(0, allowIndex);
+        Assert.IsGreaterThan(allowIndex, lanDropIndex);
+
+        var dnsDropIndex = rules.IndexOf("udp dport { 53, 853 } drop", StringComparison.Ordinal);
+        Assert.IsGreaterThan(dnsDropIndex, allowIndex);
+    }
+
+    [TestMethod]
     public void Ruleset_CanUseTemporaryTableForSyntaxCheck()
     {
         var rules = LinuxNftablesPolicy.BuildRuleset(ProtectionPolicy.Default, "guvenon_check");

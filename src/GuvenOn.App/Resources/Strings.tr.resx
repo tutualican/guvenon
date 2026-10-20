@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
     <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
@@ -88,6 +88,12 @@
   <data name="AdvancedLanBody" xml:space="preserve"><value>Özel IPv4 aralıkları, çoklu yayın ve eski keşif protokolleri engellenir.</value></data>
   <data name="AdvancedPersistentTitle" xml:space="preserve"><value>Çökmeye dayanıklı filtreler</value></data>
   <data name="AdvancedPersistentBody" xml:space="preserve"><value>Kalıcı WFP nesneleri yeniden başlatmadan sonra geri yüklenir veya temizlenir.</value></data>
+  <data name="LanAllowlistTitle" xml:space="preserve"><value>Yerel cihazlar</value></data>
+  <data name="LanAllowlistBody" xml:space="preserve"><value>LAN yalıtımı açık kalırken yazıcı, NAS veya oyun konsollarına erişimi koruyun.</value></data>
+  <data name="LanAllowlistHint" xml:space="preserve"><value>Her satıra bir IPv4 veya IPv6 adresi. Yerel çözümleyicilere DNS engelli kalır.</value></data>
+  <data name="LanAllowlistSave" xml:space="preserve"><value>Cihazları kaydet</value></data>
+  <data name="LanAllowlistSaved" xml:space="preserve"><value>Yerel cihaz izin listesi kaydedildi.</value></data>
+  <data name="LanAllowlistFailed" xml:space="preserve"><value>Yerel cihazlar kaydedilemedi: {0}</value></data>
   <data name="AdvancedSelfTest" xml:space="preserve"><value>Öz testi çalıştır</value></data>
   <data name="AdvancedSelfTestHint" xml:space="preserve"><value>WFP deposunu yeniden açar ve beklenen her filtreyi doğrular.</value></data>
   <data name="SelfTestPassed" xml:space="preserve"><value>Öz test geçti: Beklenen tüm filtreler kurulu.</value></data>

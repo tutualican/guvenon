@@ -57,6 +57,7 @@ public static class LinuxNftablesPolicy
 
         if (policy.BlockLan)
         {
+            AppendLanAllowlistPermits(builder, policy, inbound: false);
             builder.AppendLine($"        ip daddr {{ {string.Join(", ", PrivateV4Ranges)} }} drop");
             builder.AppendLine("        ip6 daddr fc00::/7 drop");
         }
@@ -80,6 +81,7 @@ public static class LinuxNftablesPolicy
 
         if (policy.BlockLan)
         {
+            AppendLanAllowlistPermits(builder, policy, inbound: true);
             builder.AppendLine($"        ip saddr {{ {string.Join(", ", PrivateV4Ranges)} }} drop");
             builder.AppendLine("        ip6 saddr fc00::/7 drop");
         }
@@ -91,6 +93,37 @@ public static class LinuxNftablesPolicy
         }
 
         builder.AppendLine("    }");
+    }
+
+    private static void AppendLanAllowlistPermits(
+        StringBuilder builder,
+        ProtectionPolicy policy,
+        bool inbound)
+    {
+        var v4 = new List<string>();
+        var v6 = new List<string>();
+        foreach (var value in ProtectionPolicy.NormalizeLanAllowlist(policy.LanAllowlist))
+        {
+            if (value.Contains(':'))
+            {
+                v6.Add(value);
+            }
+            else
+            {
+                v4.Add(value);
+            }
+        }
+
+        var direction = inbound ? "saddr" : "daddr";
+        if (v4.Count > 0)
+        {
+            builder.AppendLine($"        ip {direction} {{ {string.Join(", ", v4)} }} accept");
+        }
+
+        if (v6.Count > 0)
+        {
+            builder.AppendLine($"        ip6 {direction} {{ {string.Join(", ", v6)} }} accept");
+        }
     }
 
     private static void AppendDnsPermits(

@@ -22,6 +22,8 @@ public partial class MainWindow : Window
     private bool _initializing = true;
     private bool _updateBusy;
     private bool _protectionBusy;
+    private bool _allowlistBusy;
+    private bool _allowlistLoaded;
     private ProtectionStatus? _protectionStatus;
     private string? _downloadUrl;
 
@@ -234,13 +236,21 @@ public partial class MainWindow : Window
             ProtectionButton.IsEnabled = false;
             PauseButton.IsEnabled = false;
             SelfTestButton.IsEnabled = false;
+            LanAllowlistSaveButton.IsEnabled = false;
             return;
         }
 
         ProtectionButton.IsEnabled = true;
         PauseButton.IsEnabled = true;
         SelfTestButton.IsEnabled = status?.EngineActive == true;
+        LanAllowlistSaveButton.IsEnabled = status is not null && !_allowlistBusy;
         PauseButton.Visibility = Visibility.Collapsed;
+
+        if (status is not null && !_allowlistLoaded)
+        {
+            LanAllowlistBox.Text = string.Join(Environment.NewLine, status.LanAllowlist);
+            _allowlistLoaded = true;
+        }
 
         if (status?.EngineActive != true)
         {
@@ -356,6 +366,57 @@ public partial class MainWindow : Window
         finally
         {
             _protectionBusy = false;
+            UpdateProtectionUi(_protectionStatus);
+        }
+    }
+
+    private async void LanAllowlistSave_Click(object sender, RoutedEventArgs e)
+    {
+        if (_allowlistBusy)
+        {
+            return;
+        }
+
+        _allowlistBusy = true;
+        LanAllowlistResult.Text = string.Empty;
+        UpdateProtectionUi(_protectionStatus);
+
+        try
+        {
+            var addresses = LanAllowlistBox.Text.Split(
+                new[] { '\r', '\n', ',', ';', ' ' },
+                StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            var response = await ProtectionClient.SetLanAllowlistAsync(
+                addresses,
+                timeout: TimeSpan.FromSeconds(30));
+
+            if (response.Ok && response.Status is not null)
+            {
+                _allowlistLoaded = true;
+                UpdateProtectionUi(response.Status);
+                LanAllowlistBox.Text = string.Join(
+                    Environment.NewLine,
+                    response.Status.LanAllowlist);
+                LanAllowlistResult.Foreground = (Brush)FindResource("StatusGreenBrush");
+                LanAllowlistResult.Text = Loc.Instance["LanAllowlistSaved"];
+            }
+            else
+            {
+                LanAllowlistResult.Foreground = (Brush)FindResource("StatusRedBrush");
+                LanAllowlistResult.Text = Loc.Instance.Format(
+                    "LanAllowlistFailed",
+                    response.Error ?? response.Status?.LastError ?? Loc.Instance["ProtectionUnavailable"]);
+            }
+        }
+        catch (Exception exception)
+        {
+            LanAllowlistResult.Foreground = (Brush)FindResource("StatusRedBrush");
+            LanAllowlistResult.Text = Loc.Instance.Format("LanAllowlistFailed", exception.Message);
+        }
+        finally
+        {
+            _allowlistBusy = false;
             UpdateProtectionUi(_protectionStatus);
         }
     }

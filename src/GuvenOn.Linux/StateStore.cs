@@ -6,7 +6,10 @@ internal sealed record LinuxState(
     bool Enabled,
     DateTimeOffset? PausedUntil,
     string? DnsMethod,
-    DateTimeOffset? AppliedAt);
+    DateTimeOffset? AppliedAt)
+{
+    public IReadOnlyList<string> LanAllowlist { get; init; } = Array.Empty<string>();
+}
 
 internal sealed class StateStore
 {
