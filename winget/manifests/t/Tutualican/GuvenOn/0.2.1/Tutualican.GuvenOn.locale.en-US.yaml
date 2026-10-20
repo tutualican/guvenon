@@ -5,10 +5,10 @@ PackageLocale: en-US
 Publisher: GuvenOn
 PublisherUrl: https://github.com/tutualican/guvenon
 PublisherSupportUrl: https://github.com/tutualican/guvenon/issues
-PrivacyUrl: https://tutualican.github.io/guvenon/#privacy
+PrivacyUrl: https://github.com/tutualican/guvenon#privacy
 Author: GuvenOn
 PackageName: Guven-ON
-PackageUrl: https://tutualican.github.io/guvenon/
+PackageUrl: https://github.com/tutualican/guvenon
 License: Apache-2.0
 LicenseUrl: https://github.com/tutualican/guvenon/blob/main/LICENSE
 Copyright: Copyright (c) 2026 GuvenOn

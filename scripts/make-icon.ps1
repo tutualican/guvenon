@@ -1,7 +1,7 @@
 param(
     [string]$Source = "$env:USERPROFILE\Desktop\Guven-ON.png",
     [string]$AppAssets = "$PSScriptRoot\..\src\GuvenOn.App\Assets",
-    [string]$SiteAssets = "$PSScriptRoot\..\docs\assets"
+    [string]$BrandAssets = "$PSScriptRoot\..\assets"
 )
 
 $ErrorActionPreference = "Stop"
@@ -11,7 +11,7 @@ if (-not (Test-Path $Source)) {
 }
 
 New-Item -ItemType Directory -Force $AppAssets | Out-Null
-New-Item -ItemType Directory -Force $SiteAssets | Out-Null
+New-Item -ItemType Directory -Force $BrandAssets | Out-Null
 
 Add-Type -AssemblyName System.Drawing
 
@@ -43,7 +43,7 @@ public static class GuvenOnIconMaker
         return white || black;
     }
 
-    public static void Clean(string input, string outputPng, string sitePng, int siteSize, string socialPng, int appSize = 1024)
+    public static void Clean(string input, string outputPng, string brandPng, int brandSize, string socialPng, int appSize = 1024)
     {
         using (Bitmap source = new Bitmap(input))
         using (Bitmap bitmap = new Bitmap(source.Width, source.Height, PixelFormat.Format32bppArgb))
@@ -175,18 +175,18 @@ public static class GuvenOnIconMaker
                     app.Save(outputPng, ImageFormat.Png);
                 }
 
-                using (Bitmap site = new Bitmap(siteSize, siteSize, PixelFormat.Format32bppArgb))
+                using (Bitmap brand = new Bitmap(brandSize, brandSize, PixelFormat.Format32bppArgb))
                 {
-                    using (Graphics graphics = Graphics.FromImage(site))
+                    using (Graphics graphics = Graphics.FromImage(brand))
                     {
                         graphics.CompositingMode = CompositingMode.SourceCopy;
                         graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
                         graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
                         graphics.SmoothingMode = SmoothingMode.HighQuality;
-                        graphics.DrawImage(square, 0, 0, siteSize, siteSize);
+                        graphics.DrawImage(square, 0, 0, brandSize, brandSize);
                     }
 
-                    site.Save(sitePng, ImageFormat.Png);
+                    brand.Save(brandPng, ImageFormat.Png);
                 }
 
                 MakeSocial(square, socialPng);
@@ -232,11 +232,11 @@ public static class GuvenOnIconMaker
             using (Font microFont = new Font("Segoe UI", 19, FontStyle.Regular, GraphicsUnit.Pixel))
             {
                 graphics.FillRectangle(navyBrush, 84, 142, 52, 6);
-                graphics.DrawString("WINDOWS 11  \u00B7  PREVIEW", labelFont, navyBrush, 84, 166);
+                graphics.DrawString("WINDOWS 11  \u00B7  LINUX ALPHA  \u00B7  PREVIEW", labelFont, navyBrush, 84, 166);
                 graphics.DrawString("Guven-ON", titleFont, navyBrush, 80, 206);
                 graphics.DrawString("Privacy that", subtitleFont, navyBrush, 84, 318);
                 graphics.DrawString("just works.", subtitleFont, navyBrush, 84, 356);
-                graphics.DrawString("DNS leak protection for untrusted Wi-Fi.", microFont, mutedBrush, 84, 470);
+                graphics.DrawString("DNS and LAN protection for untrusted Wi-Fi.", microFont, mutedBrush, 84, 470);
             }
 
             using (Pen divider = new Pen(line, 1))
@@ -317,19 +317,19 @@ public static class GuvenOnIconMaker
 }
 
 $cleanPng = Join-Path $AppAssets "Guven-ON.png"
-$sitePng = Join-Path $SiteAssets "guvenon.png"
-$socialPng = Join-Path $SiteAssets "og.png"
+$brandPng = Join-Path $BrandAssets "guvenon.png"
+$socialPng = Join-Path $BrandAssets "og.png"
 $icoPath = Join-Path $AppAssets "guvenon.ico"
 
 $tempDir = Join-Path $env:TEMP "guvenon-icon"
 New-Item -ItemType Directory -Force $tempDir | Out-Null
 $tempPng = Join-Path $tempDir "Guven-ON.png"
 
-[GuvenOnIconMaker]::Clean($Source, $tempPng, $sitePng, 256, $socialPng)
+[GuvenOnIconMaker]::Clean($Source, $tempPng, $brandPng, 256, $socialPng)
 Copy-Item $tempPng $cleanPng -Force
 [GuvenOnIconMaker]::MakeIco($cleanPng, $icoPath)
 
 Write-Host "Wrote $cleanPng"
-Write-Host "Wrote $sitePng"
+Write-Host "Wrote $brandPng"
 Write-Host "Wrote $socialPng"
 Write-Host "Wrote $icoPath"
