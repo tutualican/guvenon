@@ -257,6 +257,9 @@ the light details inside the shield.
   DNS policy by itself.
 - The service runs as `LocalSystem` and is the only component that owns WFP
   filters and DNS policy. IPC commands are enumerated, never free-form.
+- The Windows control pipe currently accepts any authenticated local user, so
+  another signed-in user on a shared machine could toggle protection. Restricting
+  it to the interactive user is future hardening.
 - Windows filters use a dynamic WFP session, so a service crash removes the
   filters instead of locking the machine out. That means a crash fails open;
   persistent filters with a verified cleanup path are still a release blocker.
