@@ -32,7 +32,7 @@
       "name": "Guven-ON",
       "applicationCategory": "SecurityApplication",
       "operatingSystem": "Windows 11, Linux",
-      "softwareVersion": "0.2.1",
+      "softwareVersion": "0.2.2",
       "description": "An opt-in preview that blocks DNS leaks and local-network exposure on untrusted Wi-Fi using WFP on Windows and nftables on Linux.",
       "url": "https://tutualican.github.io/guvenon/",
       "downloadUrl": "https://github.com/tutualican/guvenon/releases/latest",
@@ -207,9 +207,9 @@
           </span>
           <h3 data-i18n="why2Title">Local exposure, contained.</h3>
           <p data-i18n="why2Body">
-            Protection isolates private IPv4 ranges, multicast and legacy discovery. A printer or
-            captive portal can be reached through the ten-minute pause; a configurable LAN allowlist
-            is on the roadmap.
+            Protection isolates private IPv4 ranges, multicast and legacy discovery. Add a printer, NAS
+            or console by IP to keep it reachable while isolation stays on; use the ten-minute pause
+            for a captive portal.
           </p>
         </article>
 
@@ -256,8 +256,9 @@
           <span class="step-num">03</span>
           <h3 data-i18n="step3Title">You stay in control</h3>
           <p data-i18n="step3Body">
-            Use the ten-minute pause for a captive portal or a printer. Panic turns everything off and
-            restores DNS immediately.
+            Use the ten-minute pause for a captive portal. The local-device list keeps a printer or NAS
+            reachable without turning protection off. Panic turns everything off and restores DNS
+            immediately.
           </p>
         </div>
       </div>
@@ -334,7 +335,7 @@
       <div class="faq-list">
         <details class="faq-item reveal">
           <summary><span data-i18n="faq0Q">What does the preview enforce?</span><span class="plus" aria-hidden="true"></span></summary>
-          <div class="faq-a"><p data-i18n="faq0A">On Windows, enabling protection applies persistent WFP filters and points active adapters at Cloudflare and Quad9: DNS and DoT to other resolvers, private LAN ranges, multicast and legacy discovery are blocked. The filters survive a service crash, and a self-test verifies them. On Linux the same policy is compiled to nftables. This is alpha: DoH on port 443, some IPv6 traffic, VPN split tunneling, local printers and automatic trust profiles are not covered yet. Protection is off until you enable it.</p></div>
+          <div class="faq-a"><p data-i18n="faq0A">On Windows, enabling protection applies persistent WFP filters and points active adapters at Cloudflare and Quad9: DNS and DoT to other resolvers, private LAN ranges, multicast and legacy discovery are blocked. The filters survive a service crash, and a self-test verifies them. An exact-IP allowlist keeps chosen printers, NAS devices or consoles reachable. On Linux the same policy is compiled to nftables. This is alpha: DoH on port 443, some IPv6 traffic, VPN split tunneling and automatic trust profiles are not covered yet. Protection is off until you enable it.</p></div>
         </details>
         <details class="faq-item reveal">
           <summary><span data-i18n="faq1Q">Does it slow down my connection?</span><span class="plus" aria-hidden="true"></span></summary>
@@ -342,7 +343,7 @@
         </details>
         <details class="faq-item reveal">
           <summary><span data-i18n="faq2Q">Will it break my printer, NAS or Chromecast?</span><span class="plus" aria-hidden="true"></span></summary>
-          <div class="faq-a"><p data-i18n="faq2A">While protection is on, private LAN ranges and legacy discovery are isolated, so a printer or casting device may be unreachable. Use the ten-minute pause for local devices or a captive portal. A LAN allowlist is planned.</p></div>
+          <div class="faq-a"><p data-i18n="faq2A">Add the device's IP under Local devices in the app. Exact IPv4 and IPv6 addresses work, and DNS to local resolvers remains blocked. Casting and legacy discovery may still need the ten-minute pause or the device's IP.</p></div>
         </details>
         <details class="faq-item reveal">
           <summary><span data-i18n="faq3Q">Is Guven-ON a VPN?</span><span class="plus" aria-hidden="true"></span></summary>

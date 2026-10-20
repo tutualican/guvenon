@@ -249,9 +249,16 @@ These are release blockers, not suggestions.
 - Elevated Windows CI verifies enable, self-test, pause cleanup, a forced crash
   with filters still installed, recovery, disable and uninstall cleanup.
 
+**Shipped in 0.2.2**
+- Exact-IP local-device allowlist on Windows and Linux, above the LAN and legacy
+  blocks but below DNS blocks, with state persistence across pause and restart.
+- In-app allowlist editor and self-test button in English, German and Turkish.
+- Elevated Windows CI verifies allowlist filter counts and persistence across
+  pause and a forced crash.
+
 **Still required before "real protection"**
 - Trust profiles and a new-network prompt.
-- LAN allowlist and automatic captive-portal detection.
+- Automatic captive-portal detection.
 - IPv6 isolation and DoH handling.
 - A documented leak matrix on Windows 11 and Ubuntu/Debian VMs, including
   portal, IPv6, sleep/wake, service crash, reboot and uninstall.
@@ -404,10 +411,11 @@ User-facing pain points and vendor behavior:
 6. Do not label a build "protected" until the leak matrix passes and the
    self-test can prove it.
 
-0.2.0 is no longer monitor-only: it applies real DNS and LAN rules. 0.2.1 adds
-persistent WFP filters and state restore. The elevated Windows CI job verifies
-enable, self-test, pause cleanup, a forced crash with filters still installed,
-recovery, disable and uninstall cleanup. A physical Windows 11 sleep/wake and
-captive-portal leak matrix is still pending. Profiles, an allowlist, DoH coverage
-and full IPv6 isolation remain missing, so the product must stay labeled an
-opt-in preview until that physical matrix passes.
+0.2.0 is no longer monitor-only: it applies real DNS and LAN rules. 0.2.1 added
+persistent WFP filters and state restore; 0.2.2 adds exact-IP allowlists and an
+in-app self-test. The elevated Windows CI job verifies enable, self-test,
+allowlist persistence, pause cleanup, a forced crash with filters still
+installed, recovery, disable and uninstall cleanup. A physical Windows 11
+sleep/wake and captive-portal leak matrix is still pending. Profiles, DoH
+coverage and full IPv6 isolation remain missing, so the product must stay
+labeled an opt-in preview until that physical matrix passes.

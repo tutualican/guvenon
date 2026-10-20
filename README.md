@@ -15,12 +15,13 @@ user interface is available in English, German and Turkish.
 > are in place. Protection is **off until you enable it**. On Windows the guards
 > are persistent WFP filters plus adapter DNS changes; on Linux they are an
 > nftables table plus systemd-resolved configuration. Still missing: automatic
-> trust profiles, a LAN allowlist, automatic captive-portal detection,
-> DNS-over-HTTPS blocking, full IPv6 isolation and a physical leak matrix for
-> sleep/wake and captive-portal recovery. Preview builds are unsigned.
+> trust profiles, automatic captive-portal detection, DNS-over-HTTPS blocking,
+> full IPv6 isolation and a physical leak matrix for sleep/wake and
+> captive-portal recovery. Preview builds are unsigned.
 >
-> **0.2.1 note:** persistent WFP filters, service-state restore and a real WFP
-> self-test ship in this preview. The earlier 0.2.0 installer used a dynamic WFP
+> **0.2.2 note:** local-device allowlists and an in-app self-test ship in this
+> preview; 0.2.1 added persistent WFP filters, service-state restore and the
+> command-line self-test. The earlier 0.2.0 installer used a dynamic WFP
 > session that failed open after a service crash.
 
 ## What works today
@@ -30,11 +31,11 @@ user interface is available in English, German and Turkish.
 - Opt-in Windows enforcement: persistent WFP filters, trusted DNS on active
   adapters (Cloudflare and Quad9), plain DNS/DoT blocking, private IPv4 and ULA
   isolation, legacy discovery blocking, loopback/DHCP permits, service-state
-  restore after a crash, and a ten-minute captive-portal pause with automatic
-  resume.
+  restore after a crash, an exact-IP local-device allowlist, an in-app self-test,
+  and a ten-minute captive-portal pause with automatic resume.
 - Linux alpha daemon (`guvenon-linuxd`) and `guvenonctl` CLI with an nftables
   `inet guvenon` table, systemd-resolved DNS configuration, state persistence,
-  pause/resume and package cleanup.
+  exact-IP allowlists, pause/resume and package cleanup.
 - One UAC prompt at install time; the tray app runs as `asInvoker` and never
   elevates for normal operations.
 - English, German and Turkish UI resources with live language switching.
@@ -55,7 +56,7 @@ src/GuvenOn.Linux    Linux daemon and guvenonctl CLI
 tests/GuvenOn.Tests  unit tests for policy, WFP-facing rules, updates and settings
 installer/           Inno Setup script
 linux/               systemd unit, Debian control scripts and .deb builder
-winget/              WinGet manifests (0.2.1 current)
+winget/              WinGet manifests (0.2.2 current)
 docs/                static GitHub Pages site
 scripts/             icon and update-manifest helpers
 .github/workflows/   Windows/Linux release and Pages pipelines
@@ -180,7 +181,7 @@ Each release must upload `latest.json` next to the installer. The helper
 generates it with the immutable asset URL, size and SHA-256:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-manifest.ps1 -InstallerPath .\artifacts\installer\GuvenOnSetup-0.2.1.exe -Version 0.2.1
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\make-manifest.ps1 -InstallerPath .\artifacts\installer\GuvenOnSetup-0.2.2.exe -Version 0.2.2
 ```
 
 The app verifies the version and offers a download link from the manifest. The
@@ -210,12 +211,12 @@ elevated through Windows' standard uninstall flow.
 ## WinGet
 
 Versioned manifests for `Tutualican.GuvenOn` live in
-`winget/manifests/t/Tutualican/GuvenOn/0.2.1/`. They describe the per-machine
+`winget/manifests/t/Tutualican/GuvenOn/0.2.2/`. They describe the per-machine
 Inno installer, silent switches and English, German and Turkish descriptions.
 Validate them locally with:
 
 ```powershell
-winget validate --manifest .\winget\manifests\t\Tutualican\GuvenOn\0.2.1
+winget validate --manifest .\winget\manifests\t\Tutualican\GuvenOn\0.2.2
 ```
 
 Submitting to the community `winget-pkgs` repository is a separate review step;
@@ -283,13 +284,17 @@ the light details inside the shield.
   filters and restores DNS, and the next service start re-applies an enabled
   policy.
 - WFP replacement and removal run in a transaction. The elevated Windows CI job
-  verifies filter presence, pause cleanup, a forced service crash with filters
-  still installed, recovery, disable and uninstall cleanup. A physical Windows 11
-  sleep/wake and captive-portal leak matrix is still pending.
+  verifies filter presence, allowlist filters and persistence, pause cleanup, a
+  forced service crash with filters still installed, recovery, disable and
+  uninstall cleanup. A physical Windows 11 sleep/wake and captive-portal leak
+  matrix is still pending.
 - DNS changes are snapshotted under `%ProgramData%\GuvenOn` and restored on
   disable, pause, clean uninstall and the next service start after a crash.
-- The 0.2.1 installer includes the persistent-filter, state-restore and self-test
-  work. The earlier 0.2.0 installer predates it.
+- The local-device allowlist accepts exact IPv4 and IPv6 addresses, not CIDR
+  ranges. It keeps general traffic to those devices reachable, but DNS to a
+  local resolver remains blocked by the DNS guard.
+- The 0.2.2 installer includes the allowlist and in-app self-test; 0.2.1 added
+  the persistent-filter, state-restore and command-line self-test work.
 - The Linux daemon runs as root, restricts its control socket to root, and
   leaves the nftables table in place if the daemon crashes. Package removal
   runs `--cleanup` before files are deleted.
@@ -305,14 +310,14 @@ the light details inside the shield.
 
 The detailed, research-backed backlog lives in [ROADMAP.md](ROADMAP.md).
 
-1. Finish the Windows guard: trust-aware profiles, LAN allowlist, automatic
-   captive-portal detection, DoH handling, full IPv6 isolation, leak-matrix
-   verification of persistent-filter crash recovery, and self-test.
-2. Linux follow-up: PolicyKit/D-Bus, NetworkManager integration, arm64 packages
-   and a small tray UI.
+1. Finish the Windows guard: trust-aware profiles, automatic captive-portal
+   detection, DoH handling, full IPv6 isolation and leak-matrix verification of
+   persistent-filter crash recovery.
+2. Linux follow-up: PolicyKit/D-Bus, NetworkManager integration, a small tray UI
+   and arm64 packages.
 3. WireGuard, split tunneling, per-app rules, visibility and threat alerts.
 4. Signed update manifest, silent installer handoff, rollback.
-5. WinGet community submission for the 0.2.1 manifests.
+5. WinGet community submission for the 0.2.2 manifests.
 6. Code signing and SmartScreen reputation.
 
 Linux packaging starts with `.deb`; Flatpak/AppImage are not a substitute for a

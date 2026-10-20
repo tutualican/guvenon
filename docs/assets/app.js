@@ -43,7 +43,7 @@
         "When you enable protection on untrusted Wi-Fi, Guven-ON points the system at Cloudflare and Quad9, permits DNS only to those resolvers, and blocks plain DNS and DNS-over-TLS to everything else. No silent leaks to the café router.",
       why2Title: "Local exposure, contained.",
       why2Body:
-        "Protection isolates private IPv4 ranges, multicast and legacy discovery. A printer or captive portal can be reached through the ten-minute pause; a configurable LAN allowlist is on the roadmap.",
+        "Protection isolates private IPv4 ranges, multicast and legacy discovery. Add a printer, NAS or console by IP to keep it reachable while isolation stays on; use the ten-minute pause for a captive portal.",
       why3Title: "Quiet by design.",
       why3Body:
         "Protection is off until you turn it on, and the guards live in the platform filter engine. No tunnel crypto, no keepalive, no packet capture, no per-query logs.",
@@ -58,7 +58,7 @@
         "Trusted DNS, the DNS guard and local-network isolation are applied before the next query leaves your laptop.",
       step3Title: "You stay in control",
       step3Body:
-        "Use the ten-minute pause for a captive portal or a printer. Panic turns everything off and restores DNS immediately.",
+        "Use the ten-minute pause for a captive portal. The local-device list keeps a printer or NAS reachable without turning protection off. Panic turns everything off and restores DNS immediately.",
       privacyEyebrow: "Privacy by design",
       privacyTitle: "No account. No profiling. No DNS logs.",
       privacyBody:
@@ -74,13 +74,13 @@
       faqTitle: "Good to know.",
       faq0Q: "What does the preview enforce?",
       faq0A:
-        "On Windows, enabling protection applies persistent WFP filters and points active adapters at Cloudflare and Quad9: DNS and DoT to other resolvers, private LAN ranges, multicast and legacy discovery are blocked. The filters survive a service crash, and a self-test verifies them. On Linux the same policy is compiled to nftables. This is alpha: DoH on port 443, some IPv6 traffic, VPN split tunneling, local printers and automatic trust profiles are not covered yet. Protection is off until you enable it.",
+        "On Windows, enabling protection applies persistent WFP filters and points active adapters at Cloudflare and Quad9: DNS and DoT to other resolvers, private LAN ranges, multicast and legacy discovery are blocked. The filters survive a service crash, and a self-test verifies them. An exact-IP allowlist keeps chosen printers, NAS devices or consoles reachable. On Linux the same policy is compiled to nftables. This is alpha: DoH on port 443, some IPv6 traffic, VPN split tunneling and automatic trust profiles are not covered yet. Protection is off until you enable it.",
       faq1Q: "Does it slow down my connection?",
       faq1A:
         "Protection uses platform packet filters and plain DNS to Cloudflare or Quad9. There is no tunnel encryption, no keepalive and no packet capture, so the overhead is close to the DNS lookup you were already making.",
       faq2Q: "Will it break my printer, NAS or Chromecast?",
       faq2A:
-        "While protection is on, private LAN ranges and legacy discovery are isolated, so a printer or casting device may be unreachable. Use the ten-minute pause for local devices or a captive portal. A LAN allowlist is planned.",
+        "Add the device's IP under Local devices in the app. Exact IPv4 and IPv6 addresses work, and DNS to local resolvers remains blocked. Casting and legacy discovery may still need the ten-minute pause or the device's IP.",
       faq3Q: "Is Guven-ON a VPN?",
       faq3A:
         "No. It is a local leak blocker built on the Windows Filtering Platform and nftables on Linux. It does not route your traffic through a remote server, and it does not need an account.",
@@ -148,7 +148,7 @@
         "Wenn Sie den Schutz in unsicheren WLANs aktivieren, setzt Guven-ON das System auf Cloudflare und Quad9, erlaubt DNS nur zu diesen Resolvern und blockiert normales DNS sowie DNS-over-TLS zu allen anderen. Keine stillen Leaks an den Router im Café.",
       why2Title: "Lokale Exposition begrenzt.",
       why2Body:
-        "Der Schutz isoliert private IPv4-Bereiche, Multicast und ältere Discovery-Protokolle. Drucker oder Captive Portals erreichen Sie über die zehnminütige Pause; eine konfigurierbare LAN-Allowlist ist geplant.",
+        "Der Schutz isoliert private IPv4-Bereiche, Multicast und ältere Discovery-Protokolle. Fügen Sie Drucker, NAS oder Konsolen per IP hinzu, damit sie erreichbar bleiben; für ein Captive Portal gibt es die zehnminütige Pause.",
       why3Title: "Leise durch Design.",
       why3Body:
         "Der Schutz ist aus, bis Sie ihn einschalten, und die Regeln laufen in der Filterplattform des Systems. Keine Tunnel-Kryptografie, kein Keepalive, keine Paketaufzeichnung, keine Logs pro Abfrage.",
@@ -163,7 +163,7 @@
         "Vertrauenswürdiges DNS, die DNS-Sperre und die Lokalnetz-Isolation werden angewendet, bevor die nächste Abfrage den Laptop verlässt.",
       step3Title: "Sie behalten die Kontrolle",
       step3Body:
-        "Nutzen Sie die zehnminütige Pause für ein Captive Portal oder einen Drucker. Panik schaltet alles aus und stellt DNS sofort wieder her.",
+        "Nutzen Sie die zehnminütige Pause für ein Captive Portal. Die Liste lokaler Geräte hält Drucker oder NAS erreichbar, ohne den Schutz auszuschalten. Panik schaltet alles aus und stellt DNS sofort wieder her.",
       privacyEyebrow: "Datenschutz durch Design",
       privacyTitle: "Kein Konto. Kein Profiling. Keine DNS-Logs.",
       privacyBody:
@@ -179,13 +179,13 @@
       faqTitle: "Gut zu wissen.",
       faq0Q: "Was setzt die Vorschau durch?",
       faq0A:
-        "Unter Windows wendet der aktivierte Schutz persistente WFP-Filter an und richtet aktive Adapter auf Cloudflare und Quad9: DNS und DoT zu anderen Resolvern, private LAN-Bereiche, Multicast und ältere Discovery-Protokolle werden blockiert. Die Filter überstehen einen Dienstabsturz und werden durch einen Selbsttest geprüft. Unter Linux wird dieselbe Richtlinie nach nftables übersetzt. Das ist Alpha: DoH auf Port 443, einige IPv6-Verbindungen, VPN-Split-Tunneling, lokale Drucker und automatische Vertrauensprofile sind noch nicht abgedeckt. Der Schutz ist aus, bis Sie ihn aktivieren.",
+        "Unter Windows wendet der aktivierte Schutz persistente WFP-Filter an und richtet aktive Adapter auf Cloudflare und Quad9: DNS und DoT zu anderen Resolvern, private LAN-Bereiche, Multicast und ältere Discovery-Protokolle werden blockiert. Die Filter überstehen einen Dienstabsturz und werden durch einen Selbsttest geprüft. Eine Allowlist mit exakten IPs hält ausgewählte Drucker, NAS-Geräte oder Konsolen erreichbar. Unter Linux wird dieselbe Richtlinie nach nftables übersetzt. Das ist Alpha: DoH auf Port 443, einige IPv6-Verbindungen, VPN-Split-Tunneling und automatische Vertrauensprofile sind noch nicht abgedeckt. Der Schutz ist aus, bis Sie ihn aktivieren.",
       faq1Q: "Wird meine Verbindung langsamer?",
       faq1A:
         "Der Schutz nutzt Paketfilter der Plattform und normales DNS zu Cloudflare oder Quad9. Es gibt keine Tunnelverschlüsselung, kein Keepalive und keine Paketaufzeichnung – der Aufwand liegt nahe am DNS-Lookup, den Sie ohnehin machen.",
       faq2Q: "Bricht das meinen Drucker, NAS oder Chromecast?",
       faq2A:
-        "Während der Schutz aktiv ist, werden private LAN-Bereiche und ältere Discovery-Protokolle isoliert; ein Drucker oder Casting-Gerät kann dann unerreichbar sein. Nutzen Sie die zehnminütige Pause für lokale Geräte oder ein Captive Portal. Eine LAN-Allowlist ist geplant.",
+        "Tragen Sie die IP des Geräts in der App unter Lokale Geräte ein. Exakte IPv4- und IPv6-Adressen funktionieren; DNS zu lokalen Resolvern bleibt blockiert. Casting und ältere Discovery-Protokolle benötigen eventuell weiterhin die zehnminütige Pause oder die IP des Geräts.",
       faq3Q: "Ist Guven-ON ein VPN?",
       faq3A:
         "Nein. Es ist ein lokaler Leak-Blocker auf Basis der Windows-Filterplattform und von nftables unter Linux. Der Verkehr wird nicht über einen entfernten Server geleitet, und es ist kein Konto nötig.",
@@ -253,7 +253,7 @@
         "Güvenilmeyen Wi-Fi'de korumayı açtığınızda Guven-ON sistemi Cloudflare ve Quad9'a yönlendirir, DNS'e yalnızca bu çözümleyicilere izin verir, diğer tüm düz DNS ve DNS-over-TLS sorgularını engeller. Kafedeki yönlendiriciye sessiz sızıntı yok.",
       why2Title: "Yerel maruziyet sınırlandı.",
       why2Body:
-        "Koruma özel IPv4 aralıklarını, çoklu yayını ve eski keşif protokollerini izole eder. Yazıcıya veya captive portal'a on dakikalık duraklama ile erişebilirsiniz; yapılandırılabilir LAN izin listesi yol haritasında.",
+        "Koruma özel IPv4 aralıklarını, çoklu yayını ve eski keşif protokollerini izole eder. Yazıcı, NAS veya oyun konsolunu IP ile ekleyerek erişilebilir tutun; captive portal için on dakikalık duraklamayı kullanın.",
       why3Title: "Tasarımı gereği sessiz.",
       why3Body:
         "Siz açana kadar koruma kapalıdır ve kurallar platformun filtre motorunda çalışır. Tünel şifrelemesi, keepalive, paket yakalama veya sorgu başına günlük yok.",
@@ -268,7 +268,7 @@
         "Güvenilir DNS, DNS koruması ve yerel ağ izolasyonu bir sonraki sorgu dizüstü bilgisayarınızdan çıkmadan uygulanır.",
       step3Title: "Kontrolde kalın",
       step3Body:
-        "Captive portal veya yazıcı için on dakikalık duraklamayı kullanın. Panik her şeyi kapatır ve DNS'i hemen geri yükler.",
+        "Captive portal için on dakikalık duraklamayı kullanın. Yerel cihaz listesi, korumayı kapatmadan yazıcı veya NAS'ı erişilebilir tutar. Panik her şeyi kapatır ve DNS'i hemen geri yükler.",
       privacyEyebrow: "Tasarımı gereği gizlilik",
       privacyTitle: "Hesap yok. Profil çıkarma yok. DNS günlüğü yok.",
       privacyBody:
@@ -284,13 +284,13 @@
       faqTitle: "Bilmeniz iyi olur.",
       faq0Q: "Önizleme neyi uyguluyor?",
       faq0A:
-        "Windows'ta koruma açıldığında kalıcı WFP filtreleri uygulanır ve etkin bağdaştırıcılar Cloudflare ile Quad9'a yönlendirilir: diğer çözümleyicilere DNS ve DoT, özel LAN aralıkları, çoklu yayın ve eski keşif protokolleri engellenir. Filtreler servis çökmesinden sonra korunur ve bir öz test ile doğrulanır. Linux'ta aynı ilke nftables'a derlenir. Bu bir alfa: 443 portundaki DoH, bazı IPv6 trafiği, VPN bölünmüş tünelleme, yerel yazıcılar ve otomatik güven profilleri henüz kapsam dışıdır. Koruma siz açana kadar kapalıdır.",
+        "Windows'ta koruma açıldığında kalıcı WFP filtreleri uygulanır ve etkin bağdaştırıcılar Cloudflare ile Quad9'a yönlendirilir: diğer çözümleyicilere DNS ve DoT, özel LAN aralıkları, çoklu yayın ve eski keşif protokolleri engellenir. Filtreler servis çökmesinden sonra korunur ve bir öz test ile doğrulanır. Tam IP tabanlı izin listesi seçili yazıcı, NAS veya konsolları erişilebilir tutar. Linux'ta aynı ilke nftables'a derlenir. Bu bir alfa: 443 portundaki DoH, bazı IPv6 trafiği, VPN bölünmüş tünelleme ve otomatik güven profilleri henüz kapsam dışıdır. Koruma siz açana kadar kapalıdır.",
       faq1Q: "Bağlantımı yavaşlatır mı?",
       faq1A:
         "Koruma platform paket filtrelerini ve Cloudflare veya Quad9'a düz DNS kullanır. Tünel şifrelemesi, keepalive ve paket yakalama yoktur; ek yük zaten yaptığınız DNS sorgusuna yakındır.",
       faq2Q: "Yazıcımı, NAS'ımı veya Chromecast'imi bozar mı?",
       faq2A:
-        "Koruma açıkken özel LAN aralıkları ve eski keşif protokolleri izole edilir; yazıcı veya yayın cihazı erişilemez olabilir. Yerel cihazlar veya captive portal için on dakikalık duraklamayı kullanın. LAN izin listesi planlanıyor.",
+        "Cihazın IP'sini uygulamada Yerel cihazlar altına ekleyin. Tam IPv4 ve IPv6 adresleri çalışır; yerel çözümleyicilere DNS engelli kalır. Yayın ve eski keşif protokolleri için yine on dakikalık duraklama veya cihazın IP'si gerekebilir.",
       faq3Q: "Guven-ON bir VPN mi?",
       faq3A:
         "Hayır. Windows Filtering Platform ve Linux'ta nftables üzerinde çalışan yerel bir sızıntı engelleyicidir. Trafiğinizi uzak bir sunucuya yönlendirmez ve hesap gerektirmez.",
