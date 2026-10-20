@@ -81,6 +81,17 @@
   <data name="ProtectionPause" xml:space="preserve"><value>10 Min. pausieren</value></data>
   <data name="ProtectionBusy" xml:space="preserve"><value>Wird ausgeführt...</value></data>
   <data name="ProtectionFailed" xml:space="preserve"><value>Schutz konnte nicht geändert werden: {0}</value></data>
+  <data name="AdvancedProtection" xml:space="preserve"><value>Erweiterter Schutz</value></data>
+  <data name="AdvancedDnsTitle" xml:space="preserve"><value>DNS-Leck-Schutz</value></data>
+  <data name="AdvancedDnsBody" xml:space="preserve"><value>Nur vertrauenswürdige Resolver; anderes DNS und DNS-over-TLS werden blockiert.</value></data>
+  <data name="AdvancedLanTitle" xml:space="preserve"><value>LAN-/IP-Isolierung</value></data>
+  <data name="AdvancedLanBody" xml:space="preserve"><value>Private IPv4-Bereiche, Multicast und Legacy-Erkennung werden blockiert.</value></data>
+  <data name="AdvancedPersistentTitle" xml:space="preserve"><value>Absturzsichere Filter</value></data>
+  <data name="AdvancedPersistentBody" xml:space="preserve"><value>Persistente WFP-Objekte werden nach einem Neustart wiederhergestellt oder entfernt.</value></data>
+  <data name="AdvancedSelfTest" xml:space="preserve"><value>Selbsttest starten</value></data>
+  <data name="AdvancedSelfTestHint" xml:space="preserve"><value>Öffnet den WFP-Speicher erneut und prüft jeden erwarteten Filter.</value></data>
+  <data name="SelfTestPassed" xml:space="preserve"><value>Selbsttest bestanden: Alle erwarteten Filter sind installiert.</value></data>
+  <data name="SelfTestFailed" xml:space="preserve"><value>Selbsttest fehlgeschlagen: {0}</value></data>
   <data name="StatusServiceStopped" xml:space="preserve"><value>Dienst angehalten</value></data>
   <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Der Schutz ist derzeit nicht aktiv.</value></data>
   <data name="StatusServiceMissing" xml:space="preserve"><value>Dienst nicht installiert</value></data>

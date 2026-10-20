@@ -81,6 +81,17 @@
   <data name="ProtectionPause" xml:space="preserve"><value>10 dk duraklat</value></data>
   <data name="ProtectionBusy" xml:space="preserve"><value>İşleniyor...</value></data>
   <data name="ProtectionFailed" xml:space="preserve"><value>Koruma değiştirilemedi: {0}</value></data>
+  <data name="AdvancedProtection" xml:space="preserve"><value>Gelişmiş koruma</value></data>
+  <data name="AdvancedDnsTitle" xml:space="preserve"><value>DNS sızıntı koruması</value></data>
+  <data name="AdvancedDnsBody" xml:space="preserve"><value>Yalnızca güvenilir çözümleyiciler; diğer DNS ve DNS-over-TLS engellenir.</value></data>
+  <data name="AdvancedLanTitle" xml:space="preserve"><value>LAN/IP yalıtımı</value></data>
+  <data name="AdvancedLanBody" xml:space="preserve"><value>Özel IPv4 aralıkları, çoklu yayın ve eski keşif protokolleri engellenir.</value></data>
+  <data name="AdvancedPersistentTitle" xml:space="preserve"><value>Çökmeye dayanıklı filtreler</value></data>
+  <data name="AdvancedPersistentBody" xml:space="preserve"><value>Kalıcı WFP nesneleri yeniden başlatmadan sonra geri yüklenir veya temizlenir.</value></data>
+  <data name="AdvancedSelfTest" xml:space="preserve"><value>Öz testi çalıştır</value></data>
+  <data name="AdvancedSelfTestHint" xml:space="preserve"><value>WFP deposunu yeniden açar ve beklenen her filtreyi doğrular.</value></data>
+  <data name="SelfTestPassed" xml:space="preserve"><value>Öz test geçti: Beklenen tüm filtreler kurulu.</value></data>
+  <data name="SelfTestFailed" xml:space="preserve"><value>Öz test başarısız: {0}</value></data>
   <data name="StatusServiceStopped" xml:space="preserve"><value>Servis durdu</value></data>
   <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Koruma şu anda etkin değil.</value></data>
   <data name="StatusServiceMissing" xml:space="preserve"><value>Servis kurulu değil</value></data>

@@ -81,6 +81,17 @@
   <data name="ProtectionPause" xml:space="preserve"><value>Pause 10 min</value></data>
   <data name="ProtectionBusy" xml:space="preserve"><value>Working...</value></data>
   <data name="ProtectionFailed" xml:space="preserve"><value>Could not change protection: {0}</value></data>
+  <data name="AdvancedProtection" xml:space="preserve"><value>Advanced protection</value></data>
+  <data name="AdvancedDnsTitle" xml:space="preserve"><value>DNS leak guard</value></data>
+  <data name="AdvancedDnsBody" xml:space="preserve"><value>Trusted resolvers only; other DNS and DNS-over-TLS are blocked.</value></data>
+  <data name="AdvancedLanTitle" xml:space="preserve"><value>LAN/IP isolation</value></data>
+  <data name="AdvancedLanBody" xml:space="preserve"><value>Private IPv4 ranges, multicast and legacy discovery are blocked.</value></data>
+  <data name="AdvancedPersistentTitle" xml:space="preserve"><value>Crash-safe filters</value></data>
+  <data name="AdvancedPersistentBody" xml:space="preserve"><value>Persistent WFP objects are restored or cleaned up after a restart.</value></data>
+  <data name="AdvancedSelfTest" xml:space="preserve"><value>Run self-test</value></data>
+  <data name="AdvancedSelfTestHint" xml:space="preserve"><value>Re-opens the WFP store and verifies every expected filter.</value></data>
+  <data name="SelfTestPassed" xml:space="preserve"><value>Self-test passed: all expected filters are installed.</value></data>
+  <data name="SelfTestFailed" xml:space="preserve"><value>Self-test failed: {0}</value></data>
   <data name="StatusServiceStopped" xml:space="preserve"><value>Service stopped</value></data>
   <data name="StatusServiceStoppedDetail" xml:space="preserve"><value>Protection is currently off.</value></data>
   <data name="StatusServiceMissing" xml:space="preserve"><value>Service not installed</value></data>

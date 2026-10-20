@@ -122,6 +122,96 @@
                 </Grid>
             </Border>
 
+            <!-- Advanced protection -->
+            <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="{Binding [AdvancedProtection], Source={x:Static loc:Loc.Instance}}"
+                               Style="{StaticResource H2}" />
+
+                    <Grid Margin="0,14,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Ellipse Width="6" Height="6"
+                                 Fill="{StaticResource StatusGreenBrush}"
+                                 VerticalAlignment="Top"
+                                 Margin="2,7,12,0" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding [AdvancedDnsTitle], Source={x:Static loc:Loc.Instance}}"
+                                       Style="{StaticResource BodyStrong}" />
+                            <TextBlock Text="{Binding [AdvancedDnsBody], Source={x:Static loc:Loc.Instance}}"
+                                       Style="{StaticResource Caption}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Ellipse Width="6" Height="6"
+                                 Fill="{StaticResource StatusGreenBrush}"
+                                 VerticalAlignment="Top"
+                                 Margin="2,7,12,0" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding [AdvancedLanTitle], Source={x:Static loc:Loc.Instance}}"
+                                       Style="{StaticResource BodyStrong}" />
+                            <TextBlock Text="{Binding [AdvancedLanBody], Source={x:Static loc:Loc.Instance}}"
+                                       Style="{StaticResource Caption}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Ellipse Width="6" Height="6"
+                                 Fill="{StaticResource StatusGreenBrush}"
+                                 VerticalAlignment="Top"
+                                 Margin="2,7,12,0" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="{Binding [AdvancedPersistentTitle], Source={x:Static loc:Loc.Instance}}"
+                                       Style="{StaticResource BodyStrong}" />
+                            <TextBlock Text="{Binding [AdvancedPersistentBody], Source={x:Static loc:Loc.Instance}}"
+                                       Style="{StaticResource Caption}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,2,0,0" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Border Height="1" Background="{StaticResource CardBorderBrush}" Margin="0,16,0,16" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="0,0,16,0">
+                            <TextBlock Text="{Binding [AdvancedSelfTestHint], Source={x:Static loc:Loc.Instance}}"
+                                       Style="{StaticResource Caption}"
+                                       TextWrapping="Wrap" />
+                            <TextBlock x:Name="SelfTestResult"
+                                       Style="{StaticResource Caption}"
+                                       TextWrapping="Wrap"
+                                       Margin="0,6,0,0" />
+                        </StackPanel>
+                        <Button x:Name="SelfTestButton"
+                                Grid.Column="1"
+                                Content="{Binding [AdvancedSelfTest], Source={x:Static loc:Loc.Instance}}"
+                                Style="{StaticResource SecondaryButton}"
+                                IsEnabled="False"
+                                VerticalAlignment="Center"
+                                Click="SelfTest_Click" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+
             <!-- Network -->
             <Border Style="{StaticResource Card}" Margin="0,0,0,16">
                 <Grid>

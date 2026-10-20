@@ -66,4 +66,9 @@ public static class ProtectionClient
         CancellationToken cancellationToken = default,
         TimeSpan? timeout = null) =>
         SendAsync(new ControlRequest(ProtectionCommand.Pause, minutes), timeout, cancellationToken);
+
+    public static Task<ControlResponse> SelfTestAsync(
+        CancellationToken cancellationToken = default,
+        TimeSpan? timeout = null) =>
+        SendAsync(new ControlRequest(ProtectionCommand.SelfTest), timeout, cancellationToken);
 }

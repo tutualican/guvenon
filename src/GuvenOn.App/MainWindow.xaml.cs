@@ -233,12 +233,19 @@ public partial class MainWindow : Window
             ProtectionButton.Content = Loc.Instance["ProtectionBusy"];
             ProtectionButton.IsEnabled = false;
             PauseButton.IsEnabled = false;
+            SelfTestButton.IsEnabled = false;
             return;
         }
 
         ProtectionButton.IsEnabled = true;
         PauseButton.IsEnabled = true;
+        SelfTestButton.IsEnabled = status?.EngineActive == true;
         PauseButton.Visibility = Visibility.Collapsed;
+
+        if (status?.EngineActive != true)
+        {
+            SelfTestResult.Text = string.Empty;
+        }
 
         if (status is null)
         {
@@ -345,6 +352,48 @@ public partial class MainWindow : Window
         {
             UpdateProtectionUi(null);
             ShowProtectionFailure(exception.Message);
+        }
+        finally
+        {
+            _protectionBusy = false;
+            UpdateProtectionUi(_protectionStatus);
+        }
+    }
+
+    private async void SelfTest_Click(object sender, RoutedEventArgs e)
+    {
+        if (_protectionBusy)
+        {
+            return;
+        }
+
+        _protectionBusy = true;
+        SelfTestResult.Text = string.Empty;
+        UpdateProtectionUi(_protectionStatus);
+
+        try
+        {
+            var response = await ProtectionClient.SelfTestAsync(
+                timeout: TimeSpan.FromSeconds(30));
+
+            if (response.Ok)
+            {
+                UpdateProtectionUi(response.Status);
+                SelfTestResult.Foreground = (Brush)FindResource("StatusGreenBrush");
+                SelfTestResult.Text = Loc.Instance["SelfTestPassed"];
+            }
+            else
+            {
+                SelfTestResult.Foreground = (Brush)FindResource("StatusRedBrush");
+                SelfTestResult.Text = Loc.Instance.Format(
+                    "SelfTestFailed",
+                    response.Error ?? response.Status?.LastError ?? Loc.Instance["ProtectionUnavailable"]);
+            }
+        }
+        catch (Exception exception)
+        {
+            SelfTestResult.Foreground = (Brush)FindResource("StatusRedBrush");
+            SelfTestResult.Text = Loc.Instance.Format("SelfTestFailed", exception.Message);
         }
         finally
         {
